@@ -1,146 +1,731 @@
 {
-  "version": "0.2.0",
-  "checks": 52,
-  "notes": "Legal simulated strategies are examples, not player win rates or optimal solutions.",
-  "strategies": {
-    "lean": {
-      "runs": 24,
-      "released": 24,
-      "objectiveAchieved": 24,
-      "averageWeeks": 13.1,
-      "averageScore": 73.5,
-      "averageCost": 4622,
-      "averageProfit": 2609
-    },
-    "acclaim": {
-      "runs": 24,
-      "released": 21,
-      "objectiveAchieved": 21,
-      "averageWeeks": 16.8,
-      "averageScore": 89.3,
-      "averageCost": 9128,
-      "averageProfit": 2290
-    },
-    "oldStacking": {
-      "runs": 12,
-      "released": 0,
-      "objectiveAchieved": 0,
-      "averageWeeks": 25.8,
-      "averageScore": 43.5,
-      "averageCost": 9340,
-      "averageProfit": null
-    }
-  },
-  "samples": [
+  "version": "0.3.0",
+  "checks": 110,
+  "notes": "Example legal strategies; not player win rates or optimal policies.",
+  "fullTeam": [
     {
-      "seed": 22001,
+      "seed": 33001,
       "genre": "story",
-      "route": "lean",
+      "template": "designer",
       "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 14,
+      "score": 75,
+      "cost": 4140,
+      "profit": 3225,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "story",
+      "template": "designer",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 14,
+      "score": 75,
+      "cost": 4555,
+      "profit": 2810,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "action",
+      "template": "designer",
+      "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 16,
+      "score": 78,
+      "cost": 5028,
+      "profit": 2942,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "action",
+      "template": "designer",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 16,
+      "score": 78,
+      "cost": 5507,
+      "profit": 2463,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "sim",
+      "template": "designer",
+      "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 74,
+      "cost": 4543,
+      "profit": 3740,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "sim",
+      "template": "designer",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 74,
+      "cost": 4990,
+      "profit": 3293,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "story",
+      "template": "engineer",
+      "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 14,
+      "score": 75,
+      "cost": 4258,
+      "profit": 3107,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "story",
+      "template": "engineer",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 14,
+      "score": 75,
+      "cost": 4673,
+      "profit": 2692,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "action",
+      "template": "engineer",
+      "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 80,
+      "cost": 4741,
+      "profit": 4646,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "action",
+      "template": "engineer",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 80,
+      "cost": 5188,
+      "profit": 4199,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "sim",
+      "template": "engineer",
+      "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 74,
+      "cost": 4543,
+      "profit": 3696,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "sim",
+      "template": "engineer",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 74,
+      "cost": 4990,
+      "profit": 3249,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "story",
+      "template": "artist",
+      "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 13,
+      "score": 76,
+      "cost": 4065,
+      "profit": 3837,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "story",
+      "template": "artist",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 13,
+      "score": 76,
+      "cost": 4448,
+      "profit": 3454,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "action",
+      "template": "artist",
+      "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 77,
+      "cost": 4496,
+      "profit": 4327,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "action",
+      "template": "artist",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 77,
+      "cost": 4943,
+      "profit": 3880,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "sim",
+      "template": "artist",
+      "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 14,
+      "score": 74,
+      "cost": 4427,
+      "profit": 2932,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "sim",
+      "template": "artist",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 14,
+      "score": 74,
+      "cost": 4842,
+      "profit": 2517,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "story",
+      "template": "tester",
+      "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 14,
+      "score": 75,
+      "cost": 4130,
+      "profit": 3235,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "story",
+      "template": "tester",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 14,
+      "score": 75,
+      "cost": 4545,
+      "profit": 2820,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "action",
+      "template": "tester",
+      "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 78,
+      "cost": 4535,
+      "profit": 4386,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "action",
+      "template": "tester",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 78,
+      "cost": 4982,
+      "profit": 3939,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "sim",
+      "template": "tester",
+      "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 16,
+      "score": 74,
+      "cost": 4756,
+      "profit": 2529,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "sim",
+      "template": "tester",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 16,
+      "score": 74,
+      "cost": 5224,
+      "profit": 2061,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "story",
+      "template": "producer",
+      "hard": false,
+      "route": "lean",
       "released": true,
       "weeks": 13,
       "score": 74,
-      "cost": 4182,
-      "profit": 3230,
+      "cost": 3866,
+      "profit": 3538,
       "target": true,
-      "money": 4438,
-      "cards": [
-        "lean",
-        "artkit",
-        "prototype"
-      ]
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
     },
     {
-      "seed": 22001,
-      "genre": "action",
-      "route": "lean",
-      "hard": false,
-      "released": true,
-      "weeks": 14,
-      "score": 77,
-      "cost": 4512,
-      "profit": 3920,
-      "target": true,
-      "money": 4228,
-      "cards": [
-        "lean",
-        "artkit"
-      ]
-    },
-    {
-      "seed": 22001,
-      "genre": "sim",
-      "route": "lean",
-      "hard": false,
-      "released": true,
-      "weeks": 14,
-      "score": 73,
-      "cost": 4507,
-      "profit": 3309,
-      "target": true,
-      "money": 4233,
-      "cards": [
-        "lean",
-        "artkit",
-        "prototype"
-      ]
-    },
-    {
-      "seed": 22001,
+      "seed": 33001,
       "genre": "story",
-      "route": "acclaim",
-      "hard": false,
+      "template": "producer",
+      "hard": true,
+      "route": "lean",
       "released": true,
-      "weeks": 17,
-      "score": 89,
-      "cost": 8794,
-      "profit": 2868,
+      "weeks": 13,
+      "score": 74,
+      "cost": 4238,
+      "profit": 3166,
       "target": true,
-      "money": 2026,
-      "cards": [
-        "prototype",
-        "artkit",
-        "modules",
-        "lean"
-      ]
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
     },
     {
-      "seed": 22001,
+      "seed": 33001,
       "genre": "action",
-      "route": "acclaim",
+      "template": "producer",
       "hard": false,
+      "route": "lean",
       "released": true,
-      "weeks": 17,
-      "score": 90,
-      "cost": 9393,
-      "profit": 2495,
+      "weeks": 15,
+      "score": 80,
+      "cost": 4751,
+      "profit": 4516,
       "target": true,
-      "money": 1547,
-      "cards": [
-        "prototype",
-        "artkit",
-        "modules",
-        "lean"
-      ]
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
     },
     {
-      "seed": 22001,
+      "seed": 33001,
+      "genre": "action",
+      "template": "producer",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 80,
+      "cost": 5187,
+      "profit": 4080,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
       "genre": "sim",
-      "route": "acclaim",
+      "template": "producer",
       "hard": false,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 75,
+      "cost": 4515,
+      "profit": 3700,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33001,
+      "genre": "sim",
+      "template": "producer",
+      "hard": true,
+      "route": "lean",
+      "released": true,
+      "weeks": 15,
+      "score": 75,
+      "cost": 4929,
+      "profit": 3286,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "valid": true
+    }
+  ],
+  "duo": [
+    {
+      "seed": 33002,
+      "genre": "story",
+      "template": "designer",
+      "hard": false,
+      "route": "duo",
       "released": true,
       "weeks": 17,
-      "score": 86,
-      "cost": 8932,
-      "profit": 1545,
+      "score": 75,
+      "cost": 4277,
+      "profit": 3742,
       "target": true,
-      "money": 1888,
-      "cards": [
-        "prototype",
-        "modules",
-        "lean",
-        "artkit"
-      ]
+      "crew": [
+        "hero",
+        "ace"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33002,
+      "genre": "story",
+      "template": "engineer",
+      "hard": false,
+      "route": "duo",
+      "released": true,
+      "weeks": 16,
+      "score": 75,
+      "cost": 4027,
+      "profit": 3065,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33002,
+      "genre": "story",
+      "template": "artist",
+      "hard": false,
+      "route": "duo",
+      "released": true,
+      "weeks": 18,
+      "score": 74,
+      "cost": 4554,
+      "profit": 2907,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33002,
+      "genre": "story",
+      "template": "tester",
+      "hard": false,
+      "route": "duo",
+      "released": true,
+      "weeks": 16,
+      "score": 77,
+      "cost": 4134,
+      "profit": 3180,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33002,
+      "genre": "story",
+      "template": "producer",
+      "hard": false,
+      "route": "duo",
+      "released": true,
+      "weeks": 15,
+      "score": 77,
+      "cost": 4659,
+      "profit": 3338,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace"
+      ],
+      "valid": true
+    }
+  ],
+  "acclaim": [
+    {
+      "seed": 33003,
+      "genre": "story",
+      "template": "designer",
+      "hard": false,
+      "route": "acclaim",
+      "released": true,
+      "weeks": 16,
+      "score": 89,
+      "cost": 7680,
+      "profit": 2167,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin",
+        "wen"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33003,
+      "genre": "action",
+      "template": "engineer",
+      "hard": false,
+      "route": "acclaim",
+      "released": true,
+      "weeks": 15,
+      "score": 90,
+      "cost": 7469,
+      "profit": 4025,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "lin",
+        "wen"
+      ],
+      "valid": true
+    },
+    {
+      "seed": 33003,
+      "genre": "sim",
+      "template": "artist",
+      "hard": false,
+      "route": "acclaim",
+      "released": true,
+      "weeks": 15,
+      "score": 88,
+      "cost": 7672,
+      "profit": 2545,
+      "target": true,
+      "crew": [
+        "hero",
+        "ace",
+        "shen",
+        "wen"
+      ],
+      "valid": true
     }
   ]
 }

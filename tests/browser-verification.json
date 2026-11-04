@@ -1,36 +1,44 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "date": "2026-11-04",
   "surface": "localhost / in-app Chromium browser",
   "actualRun": {
+    "seed": 33001,
     "genre": "story",
-    "objective": "profit",
-    "weeks": 13,
-    "score": 74,
-    "cost": 4399,
-    "revenue": 6810,
-    "profitIncludingEventIncome": 2651,
-    "experience": 161,
+    "template": "designer",
+    "initialCrew": [
+      "小周",
+      "阿策"
+    ],
+    "recruited": "林绘",
+    "weeks": 15,
+    "score": 73,
+    "cost": 4539,
+    "revenue": 7687,
+    "profitIncludingEventIncome": 3508,
+    "experience": 160,
     "objectiveAchieved": true
   },
   "verified": [
-    "objective selection survives genre switch",
-    "scope freeze blocks all feature buttons",
-    "blueprint decline",
-    "QA versus refactor mode descriptions",
-    "event and milestone modal progression",
-    "full release and exact actual objective result",
-    "automatic save restored after tab recovery and reload",
-    "320px and 390px viewports without document horizontal overflow",
-    "no browser console warnings or errors"
+    "five protagonist templates and companion preview",
+    "hero name and template preserved when switching genre",
+    "exactly two founding members",
+    "unsupported role option disabled",
+    "progress-gated invitation for Lin and Shen",
+    "named partner recruited, no anonymous workers",
+    "individual job selectors and ramp hints",
+    "event dialogue from a present team member",
+    "full legal UI playthrough to release",
+    "named cast shown at settlement",
+    "individual assignments restored after reload",
+    "experience remains 443 on reload instead of duplicate award",
+    "390px and 320px roster layouts without horizontal document overflow",
+    "no console warnings or errors",
+    "career history shows actual crew and preserves earlier v0.2 records",
+    "320px setup form without horizontal document overflow"
   ],
-  "offline": {
-    "inlineScripts": 3,
-    "syntaxChecked": true,
-    "externalRuntimeAssets": false
-  },
   "limitations": [
-    "Single-file package syntax and inlining checked; direct file navigation not exercised in browser.",
-    "Simulated strategies are examples, not optimal solutions or player win rates."
+    "No long-term balance or user playtesting claim.",
+    "Single HTML package shares the tested engine and UI; direct file navigation is not exercised by browser automation."
   ]
 }

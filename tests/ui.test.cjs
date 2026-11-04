@@ -1,0 +1,16 @@
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict'),G=require('../dist/engine.js');
+const root=path.resolve(__dirname,'..'),window={StudioGame:G};
+vm.runInNewContext(fs.readFileSync(path.join(root,'dist/characters-ui.js'),'utf8'),{window});
+const s=G.newRun({heroName:'小周'});G.chooseCard(s,'skip');G.assignMember(s,'hero','code');
+assert.ok(window.StudioPeople.strip(s,true).includes('转岗磨合 −20%'));
+s.cards.push('veteran');assert.ok(window.StudioPeople.strip(s,true).includes('转岗磨合 −10%'));
+s.team[0].name='<x>';const card=window.StudioPeople.memberCard(s,s.team[0],true);
+assert.ok(card.includes('&lt;x&gt;')&&!card.includes('<x>'),'player names are escaped in person card and labels');
+assert.ok(card.includes('value="test" disabled'),'unsupported role disabled in selector');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+assert.equal(scripts.length,4,'offline package includes the people module');
+scripts.forEach((m,i)=>new vm.Script(m[1],{filename:'offline-script-'+i}));
+assert.ok(!/<script\b[^>]*\bsrc=|<link\b[^>]*rel=["']stylesheet/i.test(html),'offline scripts and styles embedded');
+assert.ok(html.includes('v0.3.0 DEMO')&&html.includes('loop_studio_run_v3'),'offline build current version and isolated save key');
+for(const f of ['engine.js','audio.js','characters-ui.js','app.js'])new vm.Script(fs.readFileSync(path.join(root,'dist',f),'utf8'),{filename:f});
+console.log('UI checks passed: individual ramp hints, unavailable role, escaped names, four inline scripts, current offline build.');

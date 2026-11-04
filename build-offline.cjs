@@ -1,9 +1,9 @@
 const fs=require('node:fs'),path=require('node:path');
 let html=fs.readFileSync(path.join(__dirname,'dist/index.html'),'utf8');
 const css=fs.readFileSync(path.join(__dirname,'dist/style.css'),'utf8');
-const scripts=['engine.js','audio.js','app.js'].map(f=>fs.readFileSync(path.join(__dirname,'dist',f),'utf8'));
+const scripts=['engine.js','audio.js','characters-ui.js','app.js'].map(f=>fs.readFileSync(path.join(__dirname,'dist',f),'utf8'));
 html=html.replace('<link rel="stylesheet" href="style.css">',()=>'<style>'+css+'</style>');
-html=html.replace(/<script defer src="(?:engine|audio|app)\.js"><\/script>/g,'');
+html=html.replace(/<script defer src="(?:engine|audio|characters-ui|app)\.js"><\/script>/g,'');
 const license=fs.readFileSync(path.join(__dirname,'LICENSE'),'utf8');
 html=html.replace('<head>','<head>\n<!--\n'+license+'\n-->');
 html=html.replace('</body>',()=>scripts.map(s=>'<script>\n'+s+'\n</script>').join('\n')+'\n</body>');

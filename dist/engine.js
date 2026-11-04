@@ -1,9 +1,9 @@
-/* 周目工作室 v0.2.0. Pure, seeded simulation; interface/storage are separate.
+/* 周目工作室 v0.3.0. Pure, seeded simulation; interface/storage are separate.
    Architecture follows 周目小镇 v3.17.0: run configuration, seeded choices,
    projections, milestone blueprints and idempotent growth receipts. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.StudioGame=factory();})(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const VERSION=2;
+  const VERSION=3;
   const JOBS=[
     {id:'design',name:'策划设计',short:'策划',icon:'✦',color:'#d8b879'},
     {id:'code',name:'程序开发',short:'程序',icon:'⌘',color:'#76a9e7'},
@@ -41,6 +41,30 @@
     {id:'savings',name:'节约习惯',desc:'团队工资 −10%',cost:1,unlock:160},
     {id:'insight',name:'制作人直觉',desc:'初始玩法与表现品质各 +8',cost:2,unlock:260}
   ];
+  const TEMPLATES=[
+    {id:'designer',name:'灵感主策',title:'把点子变成可玩的规则',skills:{design:150,code:60,art:85,test:0,ops:75},quote:'先想清楚玩家为什么想再玩一次。',color:'#d8b879',look:0},
+    {id:'engineer',name:'系统工程师',title:'用代码搭建世界',skills:{design:75,code:155,art:0,test:95,ops:50},quote:'让复杂的系统，也能稳稳运行。',color:'#76a9e7',look:1},
+    {id:'artist',name:'视觉创作者',title:'为世界赋予独特气质',skills:{design:90,code:0,art:155,test:55,ops:70},quote:'让玩家一眼就记住这个世界。',color:'#bc9fe4',look:2},
+    {id:'tester',name:'体验侦探',title:'从细节里找出体验的裂缝',skills:{design:70,code:80,art:45,test:160,ops:0},quote:'这个边界情况，玩家一定会遇见。',color:'#80ba91',look:3},
+    {id:'producer',name:'发行制作人',title:'把作品送到对的玩家手里',skills:{design:85,code:45,art:0,test:70,ops:155},quote:'好作品，也值得被看见。',color:'#dd957d',look:4}
+  ];
+  const COMPANION={id:'ace',name:'阿策',title:'Codex 的化身 · 全能搭档',kind:'companion',skills:{design:145,code:145,art:145,test:145,ops:145},salary:96,quote:'你来决定方向，我来补上最需要的一块。',bio:'从第一行想法到最后一次提交，一直和你并肩。五项能力都很强，每周仍只能专注一项工作。',color:'#81bea7',look:5};
+  const RECRUITS=[
+    {id:'lin',name:'林绘',title:'独立美术',skills:{design:90,code:0,art:170,test:40,ops:55},salary:88,stage:'prototype',quote:'这个原型，我想给它画一片天空。',bio:'被你的可玩原型打动，擅长视觉表达，完全不会写程序。',color:'#bc9fe4',look:2},
+    {id:'shen',name:'沈序',title:'引擎程序员',skills:{design:60,code:170,art:0,test:95,ops:40},salary:96,stage:'prototype',quote:'你的原型挺有意思，技术部分交给我。',bio:'喜欢有野心的系统，能承担复杂实现，不会美术制作。',color:'#76a9e7',look:1},
+    {id:'tang',name:'唐砚',title:'叙事设计师',skills:{design:165,code:40,art:110,test:0,ops:75},salary:92,stage:'vertical',quote:'切片里的世界，还能再多一点回响。',bio:'看过垂直切片后主动来信，擅长设计与画面叙事，不做测试。',color:'#d8b879',look:0},
+    {id:'wen',name:'温衡',title:'质量工程师',skills:{design:75,code:100,art:0,test:175,ops:65},salary:90,stage:'vertical',quote:'让每一个好设计，都能可靠地到达玩家。',bio:'相信打磨决定作品的最后一公里，擅长验收、修复与重构。',color:'#80ba91',look:3},
+    {id:'xia',name:'夏禾',title:'发行联络人',skills:{design:100,code:40,art:65,test:0,ops:175},salary:84,stage:'content',quote:'内容完成了，接下来让玩家找到它。',bio:'关注到你的完整版本，熟悉资质与渠道准备，不会测试。',color:'#dd957d',look:4},
+    {id:'lu',name:'陆简',title:'交付协调员',skills:{design:70,code:95,art:0,test:125,ops:135},salary:88,stage:'content',quote:'验收和上架，我们一起把最后几步走稳。',bio:'擅长测试和发行之间的协作，不会美术，适合收尾阶段。',color:'#8bbfc5',look:6}
+  ];
+  function skillLabel(value){return value===0?'不会':value>=130?'擅长':value>=80?'胜任':'生疏';}
+  function syncPeople(s){s.people=Object.fromEntries(JOBS.map(j=>[j.id,s.team.filter(m=>m.job===j.id).length]));s.reserve=s.team.filter(m=>m.job==='idle').length;}
+  function makeMember(def,job){return {...copy(def),job,lastJob:job,kind:def.kind||'partner'};}
+  function createTeam(config){const t=TEMPLATES.find(t=>t.id===(config.template||'designer'));if(!t)throw Error('请选择有效的主角模板');const hero=makeMember({...t,id:'hero',template:t.id,name:String(config.heroName||'你').trim().slice(0,12)||'你',title:t.name,kind:'hero',salary:72,bio:t.title},JOBS.reduce((a,j)=>t.skills[j.id]>t.skills[a]?j.id:a,'design'));return [hero,makeMember(COMPANION,hero.job==='design'?'code':'design')];}
+  function availableRecruits(s){return RECRUITS.filter(r=>s.milestones.includes(r.stage)&&!s.team.some(m=>m.id===r.id)&&!s.departed.includes(r.id));}
+  function assignMember(s,memberId,job){const m=s.team.find(m=>m.id===memberId);if(blocked(s)||!m||job!=='idle'&&!JOBS.some(j=>j.id===job)||job!=='idle'&&m.skills[job]<=0)return false;m.job=job;syncPeople(s);return true;}
+  function memberOutput(s,memberId){const member=s.team.find(m=>m.id===memberId);if(!member||member.job==='idle')return 0;const job=member.job,m=mods(s);const ordered=s.team.filter(p=>p.job===job).map(p=>({id:p.id,n:p.skills[job]/100*(p.job!==p.lastJob?1-.2*m.ramp:1)})).sort((a,b)=>b.n-a.n||a.id.localeCompare(b.id));const index=ordered.findIndex(p=>p.id===memberId);const spirit=.65+s.morale/285,debt=['code','art'].includes(job)?Math.max(.55,1-s.debt*.013):1,freeze=s.designLocked&&['code','art'].includes(job)?1.12:1;return round(ordered[index].n*(index?m.crowd:1)*10*(s.focus===job?1.5:1)*m.all*m[job]*(s.pace==='crunch'?1.35:s.pace==='rest'?.7:1)*spirit*debt*freeze);}
+  function teamVoice(s,e){const key={palette:'art',backup:'code',bug:'test',compat:'code',debt:'code',forms:'ops',showcase:'ops',inspiration:'design',scope:'design',feedback:'test'}[e?.id];const m=s.team.find(m=>m.job===key)||s.team.find(m=>m.id==='ace');const lines={palette:'风格值得打磨，也要想好多画的这些工作值不值。',backup:'先把备份保住，再决定设备预算。',bug:'发现问题是好事，留到上线后代价更大。',forms:'资质和上架清单，我已经重新核对了一遍。',scope:'这个想法很好。是放进这一作，还是留给下一作？',feedback:'有人认真玩了我们的作品，这份反馈值得研究。'};return {id:m.id,name:m.name,text:lines[e?.id]||m.quote};}
   const OBJECTIVES=[{id:'profit',name:'商业回报',desc:'项目结余达到 ¥1,200，尽量少花钱交付。',bonus:40},{id:'acclaim',name:'口碑佳作',desc:'作品评分达到 82，需要功能方向和品质投入。',bonus:40}];
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const round=v=>Math.round(v*100)/100;
@@ -53,8 +77,8 @@
     s.cards.forEach(id=>{const c=CARDS.find(x=>x.id===id);if(c)Object.entries(c.effect).forEach(([k,v])=>{if(['fix','morale','fee','crowd','cleanup'].includes(k))m[k]+=v;else m[k]*=v;});});
     if(s.buffs.includes('friend'))m.all*=1.08;if(s.buffs.includes('contacts')){m.ops*=1.25;m.sales*=1.05;}
     s.effects.forEach(e=>{if(e.weeks>0){m.all*=e.all||1;if(e.job)m[e.job]*=e.mult||1;}});return m;}
-  function teamSize(s){return Object.values(s.people).reduce((a,b)=>a+b,0)+(s.reserve||0);}
-  function cost(s){const m=mods(s);const wages=Math.ceil(teamSize(s)*72*(s.hard?1.15:1)*(s.buffs.includes('savings')?.9:1)*m.wages);const overhead=Math.ceil((90+s.features.length*22+s.debt*3+Math.max(0,teamSize(s)-4)**2*12)*m.overhead);return {wages,overhead,tools:m.fee,total:wages+overhead+m.fee};}
+  function teamSize(s){return s.team.length;}
+  function cost(s){const m=mods(s);const wages=Math.ceil(s.team.reduce((n,m)=>n+m.salary,0)*(s.hard?1.15:1)*(s.buffs.includes('savings')?.9:1)*m.wages);const overhead=Math.ceil((90+s.features.length*22+s.debt*3+Math.max(0,teamSize(s)-4)**2*12)*m.overhead);return {wages,overhead,tools:m.fee,total:wages+overhead+m.fee};}
   function progress(s,id){return clamp(s.work[id]/s.req[id],0,1);}
   function coreReady(s){return ['design','code','art'].every(k=>progress(s,k)>=1);}
   function complete(s){return ['design','code','art','test'].every(k=>progress(s,k)>=1)&&s.qualification>=70&&s.listing>=80;}
@@ -76,21 +100,21 @@
     const buffs=[...new Set(config.buffs||[])];if(buffs.some(id=>!BUFFS.some(b=>b.id===id&&b.unlock<=exp))||buffs.reduce((n,id)=>n+BUFFS.find(b=>b.id===id).cost,0)>capacity({exp}))throw Error('开局加成尚未解锁或超过额度');
     const seed=(Number(config.seed)||Date.now())>>>0;
     const s={version:VERSION,id:'run-'+seed+'-'+Date.now(),seed,rng:seed,genre:g.id,name:String(config.name||g.title).trim().slice(0,18)||g.title,hard:config.hard===true,buffs,metaExp:exp,week:1,money:config.hard?6800:7600,spent:0,income:0,people:{design:1,code:1,art:1,test:0,ops:1},focus:'design',opsMode:'auto',pace:'normal',work:{design:0,code:0,art:0,test:0},req:copy(g.req),qualification:0,listing:0,quality:{play:12,visual:12},bugs:0,debt:0,morale:90,cards:[],features:[],effects:[],logs:[],history:[],milestones:[],funding:false,share:0,managed:false,pendingCards:null,pendingEvent:null,over:false,result:null,lastEvent:null};
-    s.reserve=0;s.lastPeople=copy(s.people);s.testMode='qa';s.designLocked=false;s.featureWork={};s.objective=config.objective==='acclaim'?'acclaim':'profit';s.initialMoney=s.money+(buffs.includes('fund')?900:0);if(buffs.includes('fund'))s.money+=900;if(buffs.includes('insight')){s.quality.play+=8;s.quality.visual+=8;}
-    addLog(s,'项目「'+s.name+'」正式立项。每周消耗资金，没有固定回合上限。','good');offerCards(s);return s;
+    s.team=createTeam(config);s.departed=[];syncPeople(s);s.lastPeople=copy(s.people);s.testMode='qa';s.designLocked=false;s.featureWork={};s.objective=config.objective==='acclaim'?'acclaim':'profit';s.initialMoney=s.money+(buffs.includes('fund')?900:0);if(buffs.includes('fund'))s.money+=900;if(buffs.includes('insight')){s.quality.play+=8;s.quality.visual+=8;}
+    addLog(s,'项目「'+s.name+'」正式立项。'+s.team[0].name+'与阿策两人开工，随着作品进展结识新伙伴。','good');offerCards(s);return s;
   }
   function chooseCard(s,id){if(s.over||!s.pendingCards||id!=='skip'&&!s.pendingCards.includes(id))return false;if(id==='skip'){s.pendingCards=null;addLog(s,'放弃本次蓝图，保持轻量开发。');return true;}s.cards.push(id);s.pendingCards=null;addLog(s,'采用技术蓝图：'+CARDS.find(c=>c.id===id).name,'good');return true;}
   function blocked(s){return s.over||!!s.pendingEvent||!!s.pendingCards;}
-  function allocate(s,from,to){if(blocked(s)||from===to||!JOBS.some(j=>j.id===from)||!JOBS.some(j=>j.id===to)||s.people[from]<1)return false;s.people[from]--;s.people[to]++;return true;}
-  function assign(s,id,delta){if(blocked(s)||!JOBS.some(j=>j.id===id)||![1,-1].includes(delta))return false;if(delta===1&&s.reserve<1||delta===-1&&s.people[id]<1)return false;s.people[id]+=delta;s.reserve-=delta;return true;}
-  function hire(s){if(blocked(s)||s.managed||teamSize(s)>=8||s.money<180)return false;s.money-=180;s.spent+=180;s.people[s.focus]++;s.managed=true;addLog(s,'招募一位新伙伴，加入'+JOBS.find(j=>j.id===s.focus).name+'。招聘支出 ¥180。');return true;}
-  function downsize(s){if(blocked(s)||s.managed||teamSize(s)<=2||s.money<100)return false;if(s.reserve>0)s.reserve--;else{let id=s.focus;if(!s.people[id])id=JOBS.find(j=>s.people[j.id]>0).id;s.people[id]--;}s.money-=100;s.spent+=100;s.managed=true;addLog(s,'缩减一名人手，安置支出 ¥100，后续周薪下降。');return true;}
+  function allocate(s,from,to){if(from===to)return false;const m=s.team.filter(m=>m.job===from&&m.skills[to]>0).sort((a,b)=>b.skills[to]-a.skills[to])[0];return !!m&&assignMember(s,m.id,to);}
+  function assign(s,id,delta){if(!JOBS.some(j=>j.id===id)||![1,-1].includes(delta))return false;const choices=s.team.filter(m=>delta===1?m.job==='idle'&&m.skills[id]>0:m.job===id).sort((a,b)=>delta===1?b.skills[id]-a.skills[id]:a.skills[id]-b.skills[id]);return !!choices.length&&assignMember(s,choices[0].id,delta===1?id:'idle');}
+  function hire(s,id){const r=availableRecruits(s).find(r=>r.id===id);if(!r||blocked(s)||s.managed||teamSize(s)>=8||s.money<180)return false;const job=JOBS.reduce((a,j)=>r.skills[j.id]>r.skills[a]?j.id:a,'design');const member=makeMember(r,job);member.lastJob='idle';s.team.push(member);syncPeople(s);s.money-=180;s.spent+=180;s.managed=true;addLog(s,r.name+'加入团队：'+r.title+'，负责'+JOBS.find(j=>j.id===job).name+'。入组支出 ¥180，基础周薪 ¥'+r.salary+'。','good');return true;}
+  function downsize(s,id){const member=id?s.team.find(m=>m.id===id):s.team.filter(m=>m.kind==='partner').at(-1);if(!member||member.kind!=='partner'||blocked(s)||s.managed||s.money<100)return false;s.team=s.team.filter(m=>m.id!==member.id);s.departed.push(member.id);syncPeople(s);s.money-=100;s.spent+=100;s.managed=true;addLog(s,'与'+member.name+'暂别，支付 ¥100 安置费；本项目不再重复邀请。');return true;}
   function featurePreview(s,id){const f=FEATURES.find(x=>x.id===id);if(!f)return null;const avg=['design','code','art'].reduce((a,k)=>a+progress(s,k),0)/3;const rework=1+avg*.7*mods(s).rework;const fit=featureFit(s,id);return {req:Object.fromEntries(Object.entries(f.req).map(([k,v])=>[k,Math.ceil(v*rework)])),fit,rework:Math.round((rework-1)*100),weekly:22,debt:round(f.debt*mods(s).debt)};}
   function feature(s,id){const f=FEATURES.find(x=>x.id===id);if(!f||blocked(s)||s.managed||s.designLocked||s.features.includes(id)||s.money<f.cost)return false;const p=featurePreview(s,id);s.features.push(id);s.featureWork[id]=p.req;s.money-=f.cost;s.spent+=f.cost;Object.entries(p.req).forEach(([k,v])=>s.req[k]+=v);s.debt=round(s.debt+p.debt);s.managed=true;addLog(s,'扩展功能：'+f.name+'。后期返工增加 '+p.rework+'%，维护 +22/周。');return true;}
   function cutFeature(s,id){const f=FEATURES.find(x=>x.id===id);if(!f||blocked(s)||s.managed||s.designLocked||!s.features.includes(id))return false;s.features=s.features.filter(x=>x!==id);Object.entries(s.featureWork[id]||f.req).forEach(([k,v])=>{s.req[k]-=v;s.work[k]=Math.min(s.work[k],s.req[k]);});delete s.featureWork[id];s.debt=Math.max(0,s.debt-f.debt*.6);s.managed=true;addLog(s,'删减「'+f.name+'」，收缩开发范围。已花费资金不退还。');return true;}
   function freeze(s){if(blocked(s)||s.managed||progress(s,'design')<.6||s.designLocked&&s.money<180)return false;if(s.designLocked){s.money-=180;s.spent+=180;s.debt+=4;s.req.design+=8;s.designLocked=false;addLog(s,'解冻设计：支出 180、设计 +8、技术债 +4。');}else{s.designLocked=true;addLog(s,'冻结设计范围：程序、美术效率 +12%，新问题减少 25%；不能增删功能。','good');}s.managed=true;return true;}
   function funding(s){if(blocked(s)||s.funding)return false;const n=['design','code','art'].reduce((a,k)=>a+progress(s,k),0)/3;if(n<.3)return false;s.funding=true;s.money+=2200;s.income+=2200;s.share=.22;addLog(s,'签订发行合作：预付款 ¥2,200，发售收入分成 22%。本项目仅一次。','good');return true;}
-  function throughput(s,id){const m=mods(s),n=s.people[id],incoming=Math.max(0,n-(s.lastPeople[id]||0));const team=n?1+(n-1)*m.crowd:0;const ramp=n?1-incoming/n*.2*m.ramp:1;const spirit=.65+s.morale/285;const debt=['code','art'].includes(id)?Math.max(.55,1-s.debt*.013):1;const freeze=s.designLocked&&['code','art'].includes(id)?1.12:1;return round(team*10*(s.focus===id?1.5:1)*m.all*m[id]*(s.pace==='crunch'?1.35:s.pace==='rest'?.7:1)*spirit*ramp*debt*freeze);}
+  function throughput(s,id){return round(s.team.filter(m=>m.job===id).reduce((n,m)=>n+memberOutput(s,m.id),0));}
   function workLimit(s,id){if(id==='code'||id==='art')return s.req[id]*Math.min(1,.15+progress(s,'design')*.85);if(id==='test')return s.req.test*Math.min(progress(s,'code'),progress(s,'art'));return s.req[id]||Infinity;}
   function workWeek(s){const m=mods(s),result={};s.lastBottlenecks={};
     JOBS.forEach(j=>{const amount=throughput(s,j.id);result[j.id]=amount;
@@ -103,7 +127,7 @@
         if(j.id==='test'){s.bugs=Math.max(0,s.bugs-amount*.38);s.quality.play+=added*.06;}
         s.quality.play=Math.min(playCap,s.quality.play);s.quality.visual=Math.min(visualCap,s.quality.visual);
       }
-    });s.bugs=Math.max(0,Math.round(s.bugs-(s.people.test>0?m.fix:0)));s.debt=round(Math.max(0,s.debt-m.cleanup));s.morale=clamp(s.morale+(s.pace==='crunch'?-10:s.pace==='rest'?12:1)+m.morale,25,100);if(s.pace==='crunch')s.debt+=2.5;s.lastPeople=copy(s.people);return result;
+    });s.bugs=Math.max(0,Math.round(s.bugs-(s.people.test>0?m.fix:0)));s.debt=round(Math.max(0,s.debt-m.cleanup));s.morale=clamp(s.morale+(s.pace==='crunch'?-10:s.pace==='rest'?12:1)+m.morale,25,100);if(s.pace==='crunch')s.debt+=2.5;s.lastPeople=copy(s.people);s.team.forEach(m=>m.lastJob=m.job);return result;
   }
   const EVENTS=[
     {id:'inspiration',tag:'灵感时刻',title:'茶水间的一句好点子',text:'一个新想法可能让玩法更出色，但整合它就得扩大范围。',choices:[{label:'扩展这个创意',hint:'可玩性 +5；设计、程序工作量各 +8',quality:{play:5},workload:{design:8,code:8}},{label:'收进下一作的笔记',hint:'士气 +3，本作不扩范围',morale:3}]},
@@ -123,8 +147,8 @@
   ];
   function eventPool(s){const p=['design','code','art'].reduce((a,k)=>a+progress(s,k),0)/3;return EVENTS.filter(e=>(!e.min||p>=e.min)&&(!e.condition||e.condition(s))&&e.id!==s.lastEvent);}
   function advance(s){if(blocked(s))return {ok:false,reason:'请先完成当前选择'};const c=cost(s);if(s.money<c.total)return {ok:false,reason:'资金不足以支付下一周，请发售、融资、缩减规模或终止项目'};
-    s.money-=c.total;s.spent+=c.total;const production=workWeek(s);s.effects=s.effects.map(e=>({...e,weeks:e.weeks-1})).filter(e=>e.weeks>0);s.history.push({week:s.week,cost:c.total,production,score:score(s),money:s.money});
-    addLog(s,'完成第 '+s.week+' 周：支出 ¥'+c.total+'，主攻'+JOBS.find(j=>j.id===s.focus).name+'。');const p=eventPool(s);const e=p[Math.floor(random(s)*p.length)];s.pendingEvent=e.id;s.lastEvent=e.id;s.week++;s.managed=false;return {ok:true,event:e.id};
+    const contributions=s.team.map(m=>({id:m.id,name:m.name,job:m.job,output:memberOutput(s,m.id)}));s.money-=c.total;s.spent+=c.total;const production=workWeek(s);s.effects=s.effects.map(e=>({...e,weeks:e.weeks-1})).filter(e=>e.weeks>0);s.history.push({week:s.week,cost:c.total,production,team:contributions,score:score(s),money:s.money});
+    addLog(s,'完成第 '+s.week+' 周：支出 ¥'+c.total+'，主攻'+JOBS.find(j=>j.id===s.focus).name+'。'+contributions.filter(m=>m.output>0).map(m=>m.name+'负责'+JOBS.find(j=>j.id===m.job).short).join('、')+'。');const p=eventPool(s);const e=p[Math.floor(random(s)*p.length)];s.pendingEvent=e.id;s.lastEvent=e.id;s.week++;s.managed=false;return {ok:true,event:e.id};
   }
   function event(s){return EVENTS.find(e=>e.id===s.pendingEvent);}
   function eventChoiceStatus(s,index){const c=event(s)?.choices[index];if(!c)return {ok:false,reason:'无效选项'};if(c.cash<0&&s.money<-c.cash)return {ok:false,reason:'资金不足'};if(c.workload&&s.designLocked)return {ok:false,reason:'已冻结范围，不能扩展'};return {ok:true};}
@@ -138,15 +162,15 @@
   }
   function checkMilestones(s){const avg=['design','code','art'].reduce((a,k)=>a+progress(s,k),0)/3;
     const next=[{id:'prototype',check:avg>=.3,name:'可玩原型'},{id:'vertical',check:avg>=.65,name:'垂直切片'},{id:'content',check:coreReady(s),name:'内容完成'}].find(m=>m.check&&!s.milestones.includes(m.id));
-    if(next){s.milestones.push(next.id);addLog(s,'达成里程碑「'+next.name+'」，获得一次技术蓝图选择。','good');offerCards(s);}
+    if(next){s.milestones.push(next.id);addLog(s,'达成里程碑「'+next.name+'」，获得蓝图选择；'+RECRUITS.filter(r=>r.stage===next.id).map(r=>r.name).join('、')+'愿意加入团队，可在人物卡查看与邀请。','good');offerCards(s);}
   }
   function preview(s){const p=copy(s);if(blocked(p))return null;const c=cost(p);const production=workWeek(p);return {production,cost:c,quality:quality(p),bugs:p.bugs,debt:p.debt,bottlenecks:p.lastBottlenecks,work:p.work,qualification:p.qualification,listing:p.listing,money:s.money-c.total};}
   function objectiveStatus(s,result){const f=forecast(s),profit=result?result.profit:f.revenue+s.income-s.spent;const value=s.objective==='acclaim'?(result?result.score:Math.round(f.score)):profit;const target=s.objective==='acclaim'?82:1200;const ready=result?true:goals(s).every(g=>g.ok);return {id:s.objective,name:OBJECTIVES.find(o=>o.id===s.objective)?.name||'商业回报',value,target,ready,ok:ready&&value>=target};}
   function finish(s,released){if(blocked(s)||released&&!canRelease(s))return false;const f=forecast(s);let revenue=0;if(released)revenue=Math.round(f.revenue*(.85+random(s)*.3));const profit=revenue+s.income-s.spent;const target=objectiveStatus(s,{score:Math.round(f.score),profit});const exp=released?Math.round(35+f.score*.9+(revenue>s.spent?20:0)+(s.hard?25:0)+(target.ok?40:0)):Math.min(30,Math.floor(s.milestones.length*8));
-    s.over=true;s.result={runId:s.id,name:s.name,genre:s.genre,released,weeks:s.week-1,score:Math.round(f.score),quality:quality(s),revenue,cost:s.spent,profit,exp,objective:s.objective,objectiveOK:released&&target.ok,features:s.features.slice(),cards:s.cards.slice(),seed:s.seed};addLog(s,released?'「'+s.name+'」正式发售。':'项目终止。已完成里程碑将保留少量制作经验。',released?'good':'info');return s.result;
+    s.over=true;s.result={runId:s.id,name:s.name,genre:s.genre,released,weeks:s.week-1,score:Math.round(f.score),quality:quality(s),revenue,cost:s.spent,profit,exp,objective:s.objective,objectiveOK:released&&target.ok,features:s.features.slice(),cards:s.cards.slice(),team:copy(s.team),seed:s.seed};addLog(s,released?'「'+s.name+'」正式发售。':'项目终止。已完成里程碑将保留少量制作经验。',released?'good':'info');return s.result;
   }
   function emptyMeta(){return {version:1,exp:0,receipts:{},history:[]};}
   function settle(meta,s){const m=copy(meta);if(!s.over||!s.result||m.receipts[s.id])return m;const r=copy(s.result);m.receipts[s.id]=r.exp;m.exp+=r.exp;m.history.unshift(r);return m;}
-  function validateRun(s){try{if(!s||s.version!==VERSION||!GENRES.some(g=>g.id===s.genre)||!Number.isInteger(s.week)||s.week<1||!Number.isFinite(s.money)||!Number.isFinite(s.spent)||!Array.isArray(s.cards)||!Array.isArray(s.logs)||!Array.isArray(s.effects)||!Array.isArray(s.features)||!Array.isArray(s.milestones)||!Array.isArray(s.buffs)||!s.quality||!s.req||!s.work||!s.people)return false;return JOBS.every(j=>Number.isInteger(s.people[j.id])&&s.people[j.id]>=0)&&['design','code','art','test'].every(k=>Number.isFinite(s.work[k])&&Number.isFinite(s.req[k])&&s.req[k]>0)&&[s.qualification,s.listing,s.bugs,s.debt,s.morale,s.quality.play,s.quality.visual,s.rng,s.seed].every(Number.isFinite)&&s.cards.every(id=>CARDS.some(c=>c.id===id))&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.pendingCards||Array.isArray(s.pendingCards)&&s.pendingCards.every(id=>CARDS.some(c=>c.id===id)));}catch{return false;}}
-  return {VERSION,JOBS,GENRES,CARDS,FEATURES,BUFFS,OBJECTIVES,EVENTS,newRun,chooseCard,mods,cost,teamSize,progress,coreReady,complete,goals,canRelease,quality,score,forecast,objectiveStatus,featureFit,featurePreview,freeze,throughput,workLimit,allocate,assign,hire,downsize,feature,cutFeature,funding,advance,event,eventChoiceStatus,resolveEvent,preview,finish,emptyMeta,settle,capacity,validateRun,copy};
+  function validateRun(s){try{if(!s||s.version!==VERSION||!GENRES.some(g=>g.id===s.genre)||!Number.isInteger(s.week)||s.week<1||!Array.isArray(s.team)||s.team.length<2||s.team.length>8||!Array.isArray(s.departed)||!Array.isArray(s.history)||!Array.isArray(s.cards)||!Array.isArray(s.logs)||!Array.isArray(s.effects)||!Array.isArray(s.features)||!Array.isArray(s.milestones)||!Array.isArray(s.buffs)||!s.quality||!s.req||!s.work||!s.people||!s.featureWork)return false;const ids=s.team.map(m=>m.id);if(new Set(ids).size!==ids.length||s.team.filter(m=>m.kind==='hero').length!==1||!s.team.some(m=>m.id==='hero'&&m.kind==='hero')||!s.team.some(m=>m.id==='ace'&&m.kind==='companion')||!['qa','refactor'].includes(s.testMode)||!['profit','acclaim'].includes(s.objective))return false;if(!s.team.every(m=>typeof m.name==='string'&&m.name.length>0&&Number.isFinite(m.salary)&&m.salary>=0&&['idle',...JOBS.map(j=>j.id)].includes(m.job)&&['idle',...JOBS.map(j=>j.id)].includes(m.lastJob)&&JOBS.every(j=>Number.isFinite(m.skills[j.id])&&m.skills[j.id]>=0&&m.skills[j.id]<=200)&&(m.job==='idle'||m.skills[m.job]>0)))return false;return JOBS.every(j=>s.people[j.id]===s.team.filter(m=>m.job===j.id).length)&&s.reserve===s.team.filter(m=>m.job==='idle').length&&['design','code','art','test'].every(k=>Number.isFinite(s.work[k])&&Number.isFinite(s.req[k])&&s.req[k]>0)&&[s.money,s.spent,s.income,s.qualification,s.listing,s.bugs,s.debt,s.morale,s.quality.play,s.quality.visual,s.rng,s.seed].every(Number.isFinite)&&s.cards.every(id=>CARDS.some(c=>c.id===id))&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.pendingCards||Array.isArray(s.pendingCards)&&s.pendingCards.every(id=>CARDS.some(c=>c.id===id)));}catch{return false;}}
+  return {VERSION,TEMPLATES,COMPANION,RECRUITS,skillLabel,assignMember,availableRecruits,memberOutput,teamVoice,JOBS,GENRES,CARDS,FEATURES,BUFFS,OBJECTIVES,EVENTS,newRun,chooseCard,mods,cost,teamSize,progress,coreReady,complete,goals,canRelease,quality,score,forecast,objectiveStatus,featureFit,featurePreview,freeze,throughput,workLimit,allocate,assign,hire,downsize,feature,cutFeature,funding,advance,event,eventChoiceStatus,resolveEvent,preview,finish,emptyMeta,settle,capacity,validateRun,copy};
 });
