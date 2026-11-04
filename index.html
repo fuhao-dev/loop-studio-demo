@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<!--
+MIT License
+
+Copyright (c) 2026 fuhao-dev
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-->
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111820"><meta name="description" content="从一个点子，到一款真正发售的游戏。回合制游戏开发肉鸽 Demo。">
+  <title>周目工作室 · 游戏开发肉鸽</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%2318202a'/%3E%3Cpath d='M13 13h22v22H13z' fill='none' stroke='%23d6b67b' stroke-width='3'/%3E%3Cpath d='m21 19 8 5-8 5z' fill='%237cbaa5'/%3E%3C/svg%3E">
+  <style>
+:root{color-scheme:dark;--bg:#111820;--panel:#19232d;--line:#2b3540;--muted:#8e9ba7;--text:#e4e6e5;--gold:#d8b879;--teal:#81bea7;--red:#df927f;--blue:#76a9e7;font-family:'Segoe UI','Microsoft YaHei',system-ui,sans-serif;font-size:14px;font-synthesis:none}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text)}button,input,select{font:inherit}button,a,input,select{outline-offset:4px}button{cursor:pointer;border:1px solid var(--line);background:#202d38;color:var(--text);border-radius:7px;padding:10px 14px;transition:background .15s,border .15s,transform .15s}button:hover:not(:disabled){background:#2b3a46;border-color:#627374}button:active:not(:disabled){transform:translateY(1px)}button:disabled{opacity:.38;cursor:not-allowed}button:focus-visible,a:focus-visible{outline:2px solid var(--gold)}a{color:inherit;text-decoration:none}h1,h2,h3,p{margin:0}h1{font-size:29px;letter-spacing:1px;line-height:1.5;font-weight:650}h2{font-size:16px;font-weight:600}h3{font-size:15px}p{line-height:1.8}small{font-size:12px}.muted,.sub{color:var(--muted)}.gold{color:var(--gold)}.teal{color:var(--teal)}.red{color:var(--red)}.num{font-variant-numeric:tabular-nums}.sidebar{width:200px;background:#141d26;position:fixed;inset:0 auto 0 0;border-right:1px solid var(--line);padding:28px 17px;z-index:20;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:650;letter-spacing:1px;padding:0 3px}.brand small{display:block;font-size:9px;letter-spacing:3px;color:var(--muted);margin-top:5px}.brandmark{width:36px;height:40px;display:grid;place-items:center;font-size:35px;color:var(--gold)}.side-caption{font-size:10px;color:#687888;margin:45px 12px 14px;letter-spacing:1px}.sidebar nav{display:flex;flex-direction:column;gap:7px}.sidebar nav button{text-align:left;background:transparent;border-color:transparent;color:var(--muted);font-size:13px;padding:13px 12px;display:flex;align-items:center;gap:12px}.sidebar nav button>span{font-size:19px;width:20px;text-align:center}.sidebar nav button.active{background:#29342f;color:#e0d6b5;border:1px solid #465045}.sidebar nav button.active>span{color:var(--gold)}.sidebar nav i{display:block;width:5px;height:5px;background:var(--teal);border-radius:50%;margin-left:auto}.side-bottom{margin-top:auto}.side-growth{border:1px solid var(--line);border-radius:8px;padding:13px;background:#1a252e}.side-growth strong{font-size:22px;font-weight:550;margin-right:5px}.side-growth p{font-size:10px;color:var(--muted)}.side-growth .progress{margin-top:10px}.help-link{border:0;background:none;color:var(--muted);font-size:12px;padding:24px 8px 17px}.help-link span{border:1px solid #66717a;border-radius:50%;display:inline-block;width:15px;height:15px;line-height:14px;margin-right:7px}.version{border-top:1px solid var(--line);padding:15px 5px 0;color:#687684;font-size:9px;letter-spacing:1px}.version span{display:block;margin-top:7px;letter-spacing:0}.shell{margin-left:200px}.topbar{height:70px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 34px;font-size:12px}.topbar>div{display:flex;align-items:center;gap:12px}.top-dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}.top-sep{color:#475460;margin:0 2px}.top-actions{gap:16px!important}.demo-tag{font-size:10px;color:var(--gold);letter-spacing:1px}.icon-button{border:0;background:transparent;font-size:20px;padding:5px 8px;color:var(--muted)}.icon-button.on{color:var(--teal)}.avatar{background:#3b4545;border:1px solid #5d6860;border-radius:50%;padding:0;width:29px;height:29px;color:#d8ccac;font-size:12px}.content{max-width:1480px;margin:0 auto;padding:30px 34px 110px}.eyebrow{font-size:10px;letter-spacing:2px;color:var(--gold);margin-bottom:12px}.title-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.title-row .sub{font-size:12px;margin-top:5px}.title-badges{display:flex;align-items:center;gap:9px}.pill{font-size:10px;border:1px solid #3d4c48;color:var(--teal);background:#23332e;padding:5px 9px;border-radius:4px}.pill.gold{background:#342f25;border-color:#5a4d35;color:var(--gold)}.pill.dim{background:transparent;color:var(--muted);border-color:var(--line)}.btn-primary{background:var(--gold);color:#20241f;border-color:var(--gold);font-weight:650}.btn-primary:hover:not(:disabled){background:#e9ca8e;border-color:#e9ca8e}.btn-teal{background:#2e5146;border-color:#4e7d69;color:#c5e8d8}.btn-ghost{background:transparent;color:var(--muted)}.btn-small{padding:7px 11px;font-size:11px}.hero{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:linear-gradient(120deg,#203029,#18232b 72%);min-height:294px;margin:4px 0 30px}.hero-copy{padding:35px 34px;position:relative;z-index:1}.hero h1{font-size:35px;line-height:1.65;letter-spacing:2px}.hero p{font-size:12px;color:#a8b4b3;max-width:360px;margin:12px 0 24px}.hero-buttons{display:flex;gap:12px;align-items:center}.hero-note{margin-top:18px!important;font-size:10px!important;color:#91a29a!important}.section-heading{display:flex;align-items:center;justify-content:space-between;margin:24px 0 14px;gap:12px}.section-heading small{color:var(--muted);font-size:11px}.genre-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.genre-card{padding:21px;background:var(--panel);border:1px solid var(--line);border-radius:9px;position:relative;overflow:hidden}.genre-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:var(--accent,var(--gold));opacity:.65}.genre-icon{font-size:28px;display:grid;place-items:center;width:49px;height:49px;background:#ffffff06;border:1px solid var(--line);border-radius:9px;color:var(--accent,var(--gold));margin-bottom:17px}.genre-card p{font-size:12px;color:var(--muted);margin:10px 0 18px;min-height:43px}.genre-card h3{font-size:17px}.genre-card .genre-meta{font-size:10px;color:var(--accent,var(--gold));margin:7px 0 0}.genre-card button{width:100%;text-align:left;display:flex;justify-content:space-between}.home-bottom{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}.home-tip{border:1px solid var(--line);border-radius:9px;padding:18px 20px;display:flex;gap:14px}.home-tip>span{font-size:21px;color:var(--teal)}.home-tip h3{font-size:12px;margin-bottom:5px}.home-tip p{font-size:11px;color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:22px}.stat{padding:17px 20px;background:var(--panel);border:1px solid var(--line);border-radius:8px}.stat .label{font-size:11px;color:var(--muted);display:flex;justify-content:space-between}.stat .value{font-size:26px;margin:8px 0 4px;font-weight:550;letter-spacing:.3px}.stat .value small{font-size:12px;color:var(--muted);font-weight:400;margin-left:5px}.stat .note{font-size:10px;color:var(--muted)}.workspace{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,1fr);gap:20px}.stack{display:flex;flex-direction:column;gap:19px;min-width:0}.panel{background:var(--panel);border:1px solid var(--line);border-radius:9px;overflow:hidden}.panel-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px}.panel-head h2{font-size:13px}.panel-head small{font-size:10px;color:var(--muted)}.panel-body{padding:18px 20px}.scene-panel{position:relative;height:202px;background:radial-gradient(ellipse at 70% 20%,#3a5143 0,#233439 35%,#1c2933 75%)}.scene-panel .office-art{width:100%;height:100%}.scene-caption{position:absolute;left:20px;top:17px;z-index:1}.scene-caption small{color:#a8b5ad;font-size:10px;letter-spacing:1px}.scene-caption p{color:#e0d8bc;font-size:13px;margin-top:7px}.scene-week{position:absolute;bottom:14px;right:17px;font-size:9px;color:#b2bcb1;letter-spacing:2px}.scene-foot{position:absolute;bottom:14px;left:20px;color:#849991;font-size:10px}.office-art{width:100%;height:100%;min-height:180px;display:block}.home-office{position:relative;display:grid;place-items:center;overflow:hidden}.home-office .office-art{min-width:340px;height:310px}.home-office::before{content:'';position:absolute;width:330px;height:330px;border-radius:50%;background:#a3c78c0a;right:25px;top:0}.job{padding:15px 20px;border-bottom:1px solid var(--line);position:relative}.job:last-child{border-bottom:0}.job.focus{background:#ffffff03}.job.focus::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--job-color)}.job-line{display:flex;gap:11px;align-items:center;margin-bottom:10px}.job-symbol{width:29px;height:29px;display:grid;place-items:center;background:color-mix(in srgb,var(--job-color) 12%,transparent);color:var(--job-color);font-size:19px;border-radius:6px}.job-name{flex:1}.job-name strong{font-size:12px;font-weight:550}.job-name small{display:block;font-size:10px;color:var(--muted);margin-top:3px}.focus-btn{padding:5px 9px;font-size:10px;color:var(--muted);background:transparent;border-color:#394550}.focus-btn.selected{background:#374038;color:var(--gold);border-color:#706344}.assigner{display:flex;gap:7px;align-items:center;white-space:nowrap}.assigner button{padding:0;width:23px;height:23px;border-radius:4px;font-size:15px}.assigner span{font-size:11px;min-width:13px;text-align:center}.progress{height:5px;background:#ffffff0a;border-radius:5px;overflow:hidden}.progress>span{display:block;height:100%;background:var(--bar,var(--teal));border-radius:5px;transition:width .4s}.progress-label{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:7px;gap:7px}.progress-label b{color:#c3cacf;font-weight:400}.ops-progress{display:grid;grid-template-columns:1fr 1fr;gap:16px}.ops-mode{display:flex;gap:7px;margin-top:10px}.ops-mode button{padding:4px 8px;font-size:9px;background:transparent}.ops-mode button.selected{color:var(--gold);border-color:#756344}.ops-note{font-size:9px;color:var(--muted);margin-top:8px}.work-note{padding:12px 20px;font-size:10px;color:var(--muted);background:#172029;display:flex;align-items:center;justify-content:space-between;gap:8px}.work-note b{color:var(--gold);font-weight:400}.event-empty{background:linear-gradient(135deg,#23332e,#1b282c);padding:22px}.event-eyebrow{font-size:10px;letter-spacing:1px;color:var(--teal);margin-bottom:12px;display:flex;justify-content:space-between}.event-empty h3{font-size:16px;font-weight:550;margin-bottom:10px}.event-empty p{font-size:11px;color:#a6b8b1;line-height:1.9}.event-empty .event-last{margin-top:14px;font-size:10px;padding-top:12px;border-top:1px solid #ffffff10;color:#839f93}.quality-row{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.quality-num{font-size:25px;font-weight:500}.quality-row label{font-size:10px;color:var(--muted);display:block;margin:5px 0 9px}.quality-note{font-size:10px;color:var(--muted);margin-top:15px;line-height:1.8}.goal-list{display:flex;flex-direction:column;gap:13px}.goal{display:flex;align-items:center;font-size:11px;gap:9px}.goal>span:first-child{width:17px;height:17px;display:grid;place-items:center;background:#27323b;border-radius:50%;font-size:10px;color:#70808a}.goal.done>span:first-child{background:#2b453b;color:var(--teal)}.goal>span:last-child{margin-left:auto;color:var(--muted);font-size:10px}.goal.done>span:last-child{color:var(--teal)}.release-btn{width:100%;margin-top:20px;display:flex;justify-content:space-between}.financial{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:17px;padding-top:15px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}.financial strong{display:block;font-size:13px;font-weight:500;color:var(--gold);margin-top:6px}.team-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.team-actions button{font-size:11px;padding:10px 4px}.team-desc{font-size:10px;color:var(--muted);line-height:1.8;margin-bottom:13px}.funding{margin-top:13px;display:flex;justify-content:space-between;gap:12px;align-items:center;border-top:1px solid var(--line);padding-top:14px}.funding p{font-size:10px;color:var(--muted)}.funding b{font-size:11px;font-weight:500;color:var(--text)}.tabs{display:flex;gap:4px;margin-bottom:15px;border-bottom:1px solid var(--line)}.tabs button{background:none;border:0;border-radius:0;padding:10px 16px 13px;font-size:12px;color:var(--muted);border-bottom:2px solid transparent}.tabs button.active{color:var(--gold);border-bottom-color:var(--gold)}.tool-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.tool-card{border:1px solid var(--line);border-radius:9px;padding:20px;background:var(--panel)}.tool-card .tag{font-size:10px;color:var(--gold);margin-bottom:13px;letter-spacing:1px}.tool-card h3{font-size:15px;margin-bottom:10px}.tool-card p{font-size:11px;color:var(--muted);line-height:1.9}.tool-card .card-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:17px;font-size:10px;color:var(--muted)}.tool-card.locked{opacity:.55}.feature-row{display:flex;align-items:flex-start;gap:16px;padding:18px 20px;border-bottom:1px solid var(--line)}.feature-row:last-child{border-bottom:0}.feature-row>div{flex:1}.feature-row h3{font-size:13px;margin-bottom:6px}.feature-row p{font-size:11px;color:var(--muted)}.feature-row small{display:block;font-size:10px;color:var(--muted);margin-top:8px}.feature-row button{font-size:11px;white-space:nowrap;padding:8px 11px}.pace{display:flex;gap:7px;align-items:center}.pace button{padding:6px 10px;font-size:10px;background:transparent}.pace .selected{border-color:#716347;color:var(--gold);background:#3b3529}.actionbar{position:fixed;bottom:0;left:200px;right:0;border-top:1px solid #3b464b;background:#17212bf5;backdrop-filter:blur(15px);padding:15px 34px;display:flex;align-items:center;justify-content:space-between;z-index:15;gap:16px}.actionbar p{font-size:11px;color:var(--muted)}.actionbar p strong{font-size:13px;color:var(--text);font-weight:500}.actionbar .next-week{padding:13px 25px;min-width:180px;font-size:13px}.action-controls{display:flex;align-items:center;gap:17px}.actionbar .danger-text{color:var(--red)}.notice{padding:13px 17px;border:1px solid #65503c;background:#382f25;border-radius:8px;font-size:11px;color:#d4bb95;line-height:1.9;margin-bottom:18px}.log-list{padding:5px 20px 14px}.log-row{display:flex;gap:13px;padding:11px 0;border-bottom:1px solid var(--line);font-size:11px;line-height:1.7}.log-row:last-child{border:0}.log-row time{font-size:10px;white-space:nowrap;color:var(--muted)}.log-row.good{color:#b2cfbe}.empty{padding:65px 25px;text-align:center}.empty .empty-icon{font-size:36px;color:var(--gold);margin-bottom:18px}.empty h2{font-size:20px;margin-bottom:14px}.empty p{font-size:12px;color:var(--muted);margin-bottom:23px}.career-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:26px}.career-record{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:22px;margin-bottom:13px}.career-record h3{font-size:16px}.career-record p{font-size:11px;color:var(--muted);margin-top:7px}.record-score{font-size:30px;color:var(--gold);text-align:right}.record-score small{display:block;font-size:10px;color:var(--muted);margin-top:5px}.unlock-list{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:17px}.unlock{padding:15px;border:1px solid var(--line);border-radius:7px;font-size:11px}.unlock strong{font-size:12px;font-weight:500}.unlock p{color:var(--muted);font-size:10px;margin-top:4px}.unlock>span{float:right;font-size:10px;color:var(--gold)}.unlock.locked{opacity:.55}dialog{border:1px solid #465248;background:#1b252e;color:var(--text);border-radius:13px;padding:0;width:min(650px,calc(100vw - 30px));max-height:calc(100dvh - 40px);box-shadow:0 30px 100px #0009}dialog::backdrop{background:#080d13cf;backdrop-filter:blur(5px)}.dialog-body{padding:30px}.dialog-header{display:flex;justify-content:space-between;gap:20px;align-items:start;margin-bottom:22px}.dialog-header h2{font-size:23px;line-height:1.6}.dialog-header .eyebrow{margin-bottom:7px}.close-btn{background:none;border:0;color:var(--muted);font-size:21px;padding:0 5px}.dialog-desc{font-size:12px;color:#a9b4bb;line-height:1.95;margin-bottom:22px}.field{display:block;margin-bottom:20px}.field>span{display:block;font-size:11px;color:var(--muted);margin-bottom:9px}.field input,.field select{width:100%;padding:12px 13px;border-radius:6px;border:1px solid #3b4852;background:#121c24;color:var(--text)}.field input:focus{border-color:var(--gold)}.setup-genres{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:22px}.setup-genres button{padding:13px 5px;font-size:12px;background:#151f28}.setup-genres button.selected{border-color:var(--gold);color:var(--gold);background:#353026}.buff-options{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.buff-option{border:1px solid var(--line);border-radius:6px;padding:12px;display:flex;gap:9px;align-items:flex-start;font-size:11px;background:#17212a}.buff-option:has(input:checked){border-color:#7b704d;background:#353326}.buff-option input{accent-color:var(--gold);margin-top:2px}.buff-option strong{font-weight:500;font-size:11px}.buff-option small{display:block;font-size:10px;color:var(--muted);margin-top:5px}.buff-option.locked{opacity:.45}.dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px}.event-image{height:98px;display:grid;place-items:center;border:1px solid #42594a;border-radius:8px;background:radial-gradient(ellipse at center,#3f5b42,#243530);font-size:39px;color:#d5c58f;margin-bottom:24px;letter-spacing:14px}.event-options{display:flex;flex-direction:column;gap:10px}.event-option{text-align:left;padding:15px 17px;background:#222e36;display:flex;align-items:center;justify-content:space-between;gap:12px}.event-option strong{display:block;font-size:12px;font-weight:500}.event-option small{font-size:10px;color:var(--muted);display:block;margin-top:6px;line-height:1.8}.event-option>span{color:var(--gold)}.blueprint-choices{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}.blueprint-choice{padding:20px 14px;text-align:left;display:flex;flex-direction:column;min-height:215px;background:#202b34}.blueprint-choice .card-symbol{font-size:28px;color:var(--gold);margin-bottom:25px}.blueprint-choice strong{font-size:13px;line-height:1.7}.blueprint-choice small{font-size:11px;color:var(--muted);margin-top:13px;line-height:1.9;flex:1}.blueprint-choice .pick{font-size:10px;color:var(--gold);margin-top:22px}.result-grade{font-size:70px;color:var(--gold);font-weight:500;text-align:center;margin:10px 0}.result-grade small{font-size:14px;color:var(--muted);margin-left:7px}.result-title{text-align:center;font-size:14px;color:var(--teal);margin-bottom:25px}.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;background:#15202a;border-radius:8px;padding:19px}.result-grid label{font-size:10px;color:var(--muted)}.result-grid strong{display:block;font-size:18px;margin-top:8px;font-weight:500}.result-note{text-align:center;font-size:11px;color:var(--muted);margin-top:20px}.manual p{font-size:12px;color:#b2bdc4;margin:0 0 17px}.manual strong{color:var(--gold);font-weight:500}.manual ol{padding-left:20px;font-size:12px;color:#b2bdc4;line-height:2.2}.legend{font-size:11px;color:var(--muted);line-height:1.9;margin-bottom:20px}.pill-list{display:flex;gap:8px;flex-wrap:wrap}.toast{opacity:1!important;transform:translate(-50%,0)!important}#toast{position:fixed;bottom:105px;left:calc(50% + 75px);transform:translate(-50%,10px);padding:12px 20px;background:#d8b879;color:#1a241f;border-radius:7px;z-index:100;font-size:12px;opacity:0;pointer-events:none;transition:all .2s;max-width:85vw;box-shadow:0 5px 25px #0005}.radio-line{display:flex;gap:20px;font-size:12px;margin-bottom:20px}.radio-line input{accent-color:var(--gold)}.warning-note{font-size:11px;color:var(--red);margin-top:12px;line-height:1.8}.table-wrap{overflow:auto}.ledger{width:100%;border-collapse:collapse;font-size:11px}.ledger th,.ledger td{padding:13px 15px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}.ledger th{color:var(--muted);font-size:10px;font-weight:400}.explain{font-size:10px;line-height:1.9;color:var(--muted);padding:12px 20px;border-top:1px solid var(--line)}
+@media(min-width:1550px){.content{padding-top:40px}.workspace{grid-template-columns:minmax(0,1.5fr) minmax(350px,1fr)}.scene-panel{height:230px}.job{padding:17px 22px}.hero{min-height:350px}.home-office .office-art{height:350px}}
+@media(max-width:1150px){.sidebar{width:175px;padding:25px 12px}.brand{font-size:16px}.shell{margin-left:175px}.actionbar{left:175px;padding:14px 23px}.content{padding:25px 23px 110px}.topbar{padding:0 23px}.workspace{gap:15px;grid-template-columns:minmax(0,1.3fr) minmax(265px,1fr)}.panel-head,.panel-body{padding:16px}.job{padding:13px 16px}.job-line{gap:7px}.focus-btn{padding:5px 6px;font-size:9px}.stat{padding:15px}.stat .value{font-size:22px}.hero h1{font-size:29px}.hero-copy{padding:30px 26px}.hero{grid-template-columns:1.05fr 1fr}.home-office .office-art{min-width:300px}.pace{gap:3px}.action-controls{gap:10px}.actionbar .next-week{min-width:145px;padding:12px 16px}.genre-card{padding:17px}}
+@media(max-width:920px){.sidebar{width:68px;padding:23px 9px}.brand>span:last-child,.side-caption,.sidebar nav button:not(.active) i,.side-bottom,.sidebar nav button{font-size:0}.brand{justify-content:center;padding:0}.brandmark{font-size:34px}.sidebar nav{margin-top:38px}.sidebar nav button{justify-content:center;padding:13px 8px;gap:0}.sidebar nav button>span{font-size:22px}.sidebar nav i{display:none!important}.shell{margin-left:68px}.actionbar{left:68px}.topbar .muted,.top-sep{display:none}.workspace{grid-template-columns:minmax(0,1.3fr) minmax(260px,1fr)}.title-row h1{font-size:24px}.hero h1{font-size:28px}.stats{gap:9px}.stat .value{font-size:21px}.stat .note{font-size:9px}.hero-copy{padding:27px 23px}.hero p{font-size:11px}.hero-buttons{gap:7px}.hero-buttons button{font-size:11px}.genre-card h3{font-size:15px}.genre-card p{font-size:11px}.genre-grid{gap:10px}.title-badges{gap:5px}.title-badges .pill{font-size:9px;padding:5px 7px}.pace button{padding:6px}.actionbar p{font-size:10px}.actionbar p strong{font-size:11px}}
+@media(max-width:740px){.content{padding:22px 18px 150px}.topbar{padding:0 18px;height:60px}.top-actions{gap:10px!important}.workspace{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.stat{padding:14px 16px}.stat .value{font-size:25px}.title-row{align-items:start;margin-bottom:18px}.title-badges{flex-direction:column;align-items:end}.title-row .sub{font-size:10px;line-height:1.8;max-width:230px}.title-row h1{font-size:23px}.scene-panel{height:205px}.hero{grid-template-columns:1fr}.hero-copy{padding:28px}.home-office{height:210px;margin-top:-20px}.home-office .office-art{height:255px;min-width:unset}.hero h1{font-size:31px}.hero p{max-width:unset}.hero-note{margin-top:13px!important}.genre-grid{grid-template-columns:1fr}.genre-card{padding:20px;display:grid;grid-template-columns:47px 1fr;gap:0 16px}.genre-icon{grid-row:1/4;width:44px;height:44px;margin:0}.genre-card p{min-height:0;margin:8px 0 15px;grid-column:2}.genre-card button{grid-column:2}.genre-meta{grid-column:2}.home-bottom{grid-template-columns:1fr}.hero{margin-bottom:23px}.tool-grid{grid-template-columns:1fr}.actionbar{padding:12px 17px;flex-wrap:wrap;gap:10px}.actionbar>div:first-child{width:100%}.action-controls{width:100%;justify-content:space-between}.actionbar .next-week{min-width:160px;padding:11px 17px}.pace button{padding:7px 9px}.actionbar p .break-mobile{display:none}.career-summary{gap:9px}.career-summary .stat{padding:13px}.career-summary .stat .value{font-size:22px}.unlock-list{grid-template-columns:1fr}.career-record{padding:19px}.career-record h3{font-size:14px}.career-record p{font-size:10px}.record-score{font-size:25px}.tab-wide{overflow:auto}.tabs{white-space:nowrap}.tabs button{padding:10px 13px}.scene-caption p{font-size:12px}.blueprint-choices{grid-template-columns:1fr}.blueprint-choice{min-height:0;padding:15px;display:grid;grid-template-columns:35px 1fr;gap:3px 11px}.blueprint-choice .card-symbol{font-size:25px;margin:0;grid-row:1/4}.blueprint-choice small{margin:5px 0 0;line-height:1.8}.blueprint-choice .pick{margin-top:10px}.dialog-body{padding:24px}.dialog-header h2{font-size:21px}.dialog-desc{font-size:11px}.buff-options{grid-template-columns:1fr}.event-option small{font-size:10px}.result-grid strong{font-size:15px}.hero .btn-ghost{font-size:11px}.topbar>div{gap:8px}.demo-tag{font-size:9px}#toast{left:calc(50% + 25px);bottom:145px}.event-image{height:80px}.home-tip{padding:17px}.feature-row{gap:10px}.feature-row button{font-size:10px}.dialog-actions button{font-size:12px}}
+@media(max-width:400px){.sidebar{width:52px;padding:21px 5px}.shell{margin-left:52px}.actionbar{left:52px;padding:11px 12px}.content{padding:19px 12px 150px}.topbar{padding:0 12px}.topbar .demo-tag{display:none}.brandmark{font-size:29px}.stat{padding:12px}.stat .value{font-size:23px}.title-row h1{font-size:21px}.pill{font-size:9px}.job{padding:13px 12px}.job-symbol{width:24px;height:25px;font-size:16px}.job-line{gap:7px}.job-name strong{font-size:11px}.assigner{gap:4px}.focus-btn{font-size:9px;padding:5px}.hero-copy{padding:24px 20px}.hero h1{font-size:27px}.hero-buttons{flex-wrap:wrap}.actionbar .next-week{min-width:135px;padding:10px 12px}.pace button{padding:6px}.quality-row{gap:11px}.panel-head,.panel-body{padding:15px}.result-grid{padding:14px;gap:8px}.result-grid strong{font-size:14px}.dialog-body{padding:20px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(max-width:920px){.brand>span:last-child,.side-caption,.side-bottom{display:none}}
+
+.strategy-panel{border:1px solid #495344;background:linear-gradient(110deg,#26332a,#1c2a2b);border-radius:9px;padding:20px 22px;margin:0 0 20px}.strategy-title{display:flex;justify-content:space-between;gap:20px;align-items:center}.strategy-title .eyebrow{font-size:9px;margin-bottom:8px;display:block}.strategy-title h2{font-size:15px}.strategy-title h2 .pill{margin-left:8px;font-size:9px}.strategy-title p,.strategy-bottom p{font-size:10px;color:#9eb1a5;margin-top:9px;line-height:1.8}.objective-value{text-align:right;font-size:25px;white-space:nowrap;font-variant-numeric:tabular-nums}.objective-value small{display:block;font-size:9px;color:var(--muted);margin-top:5px}.strategy-flow{display:flex;gap:12px;align-items:center;font-size:10px;color:#b7c4b4;border-top:1px solid #ffffff0a;margin-top:17px;padding-top:14px;flex-wrap:wrap}.strategy-flow b{color:#7d9082;font-weight:400}.strategy-bottom{display:flex;align-items:center;gap:16px;justify-content:space-between;margin-top:8px}.strategy-bottom p{margin:0}.strategy-bottom button{white-space:nowrap}.bottleneck-warning{font-size:10px;line-height:1.8;color:#d7b88a;margin-top:13px;padding-top:12px;border-top:1px solid #ffffff0b}.stat .note{line-height:1.8}.feature-row small{line-height:1.9}@media(max-width:740px){.strategy-panel{padding:16px}.strategy-title{gap:12px;align-items:start}.strategy-title h2{font-size:13px}.strategy-title h2 .pill{display:block;margin:7px 0 0;width:max-content}.objective-value{font-size:20px}.strategy-title p{font-size:9px}.strategy-title .eyebrow{font-size:8px}.strategy-flow{gap:6px;font-size:9px}.strategy-bottom{flex-wrap:wrap;gap:8px}.strategy-bottom button{margin-left:auto}.strategy-bottom p{font-size:9px}}
+</style>
+  
+</head>
+<body>
+  <aside class="sidebar">
+    <a href="#" class="brand" data-action="home" aria-label="周目工作室首页"><span class="brandmark">▣</span><span>周目工作室<small>LOOP STUDIO</small></span></a>
+    <div class="side-caption">你的制作人生涯</div>
+    <nav aria-label="主导航">
+      <button data-action="nav" data-view="home" id="nav-home"><span>⌂</span> 工作室大厅</button>
+      <button data-action="nav" data-view="game" id="nav-game"><span>▦</span> 开发现场<i id="run-dot"></i></button>
+      <button data-action="nav" data-view="blueprints" id="nav-blueprints"><span>◇</span> 技术蓝图</button>
+      <button data-action="nav" data-view="career" id="nav-career"><span>↗</span> 制作人履历</button>
+    </nav>
+    <div class="side-bottom"><div id="meta-mini"></div><button class="help-link" data-action="help"><span>?</span> 制作人手册</button><div class="version">v0.2.0 DEMO <span>本地自动存档</span></div></div>
+  </aside>
+  <div class="shell">
+    <header class="topbar"><div><span class="top-dot"></span><span id="location">工作室大厅</span><span class="top-sep">/</span><span class="muted">把好点子，做成好游戏。</span></div><div class="top-actions"><span class="demo-tag">策略迭代</span><button id="audio-toggle" data-action="audio" class="icon-button" aria-label="开启声音" title="开启声音">♫</button><button class="avatar" data-action="nav" data-view="career" aria-label="查看制作人履历">制</button></div></header>
+    <main id="app" class="content"></main>
+  </div>
+  <div id="footer"></div>
+  <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript>请启用 JavaScript 以运行周目工作室。</noscript>
+<script>
+/* 周目工作室 v0.2.0. Pure, seeded simulation; interface/storage are separate.
+   Architecture follows 周目小镇 v3.17.0: run configuration, seeded choices,
+   projections, milestone blueprints and idempotent growth receipts. */
+(function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.StudioGame=factory();})(typeof globalThis!=='undefined'?globalThis:this,function(){
+  'use strict';
+  const VERSION=2;
+  const JOBS=[
+    {id:'design',name:'策划设计',short:'策划',icon:'✦',color:'#d8b879'},
+    {id:'code',name:'程序开发',short:'程序',icon:'⌘',color:'#76a9e7'},
+    {id:'art',name:'美术制作',short:'美术',icon:'◈',color:'#bc9fe4'},
+    {id:'test',name:'测试打磨',short:'测试',icon:'✓',color:'#80ba91'},
+    {id:'ops',name:'发行事务',short:'发行',icon:'↗',color:'#dd957d'}
+  ];
+  const GENRES=[
+    {id:'story',name:'叙事冒险',tag:'故事与氛围',icon:'✦',desc:'从一个好故事开始。注重设计与美术，技术规模较小。',req:{design:84,code:84,art:108,test:84},weights:[.38,.37,.25],title:'雨停之前',subtitle:'在一座将被遗忘的小城，收集最后一场雨的声音。'},
+    {id:'action',name:'动作闯关',tag:'手感与节奏',icon:'⚔',desc:'让每一次操作都有回应。程序、测试与手感决定成败。',req:{design:84,code:120,art:84,test:108},weights:[.5,.18,.32],title:'最后一格电量',subtitle:'一台旧机器人，和它回家路上最后的一格电量。'},
+    {id:'sim',name:'模拟经营',tag:'系统与深度',icon:'▦',desc:'让系统自己讲故事。设计与程序工作量更大。',req:{design:120,code:108,art:78,test:84},weights:[.5,.25,.25],title:'云端杂货铺',subtitle:'把一间小店开到云上，接待来往的奇妙旅人。'}
+  ];
+  const CARDS=[
+    {id:'prototype',name:'纸面原型',tag:'策划',desc:'策划效率 +40%、玩法收益 +10%；程序效率 −10%。适合先验证再实现。',effect:{design:1.4,play:1.1,code:.9},unlock:0},
+    {id:'modules',name:'模块化架构',tag:'程序',desc:'程序效率 +20%，扩功能技术债与后期返工减半；工具维护 +55/周。',effect:{code:1.2,debt:.5,rework:.5,fee:55},unlock:0},
+    {id:'artkit',name:'强风格美术',tag:'美术',desc:'美术效率 +35%、表现收益 +15%；测试效率 −15%，需验证特殊表现。',effect:{art:1.35,visual:1.15,test:.85},unlock:0},
+    {id:'autotest',name:'自动化测试',tag:'测试',desc:'验收效率 +50%，有测试人员时额外修复 2 个问题；维护 +75/周。',effect:{test:1.5,fix:2,fee:75},unlock:0},
+    {id:'publisher',name:'渠道代办',tag:'发行',desc:'发行效率 +60%；代办维护 +35/周，发售净收入 −5%。',effect:{ops:1.6,fee:35,sales:.95},unlock:0},
+    {id:'lean',name:'精益工作室',tag:'经营',desc:'工资 −18%、维护 −20%；所有工作效率 −10%。低投入路线。',effect:{wages:.82,overhead:.8,all:.9},unlock:0},
+    {id:'pipeline',name:'协作流水线',tag:'协作',desc:'同岗额外人手效率由 45% 提到 70%；程序、美术 +10%，维护 +50/周。',effect:{crowd:.25,art:1.1,code:1.1,fee:50},unlock:80},
+    {id:'retrospective',name:'每周复盘',tag:'协作',desc:'每周士气 +5、技术债 −1；所有工作效率 −8%。支持可控赶工。',effect:{all:.92,morale:5,cleanup:1},unlock:160},
+    {id:'community',name:'试玩社群',tag:'口碑',desc:'测试效率 +15%、发售收入 +18%；社群运营 +50/周。',effect:{test:1.15,sales:1.18,fee:50},unlock:260},
+    {id:'veteran',name:'资深协作者',tag:'团队',desc:'全体效率 +15%，转岗磨合损失减半；顾问支出 +85/周。',effect:{all:1.15,ramp:.5,fee:85},unlock:400}
+  ];
+  const FEATURES=[
+    {id:'branch',name:'分支叙事',desc:'让选择留下回响。',cost:260,req:{design:24,code:12,art:12,test:12},play:8,visual:3,debt:4},
+    {id:'combat',name:'进阶战斗',desc:'更丰富的招式与反馈。',cost:320,req:{design:12,code:30,art:12,test:24},play:11,visual:2,debt:7},
+    {id:'world',name:'动态世界',desc:'让世界回应玩家。',cost:380,req:{design:24,code:30,art:18,test:24},play:10,visual:7,debt:9},
+    {id:'style',name:'动态演出',desc:'为关键时刻增加表现力。',cost:280,req:{design:12,code:12,art:30,test:12},play:3,visual:11,debt:4}
+  ];
+  const BUFFS=[
+    {id:'fund',name:'启动资助',desc:'启动资金 +900',cost:1,unlock:0},
+    {id:'friend',name:'熟悉的工具',desc:'所有工作效率 +8%',cost:1,unlock:0},
+    {id:'contacts',name:'行业人脉',desc:'发行效率 +25%，发售收入 +5%',cost:1,unlock:80},
+    {id:'savings',name:'节约习惯',desc:'团队工资 −10%',cost:1,unlock:160},
+    {id:'insight',name:'制作人直觉',desc:'初始玩法与表现品质各 +8',cost:2,unlock:260}
+  ];
+  const OBJECTIVES=[{id:'profit',name:'商业回报',desc:'项目结余达到 ¥1,200，尽量少花钱交付。',bonus:40},{id:'acclaim',name:'口碑佳作',desc:'作品评分达到 82，需要功能方向和品质投入。',bonus:40}];
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const round=v=>Math.round(v*100)/100;
+  const copy=o=>JSON.parse(JSON.stringify(o));
+  function random(s){s.rng=(s.rng*1664525+1013904223)>>>0;return s.rng/4294967296;}
+  function genre(s){return GENRES.find(g=>g.id===s.genre);}
+  function capacity(meta){return meta.exp>=260?3:2;}
+  function addLog(s,text,kind='info'){s.logs.unshift({week:s.week,text,kind});s.logs=s.logs.slice(0,70);}
+  function mods(s){const m={all:1,design:1,code:1,art:1,test:1,ops:1,play:1,visual:1,debt:1,rework:1,overhead:1,wages:1,ramp:1,crowd:.45,fix:0,morale:0,cleanup:0,fee:0,sales:1};
+    s.cards.forEach(id=>{const c=CARDS.find(x=>x.id===id);if(c)Object.entries(c.effect).forEach(([k,v])=>{if(['fix','morale','fee','crowd','cleanup'].includes(k))m[k]+=v;else m[k]*=v;});});
+    if(s.buffs.includes('friend'))m.all*=1.08;if(s.buffs.includes('contacts')){m.ops*=1.25;m.sales*=1.05;}
+    s.effects.forEach(e=>{if(e.weeks>0){m.all*=e.all||1;if(e.job)m[e.job]*=e.mult||1;}});return m;}
+  function teamSize(s){return Object.values(s.people).reduce((a,b)=>a+b,0)+(s.reserve||0);}
+  function cost(s){const m=mods(s);const wages=Math.ceil(teamSize(s)*72*(s.hard?1.15:1)*(s.buffs.includes('savings')?.9:1)*m.wages);const overhead=Math.ceil((90+s.features.length*22+s.debt*3+Math.max(0,teamSize(s)-4)**2*12)*m.overhead);return {wages,overhead,tools:m.fee,total:wages+overhead+m.fee};}
+  function progress(s,id){return clamp(s.work[id]/s.req[id],0,1);}
+  function coreReady(s){return ['design','code','art'].every(k=>progress(s,k)>=1);}
+  function complete(s){return ['design','code','art','test'].every(k=>progress(s,k)>=1)&&s.qualification>=70&&s.listing>=80;}
+  function goals(s){return [
+    {name:'核心开发',ok:coreReady(s),value:Math.floor(['design','code','art'].reduce((a,k)=>a+progress(s,k),0)/3*100)+'%'},
+    {name:'测试覆盖',ok:progress(s,'test')>=1,value:Math.floor(progress(s,'test')*100)+'%'},
+    {name:'严重问题',ok:s.bugs<=10,value:s.bugs+' / ≤10'},
+    {name:'资质准备',ok:s.qualification>=70,value:Math.floor(s.qualification/70*100)+'%'},
+    {name:'上架准备',ok:s.listing>=80,value:Math.floor(s.listing/80*100)+'%'}
+  ];}
+  function canRelease(s){return !s.over&&!s.pendingEvent&&!s.pendingCards&&goals(s).every(g=>g.ok);}
+  function quality(s){return {play:clamp(Math.round(s.quality.play),0,100),visual:clamp(Math.round(s.quality.visual),0,100),stable:clamp(Math.round(100-s.bugs*2-s.debt*.55),0,100)};}
+  function score(s){const q=quality(s),w=genre(s).weights;return round(q.play*w[0]+q.visual*w[1]+q.stable*w[2]);}
+  function featureFit(s,id){return ({branch:{story:1.3,action:.75,sim:.9},combat:{story:.8,action:1.3,sim:.75},world:{story:.9,action:1,sim:1.3},style:{story:1.15,action:1.15,sim:.85}}[id]||{})[s.genre]||1;}
+  function forecast(s){const q=score(s);const fit=1+s.features.reduce((a,id)=>a+(featureFit(s,id)-.85)*.25,0);const rev=Math.round((1400+q*q*1.05)*fit*mods(s).sales*(1-s.share));return {revenue:rev,low:Math.round(rev*.85),high:Math.round(rev*1.15),score:q,fit:round(fit),breakeven:Math.ceil(s.spent/24)};}
+  function pool(s){return CARDS.filter(c=>c.unlock<=s.metaExp&&!s.cards.includes(c.id));}
+  function offerCards(s){const p=pool(s);const pick=[];while(p.length&&pick.length<3)pick.push(p.splice(Math.floor(random(s)*p.length),1)[0].id);s.pendingCards=pick.length?pick:null;}
+  function newRun(config={},meta={exp:0}){const g=GENRES.find(x=>x.id===config.genre)||GENRES[0];const exp=Number(meta.exp)||0;
+    const buffs=[...new Set(config.buffs||[])];if(buffs.some(id=>!BUFFS.some(b=>b.id===id&&b.unlock<=exp))||buffs.reduce((n,id)=>n+BUFFS.find(b=>b.id===id).cost,0)>capacity({exp}))throw Error('开局加成尚未解锁或超过额度');
+    const seed=(Number(config.seed)||Date.now())>>>0;
+    const s={version:VERSION,id:'run-'+seed+'-'+Date.now(),seed,rng:seed,genre:g.id,name:String(config.name||g.title).trim().slice(0,18)||g.title,hard:config.hard===true,buffs,metaExp:exp,week:1,money:config.hard?6800:7600,spent:0,income:0,people:{design:1,code:1,art:1,test:0,ops:1},focus:'design',opsMode:'auto',pace:'normal',work:{design:0,code:0,art:0,test:0},req:copy(g.req),qualification:0,listing:0,quality:{play:12,visual:12},bugs:0,debt:0,morale:90,cards:[],features:[],effects:[],logs:[],history:[],milestones:[],funding:false,share:0,managed:false,pendingCards:null,pendingEvent:null,over:false,result:null,lastEvent:null};
+    s.reserve=0;s.lastPeople=copy(s.people);s.testMode='qa';s.designLocked=false;s.featureWork={};s.objective=config.objective==='acclaim'?'acclaim':'profit';s.initialMoney=s.money+(buffs.includes('fund')?900:0);if(buffs.includes('fund'))s.money+=900;if(buffs.includes('insight')){s.quality.play+=8;s.quality.visual+=8;}
+    addLog(s,'项目「'+s.name+'」正式立项。每周消耗资金，没有固定回合上限。','good');offerCards(s);return s;
+  }
+  function chooseCard(s,id){if(s.over||!s.pendingCards||id!=='skip'&&!s.pendingCards.includes(id))return false;if(id==='skip'){s.pendingCards=null;addLog(s,'放弃本次蓝图，保持轻量开发。');return true;}s.cards.push(id);s.pendingCards=null;addLog(s,'采用技术蓝图：'+CARDS.find(c=>c.id===id).name,'good');return true;}
+  function blocked(s){return s.over||!!s.pendingEvent||!!s.pendingCards;}
+  function allocate(s,from,to){if(blocked(s)||from===to||!JOBS.some(j=>j.id===from)||!JOBS.some(j=>j.id===to)||s.people[from]<1)return false;s.people[from]--;s.people[to]++;return true;}
+  function assign(s,id,delta){if(blocked(s)||!JOBS.some(j=>j.id===id)||![1,-1].includes(delta))return false;if(delta===1&&s.reserve<1||delta===-1&&s.people[id]<1)return false;s.people[id]+=delta;s.reserve-=delta;return true;}
+  function hire(s){if(blocked(s)||s.managed||teamSize(s)>=8||s.money<180)return false;s.money-=180;s.spent+=180;s.people[s.focus]++;s.managed=true;addLog(s,'招募一位新伙伴，加入'+JOBS.find(j=>j.id===s.focus).name+'。招聘支出 ¥180。');return true;}
+  function downsize(s){if(blocked(s)||s.managed||teamSize(s)<=2||s.money<100)return false;if(s.reserve>0)s.reserve--;else{let id=s.focus;if(!s.people[id])id=JOBS.find(j=>s.people[j.id]>0).id;s.people[id]--;}s.money-=100;s.spent+=100;s.managed=true;addLog(s,'缩减一名人手，安置支出 ¥100，后续周薪下降。');return true;}
+  function featurePreview(s,id){const f=FEATURES.find(x=>x.id===id);if(!f)return null;const avg=['design','code','art'].reduce((a,k)=>a+progress(s,k),0)/3;const rework=1+avg*.7*mods(s).rework;const fit=featureFit(s,id);return {req:Object.fromEntries(Object.entries(f.req).map(([k,v])=>[k,Math.ceil(v*rework)])),fit,rework:Math.round((rework-1)*100),weekly:22,debt:round(f.debt*mods(s).debt)};}
+  function feature(s,id){const f=FEATURES.find(x=>x.id===id);if(!f||blocked(s)||s.managed||s.designLocked||s.features.includes(id)||s.money<f.cost)return false;const p=featurePreview(s,id);s.features.push(id);s.featureWork[id]=p.req;s.money-=f.cost;s.spent+=f.cost;Object.entries(p.req).forEach(([k,v])=>s.req[k]+=v);s.debt=round(s.debt+p.debt);s.managed=true;addLog(s,'扩展功能：'+f.name+'。后期返工增加 '+p.rework+'%，维护 +22/周。');return true;}
+  function cutFeature(s,id){const f=FEATURES.find(x=>x.id===id);if(!f||blocked(s)||s.managed||s.designLocked||!s.features.includes(id))return false;s.features=s.features.filter(x=>x!==id);Object.entries(s.featureWork[id]||f.req).forEach(([k,v])=>{s.req[k]-=v;s.work[k]=Math.min(s.work[k],s.req[k]);});delete s.featureWork[id];s.debt=Math.max(0,s.debt-f.debt*.6);s.managed=true;addLog(s,'删减「'+f.name+'」，收缩开发范围。已花费资金不退还。');return true;}
+  function freeze(s){if(blocked(s)||s.managed||progress(s,'design')<.6||s.designLocked&&s.money<180)return false;if(s.designLocked){s.money-=180;s.spent+=180;s.debt+=4;s.req.design+=8;s.designLocked=false;addLog(s,'解冻设计：支出 180、设计 +8、技术债 +4。');}else{s.designLocked=true;addLog(s,'冻结设计范围：程序、美术效率 +12%，新问题减少 25%；不能增删功能。','good');}s.managed=true;return true;}
+  function funding(s){if(blocked(s)||s.funding)return false;const n=['design','code','art'].reduce((a,k)=>a+progress(s,k),0)/3;if(n<.3)return false;s.funding=true;s.money+=2200;s.income+=2200;s.share=.22;addLog(s,'签订发行合作：预付款 ¥2,200，发售收入分成 22%。本项目仅一次。','good');return true;}
+  function throughput(s,id){const m=mods(s),n=s.people[id],incoming=Math.max(0,n-(s.lastPeople[id]||0));const team=n?1+(n-1)*m.crowd:0;const ramp=n?1-incoming/n*.2*m.ramp:1;const spirit=.65+s.morale/285;const debt=['code','art'].includes(id)?Math.max(.55,1-s.debt*.013):1;const freeze=s.designLocked&&['code','art'].includes(id)?1.12:1;return round(team*10*(s.focus===id?1.5:1)*m.all*m[id]*(s.pace==='crunch'?1.35:s.pace==='rest'?.7:1)*spirit*ramp*debt*freeze);}
+  function workLimit(s,id){if(id==='code'||id==='art')return s.req[id]*Math.min(1,.15+progress(s,'design')*.85);if(id==='test')return s.req.test*Math.min(progress(s,'code'),progress(s,'art'));return s.req[id]||Infinity;}
+  function workWeek(s){const m=mods(s),result={};s.lastBottlenecks={};
+    JOBS.forEach(j=>{const amount=throughput(s,j.id);result[j.id]=amount;
+      if(j.id==='ops'){let left=amount;const mode=s.opsMode;const auth=()=>{let n=Math.min(left,70-s.qualification);s.qualification+=n;left-=n;};const listing=()=>{const cap=coreReady(s)?80:64;let n=Math.min(left,Math.max(0,cap-s.listing));s.listing+=n;left-=n;};if(mode==='listing'){listing();}else if(mode==='qualification'){auth();}else{auth();listing();}}
+      else{if(j.id==='test'&&s.testMode==='refactor'){s.debt=Math.max(0,s.debt-amount*.38);s.bugs=Math.max(0,s.bugs-amount*.1);return;}const before=s.work[j.id],limit=workLimit(s,j.id);s.work[j.id]=round(Math.max(before,Math.min(s.req[j.id],limit,before+amount)));const added=s.work[j.id]-before;const polish=progress(s,j.id)>=1?Math.max(0,amount-added):0;const wasted=Math.max(0,amount-added-polish);if(wasted>.1&&j.id!=='test')s.lastBottlenecks[j.id]=round(wasted);if(wasted>.1&&j.id==='test'&&s.bugs<=0)s.lastBottlenecks.test=round(wasted);
+        const bonuses=s.features.map(id=>({...FEATURES.find(f=>f.id===id),fit:featureFit(s,id)}));const playCap=70+bonuses.reduce((a,f)=>a+f.play*f.fit,0);const visualCap=70+bonuses.reduce((a,f)=>a+f.visual*f.fit,0);
+        if(j.id==='design')s.quality.play+=added*.35*m.play+polish*.1*m.play*Math.max(.08,1-s.quality.play/playCap);
+        if(j.id==='code'){s.quality.play+=added*.19;s.bugs+=added*.14*(1+s.debt/25)*(s.pace==='crunch'?1.55:1)*(s.designLocked?.75:1);s.debt+=added*.025;}
+        if(j.id==='art')s.quality.visual+=added*.48*m.visual+polish*.14*m.visual*Math.max(.08,1-s.quality.visual/visualCap);
+        if(j.id==='test'){s.bugs=Math.max(0,s.bugs-amount*.38);s.quality.play+=added*.06;}
+        s.quality.play=Math.min(playCap,s.quality.play);s.quality.visual=Math.min(visualCap,s.quality.visual);
+      }
+    });s.bugs=Math.max(0,Math.round(s.bugs-(s.people.test>0?m.fix:0)));s.debt=round(Math.max(0,s.debt-m.cleanup));s.morale=clamp(s.morale+(s.pace==='crunch'?-10:s.pace==='rest'?12:1)+m.morale,25,100);if(s.pace==='crunch')s.debt+=2.5;s.lastPeople=copy(s.people);return result;
+  }
+  const EVENTS=[
+    {id:'inspiration',tag:'灵感时刻',title:'茶水间的一句好点子',text:'一个新想法可能让玩法更出色，但整合它就得扩大范围。',choices:[{label:'扩展这个创意',hint:'可玩性 +5；设计、程序工作量各 +8',quality:{play:5},workload:{design:8,code:8}},{label:'收进下一作的笔记',hint:'士气 +3，本作不扩范围',morale:3}]},
+    {id:'palette',tag:'创作火花',title:'找到了对的那抹颜色',text:'新风格很漂亮，也意味着额外的美术工作。',choices:[{label:'把新风格做完整',hint:'表现力 +5，美术工作量 +12',quality:{visual:5},workload:{art:12}},{label:'继续沿用已有规范',hint:'美术进度 +5，保持范围',work:{art:5}}]},
+    {id:'discount',tag:'小小幸运',title:'工具续费，意外优惠',text:'常用工具发来了老用户折扣。一笔不大的节省，足够请大家喝杯好咖啡。',choices:[{label:'收下这份小幸运',hint:'资金 +120',cash:120}]},
+    {id:'feedback',tag:'玩家来信',title:'第一位试玩者的长评',text:'朋友把原型一口气玩了三遍，还认真写了一页反馈。要把这份热情用在哪里？',choices:[{label:'研究玩法反馈',hint:'可玩性 +4',quality:{play:4}},{label:'梳理复现步骤',hint:'问题 −4，测试进度 +8',bugs:-4,work:{test:8}}]},
+    {id:'coffee',tag:'工作室日常',title:'今天的咖啡刚刚好',text:'团队状态不错，是保持可持续节奏，还是趁势推进下一阶段？',choices:[{label:'保持这个好节奏',hint:'士气 +5',morale:5},{label:'趁状态好集中突破',hint:'下周全体效率 +15%，士气 −6',morale:-6,effect:{all:1.15,weeks:1,name:'集中突破'}}]},
+    {id:'break',tag:'团队选择',title:'不如今晚早点回家',text:'连续的开发让大家有些疲惫。有人提议安排一次小聚，也有人想留点预算。',choices:[{label:'一起吃顿饭',hint:'支出 100，士气 +14',cash:-100,morale:14},{label:'散步也挺好',hint:'士气 +5',morale:5}]},
+    {id:'backup',tag:'意外插曲',title:'硬盘发出了奇怪的声音',text:'幸好备份还在。换掉旧设备，或者先用备用机顶一阵？',choices:[{label:'更换设备',hint:'支出 180，下周程序效率 +15%',cash:-180,effect:{job:'code',mult:1.15,weeks:1,name:'新设备'}},{label:'启用备用机',hint:'下周程序效率 −15%',effect:{job:'code',mult:.85,weeks:1,name:'备用设备'}}]},
+    {id:'scope',tag:'制作人抉择',title:'这个点子，要现在做吗？',text:'一个新交互可能提升体验，也可能延后发布。',choices:[{label:'先记进下一作',hint:'士气 +3，不增加工作量',morale:3},{label:'把实验做进这个版本',hint:'支出 100，可玩性 +5，程序与测试工作量各 +8',cash:-100,quality:{play:5},workload:{code:8,test:8}}]},
+    {id:'showcase',tag:'行业机会',title:'小型独立游戏展的邀请',text:'主办方看中了你的原型，愿意留一个展位。参展有成本，但能带来宝贵反馈。',min:.3,choices:[{label:'带上试玩版去看看',hint:'支出 200，可玩性 +4，表现力 +3',cash:-200,quality:{play:4,visual:3}},{label:'专注手头的开发',hint:'下周全体效率 +10%',effect:{all:1.1,weeks:1,name:'专注开发'}}]},
+    {id:'bug',tag:'测试发现',title:'藏在角落里的边界问题',text:'一个不常见的操作触发了异常。根治需要成本，临时隔离会留下隐患。',choices:[{label:'现在彻底修复',hint:'支出 120，问题 −3',cash:-120,bugs:-3},{label:'临时隔离，稍后清理',hint:'严重问题 +2，技术债 +3',bugs:2,debt:3}]},
+    {id:'forms',tag:'发行事务',title:'资料整理得很清楚',text:'渠道对你准备的材料给出了清晰反馈，下一步可以少走一些弯路。',choices:[{label:'更新发行清单',hint:'资质准备 +8，上架准备 +6',qualification:8,listing:6}]},
+    {id:'compat',tag:'技术维护',title:'一次小小的兼容更新',text:'开发工具更新了接口。眼下可以处理，也可以暂时保持旧版本。',choices:[{label:'现在处理',hint:'支出 100，技术债 −3',cash:-100,debt:-3},{label:'锁定现有版本',hint:'技术债 +2',debt:2}]},
+    {id:'tired',tag:'团队状态',title:'大家需要喘口气',text:'赶工的痕迹写在每个人脸上。是否把下周的一部分时间留给调整？',condition:s=>s.morale<65,choices:[{label:'安排充分休息',hint:'士气 +15，下周效率 −10%',morale:15,effect:{all:.9,weeks:1,name:'休整'}},{label:'再坚持一下',hint:'士气 −5，问题 +2',morale:-5,bugs:2}]},
+    {id:'debt',tag:'架构提醒',title:'旧代码开始牵一发动全身',text:'几处临时方案互相纠缠。现在清理，可能比继续叠功能更值得。',condition:s=>s.debt>8,choices:[{label:'投入一次架构整理',hint:'支出 180，技术债 −7',cash:-180,debt:-7},{label:'标记风险，稍后处理',hint:'严重问题 +3',bugs:3}]}
+  ];
+  function eventPool(s){const p=['design','code','art'].reduce((a,k)=>a+progress(s,k),0)/3;return EVENTS.filter(e=>(!e.min||p>=e.min)&&(!e.condition||e.condition(s))&&e.id!==s.lastEvent);}
+  function advance(s){if(blocked(s))return {ok:false,reason:'请先完成当前选择'};const c=cost(s);if(s.money<c.total)return {ok:false,reason:'资金不足以支付下一周，请发售、融资、缩减规模或终止项目'};
+    s.money-=c.total;s.spent+=c.total;const production=workWeek(s);s.effects=s.effects.map(e=>({...e,weeks:e.weeks-1})).filter(e=>e.weeks>0);s.history.push({week:s.week,cost:c.total,production,score:score(s),money:s.money});
+    addLog(s,'完成第 '+s.week+' 周：支出 ¥'+c.total+'，主攻'+JOBS.find(j=>j.id===s.focus).name+'。');const p=eventPool(s);const e=p[Math.floor(random(s)*p.length)];s.pendingEvent=e.id;s.lastEvent=e.id;s.week++;s.managed=false;return {ok:true,event:e.id};
+  }
+  function event(s){return EVENTS.find(e=>e.id===s.pendingEvent);}
+  function eventChoiceStatus(s,index){const c=event(s)?.choices[index];if(!c)return {ok:false,reason:'无效选项'};if(c.cash<0&&s.money<-c.cash)return {ok:false,reason:'资金不足'};if(c.workload&&s.designLocked)return {ok:false,reason:'已冻结范围，不能扩展'};return {ok:true};}
+  function resolveEvent(s,index){const e=event(s);const c=e&&e.choices[index];if(s.over||!eventChoiceStatus(s,index).ok)return false;
+    if(c.cash){s.money+=c.cash;if(c.cash<0)s.spent-=c.cash;else s.income+=c.cash;}
+    if(c.quality)Object.entries(c.quality).forEach(([k,v])=>s.quality[k]=clamp(s.quality[k]+v,0,100));
+    if(c.workload)Object.entries(c.workload).forEach(([k,v])=>s.req[k]+=v);
+    if(c.work)Object.entries(c.work).forEach(([k,v])=>s.work[k]=Math.max(s.work[k],Math.min(s.req[k],workLimit(s,k),s.work[k]+v)));
+    s.bugs=Math.max(0,s.bugs+(c.bugs||0));s.debt=Math.max(0,s.debt+(c.debt||0));s.morale=clamp(s.morale+(c.morale||0),25,100);s.qualification=Math.min(70,s.qualification+(c.qualification||0));s.listing=Math.min(coreReady(s)?80:64,s.listing+(c.listing||0));if(c.effect)s.effects.push(copy(c.effect));
+    addLog(s,e.title+'：'+c.label+'。'+c.hint,c.cash<0?'info':'good');s.pendingEvent=null;checkMilestones(s);return true;
+  }
+  function checkMilestones(s){const avg=['design','code','art'].reduce((a,k)=>a+progress(s,k),0)/3;
+    const next=[{id:'prototype',check:avg>=.3,name:'可玩原型'},{id:'vertical',check:avg>=.65,name:'垂直切片'},{id:'content',check:coreReady(s),name:'内容完成'}].find(m=>m.check&&!s.milestones.includes(m.id));
+    if(next){s.milestones.push(next.id);addLog(s,'达成里程碑「'+next.name+'」，获得一次技术蓝图选择。','good');offerCards(s);}
+  }
+  function preview(s){const p=copy(s);if(blocked(p))return null;const c=cost(p);const production=workWeek(p);return {production,cost:c,quality:quality(p),bugs:p.bugs,debt:p.debt,bottlenecks:p.lastBottlenecks,work:p.work,qualification:p.qualification,listing:p.listing,money:s.money-c.total};}
+  function objectiveStatus(s,result){const f=forecast(s),profit=result?result.profit:f.revenue+s.income-s.spent;const value=s.objective==='acclaim'?(result?result.score:Math.round(f.score)):profit;const target=s.objective==='acclaim'?82:1200;const ready=result?true:goals(s).every(g=>g.ok);return {id:s.objective,name:OBJECTIVES.find(o=>o.id===s.objective)?.name||'商业回报',value,target,ready,ok:ready&&value>=target};}
+  function finish(s,released){if(blocked(s)||released&&!canRelease(s))return false;const f=forecast(s);let revenue=0;if(released)revenue=Math.round(f.revenue*(.85+random(s)*.3));const profit=revenue+s.income-s.spent;const target=objectiveStatus(s,{score:Math.round(f.score),profit});const exp=released?Math.round(35+f.score*.9+(revenue>s.spent?20:0)+(s.hard?25:0)+(target.ok?40:0)):Math.min(30,Math.floor(s.milestones.length*8));
+    s.over=true;s.result={runId:s.id,name:s.name,genre:s.genre,released,weeks:s.week-1,score:Math.round(f.score),quality:quality(s),revenue,cost:s.spent,profit,exp,objective:s.objective,objectiveOK:released&&target.ok,features:s.features.slice(),cards:s.cards.slice(),seed:s.seed};addLog(s,released?'「'+s.name+'」正式发售。':'项目终止。已完成里程碑将保留少量制作经验。',released?'good':'info');return s.result;
+  }
+  function emptyMeta(){return {version:1,exp:0,receipts:{},history:[]};}
+  function settle(meta,s){const m=copy(meta);if(!s.over||!s.result||m.receipts[s.id])return m;const r=copy(s.result);m.receipts[s.id]=r.exp;m.exp+=r.exp;m.history.unshift(r);return m;}
+  function validateRun(s){try{if(!s||s.version!==VERSION||!GENRES.some(g=>g.id===s.genre)||!Number.isInteger(s.week)||s.week<1||!Number.isFinite(s.money)||!Number.isFinite(s.spent)||!Array.isArray(s.cards)||!Array.isArray(s.logs)||!Array.isArray(s.effects)||!Array.isArray(s.features)||!Array.isArray(s.milestones)||!Array.isArray(s.buffs)||!s.quality||!s.req||!s.work||!s.people)return false;return JOBS.every(j=>Number.isInteger(s.people[j.id])&&s.people[j.id]>=0)&&['design','code','art','test'].every(k=>Number.isFinite(s.work[k])&&Number.isFinite(s.req[k])&&s.req[k]>0)&&[s.qualification,s.listing,s.bugs,s.debt,s.morale,s.quality.play,s.quality.visual,s.rng,s.seed].every(Number.isFinite)&&s.cards.every(id=>CARDS.some(c=>c.id===id))&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.pendingCards||Array.isArray(s.pendingCards)&&s.pendingCards.every(id=>CARDS.some(c=>c.id===id)));}catch{return false;}}
+  return {VERSION,JOBS,GENRES,CARDS,FEATURES,BUFFS,OBJECTIVES,EVENTS,newRun,chooseCard,mods,cost,teamSize,progress,coreReady,complete,goals,canRelease,quality,score,forecast,objectiveStatus,featureFit,featurePreview,freeze,throughput,workLimit,allocate,assign,hire,downsize,feature,cutFeature,funding,advance,event,eventChoiceStatus,resolveEvent,preview,finish,emptyMeta,settle,capacity,validateRun,copy};
+});
+
+</script>
+<script>
+/* 周目小镇 · original procedural score and effects, no external audio assets. */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.DSHAudio = factory();
+})(typeof window !== 'undefined' ? window : this, function () {
+  'use strict';
+  var STORAGE_KEY = 'loop_studio_audio_v1';
+  var DEFAULTS = { music: 0.12, effects: 0.3, muted: true };
+  function volume(value, fallback) {
+    return typeof value === 'number' && isFinite(value) ? Math.max(0, Math.min(1, value)) : fallback;
+  }
+  function settings(raw) {
+    raw = raw && typeof raw === 'object' ? raw : {};
+    return { music: volume(raw.music, DEFAULTS.music), effects: volume(raw.effects, DEFAULTS.effects), muted: typeof raw.muted === 'boolean' ? raw.muted : DEFAULTS.muted };
+  }
+  function frequency(note) { return 440 * Math.pow(2, (note - 69) / 12); }
+  function tone(data, rate, start, duration, note, level, soft) {
+    var begin = Math.round(start * rate), count = Math.round(duration * rate), f = frequency(note);
+    for (var i = 0; i < count && begin + i < data.length; i++) {
+      var t = i / rate, phase = 2 * Math.PI * f * t;
+      var envelope = Math.min(1, t / 0.009) * Math.min(1, (duration - t) / 0.055) * Math.exp(-t / (soft ? duration * 0.8 : 0.18));
+      data[begin + i] += level * envelope * (Math.sin(phase) + (soft ? 0.12 : 0.24) * Math.sin(phase * 2) + 0.06 * Math.sin(phase * 3));
+    }
+  }
+  function finish(data, peakLimit) {
+    var peak = 0, edge = Math.min(128, Math.floor(data.length / 4));
+    for (var i = 0; i < edge; i++) { data[i] *= i / edge; data[data.length - i - 1] *= i / edge; }
+    for (i = 0; i < data.length; i++) peak = Math.max(peak, Math.abs(data[i]));
+    if (peak > 0) for (i = 0; i < data.length; i++) data[i] *= peakLimit / peak;
+    return data;
+  }
+  // Original 16-bar piece, “晨光街角”: 92 BPM, C / Am / F / G, soft keys and bass.
+  function renderMusic(rate) {
+    rate = rate || 22050;
+    var beat = 60 / 92, data = new Float32Array(Math.round(16 * 4 * beat * rate));
+    var chords = [[48,55,60,64],[45,52,57,60],[41,48,53,57],[43,50,55,59]];
+    var melody = [
+      [72,76,79,76], [71,69,67,64], [69,72,76,74], [71,67,69,71],
+      [72,76,79,83], [81,76,72,69], [77,76,72,69], [74,71,67,71],
+      [76,79,84,79], [81,79,76,72], [77,81,79,76], [74,79,77,71],
+      [76,79,76,72], [72,69,67,64], [69,72,74,76], [74,71,67,72]
+    ];
+    var noiseSeed = 713;
+    for (var bar = 0; bar < 16; bar++) {
+      var start = bar * 4 * beat, chord = chords[bar % 4];
+      chord.forEach(function (n) { tone(data, rate, start, beat * 3.8, n + 12, 0.045, true); });
+      tone(data, rate, start, beat * 1.65, chord[0] - 12, 0.23, true);
+      tone(data, rate, start + beat * 2, beat * 1.4, chord[1] - 12, 0.17, true);
+      for (var step = 0; step < 8; step++) {
+        tone(data, rate, start + step * beat / 2, beat * 0.65, chord[(step + bar) % 4] + 12, 0.075, false);
+      }
+      melody[bar].forEach(function (n, index) {
+        tone(data, rate, start + (index + (index % 2 ? 0.15 : 0)) * beat, beat * 0.86, n, bar >= 8 ? 0.19 : 0.16, true);
+      });
+      // Quiet, deterministic brush ticks; never use the game's random generator.
+      for (step = 0; step < 4; step++) {
+        var offset = Math.round((start + (step + 0.5) * beat) * rate);
+        for (var k = 0; k < rate * 0.035 && offset + k < data.length; k++) {
+          noiseSeed = (noiseSeed * 16807) % 2147483647;
+          data[offset + k] += (noiseSeed / 2147483647 - 0.5) * 0.025 * Math.exp(-k / (rate * 0.008));
+        }
+      }
+    }
+    return finish(data, 0.55);
+  }
+  var EFFECTS = {
+    click: [[76,0,0.06]], confirm: [[67,0,0.12],[72,0.06,0.16]],
+    build: [[48,0,0.14],[55,0.06,0.14],[60,0.12,0.18],[67,0.19,0.22]],
+    task: [[64,0,0.12],[69,0.08,0.17]], turn: [[60,0,0.11],[64,0.07,0.13]],
+    reward: [[72,0,0.18],[76,0.08,0.19],[79,0.16,0.22],[84,0.25,0.3]],
+    blueprint: [[67,0,0.14],[72,0.07,0.17],[76,0.14,0.21]],
+    upgrade: [[60,0,0.2],[64,0.09,0.2],[67,0.18,0.22],[72,0.27,0.25],[76,0.38,0.32]],
+    error: [[48,0,0.1],[43,0.09,0.14]],
+    settle: [[60,0,0.22],[67,0.11,0.25],[72,0.22,0.28],[76,0.33,0.3],[79,0.46,0.42]]
+  };
+  function renderEffect(name, rate) {
+    rate = rate || 22050;
+    var notes = EFFECTS[name] || EFFECTS.click;
+    var duration = Math.max.apply(null, notes.map(function (n) { return n[1] + n[2]; })) + 0.03;
+    var data = new Float32Array(Math.ceil(duration * rate));
+    notes.forEach(function (n) { tone(data, rate, n[1], n[2], n[0], 0.25, false); });
+    return finish(data, 0.55);
+  }
+  function create(env) {
+    env = env || window;
+    var raw;
+    try { raw = JSON.parse(env.localStorage.getItem(STORAGE_KEY)); } catch (e) {}
+    var prefs = settings(raw), Context = env.AudioContext || env.webkitAudioContext;
+    var context = null, musicGain, effectsGain, musicBuffer, musicSource = null;
+    var musicOffset = 0, musicStarted = 0, effects = [], buffers = {};
+    var unlocked = false, hidden = !!(env.document && env.document.hidden), failed = false, destroyed = false;
+    var callback = function () {}, pendingResume = null, lastEffect = -1, removeListeners = [];
+    function notify() { callback(getState()); }
+    function getState() {
+      return { settings: settings(prefs), supported: !!Context && !failed, unlocked: unlocked,
+        contextState: context ? context.state : 'idle', musicPlaying: !!musicSource, hidden: hidden };
+    }
+    function buffer(data) {
+      var b = context.createBuffer(1, data.length, 22050);
+      b.getChannelData(0).set(data);
+      return b;
+    }
+    function stopMusic() {
+      if (!musicSource) return;
+      musicOffset = (musicOffset + context.currentTime - musicStarted) % musicBuffer.duration;
+      try { musicSource.stop(); musicSource.disconnect(); } catch (e) {}
+      musicSource = null;
+    }
+    function stopEffects() {
+      effects.slice().forEach(function (source) { try { source.stop(); source.disconnect(); } catch (e) {} });
+      effects = [];
+    }
+    function setGain(node, value) {
+      var now = context.currentTime;
+      node.gain.cancelScheduledValues(now);
+      node.gain.setTargetAtTime(value, now, 0.012);
+      node.gain.setValueAtTime(value, now + 0.065);
+    }
+    function syncGraph() {
+      if (!context || failed || destroyed) return;
+      var quiet = prefs.muted || hidden;
+      setGain(musicGain, quiet ? 0 : prefs.music);
+      setGain(effectsGain, quiet ? 0 : prefs.effects);
+      if (quiet || !prefs.effects) stopEffects();
+      if (quiet || !prefs.music || context.state !== 'running') stopMusic();
+      else if (!musicSource) {
+        if (!musicBuffer) musicBuffer = buffer(renderMusic());
+        musicSource = context.createBufferSource();
+        musicSource.buffer = musicBuffer; musicSource.loop = true;
+        musicSource.connect(musicGain); musicStarted = context.currentTime;
+        musicSource.start(0, musicOffset);
+      }
+    }
+    function sync() {
+      try { syncGraph(); }
+      catch (e) { failed = true; stopMusic(); stopEffects(); }
+    }
+    function ensureContext() {
+      if (context || !Context || failed || destroyed) return;
+      try {
+        context = new Context();
+        var master = context.createGain(); master.gain.value = 0.65; master.connect(context.destination);
+        musicGain = context.createGain(); musicGain.gain.value = 0; musicGain.connect(master);
+        effectsGain = context.createGain(); effectsGain.gain.value = 0; effectsGain.connect(master);
+        context.onstatechange = function () { sync(); notify(); };
+      } catch (e) { failed = true; context = null; }
+    }
+    function unlock() {
+      if (destroyed || failed || hidden || prefs.muted || (!prefs.music && !prefs.effects)) return Promise.resolve(false);
+      unlocked = true; ensureContext();
+      if (!context) { notify(); return Promise.resolve(false); }
+      if (context.state === 'running') { sync(); notify(); return Promise.resolve(!failed); }
+      if (pendingResume) return pendingResume;
+      try {
+        pendingResume = Promise.resolve(context.resume()).then(function () {
+          pendingResume = null;
+          if (hidden || destroyed) { if (!destroyed) pause(); return false; }
+          sync(); notify(); return !failed && context.state === 'running';
+        }, function () { pendingResume = null; notify(); return false; });
+      } catch (e) { pendingResume = null; notify(); return Promise.resolve(false); }
+      return pendingResume;
+    }
+    function play(name) {
+      if (!context || failed || context.state !== 'running' || hidden || destroyed || prefs.muted || !prefs.effects) return false;
+      if (name === 'click' && context.currentTime - lastEffect < 0.05) return false;
+      lastEffect = context.currentTime;
+      if (!EFFECTS[name]) name = 'click';
+      try {
+        if (!buffers[name]) buffers[name] = buffer(renderEffect(name));
+        while (effects.length >= 4) { var old = effects.shift(); try { old.stop(); old.disconnect(); } catch (e) {} }
+        var source = context.createBufferSource(); source.buffer = buffers[name]; source.connect(effectsGain);
+        effects.push(source);
+        source.onended = function () { effects = effects.filter(function (s) { return s !== source; }); source.disconnect(); };
+        source.start(); return true;
+      } catch (e) { failed = true; stopMusic(); stopEffects(); notify(); return false; }
+    }
+    function setSettings(partial) {
+      prefs = settings(Object.assign({}, prefs, partial));
+      try { env.localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs)); } catch (e) {}
+      sync(); notify();
+      if (!prefs.muted && unlocked && !hidden) unlock();
+      return settings(prefs);
+    }
+    function pause() {
+      stopMusic(); stopEffects();
+      if (context && context.state === 'running') {
+        try {
+          Promise.resolve(context.suspend()).then(function () {
+            if (!hidden && !destroyed && unlocked) unlock();
+          }, function () {});
+        } catch (e) {}
+      }
+      notify();
+    }
+    function setHidden(value) {
+      hidden = !!value;
+      if (hidden) pause();
+      else if (unlocked) unlock();
+      notify();
+    }
+    function listen(target, type, fn, capture) {
+      target.addEventListener(type, fn, capture);
+      removeListeners.push(function () { target.removeEventListener(type, fn, capture); });
+    }
+    function init(onChange) {
+      callback = onChange || callback;
+      if (env.document && !removeListeners.length) {
+        var gesture = function (e) {
+          if (e.isTrusted === false || (e.type === 'keydown' && (e.repeat || e.ctrlKey || e.metaKey || e.altKey || ['Tab','Shift','Control','Alt','Escape'].indexOf(e.key) >= 0))) return;
+          unlock();
+        };
+        listen(env.document, 'pointerdown', gesture, true);
+        listen(env.document, 'keydown', gesture, true);
+        listen(env.document, 'click', function (e) {
+          var b = e.target.closest && e.target.closest('button');
+          if (e.isTrusted === false || !b || b.disabled || b.hasAttribute('data-audio-preview')) return;
+          unlock(); play('click');
+        }, false);
+        listen(env.document, 'visibilitychange', function () { setHidden(env.document.hidden); });
+        listen(env, 'pagehide', function () { setHidden(true); });
+        listen(env, 'pageshow', function () { setHidden(env.document.hidden); });
+      }
+      notify();
+    }
+    function destroy() {
+      destroyed = true; stopMusic(); stopEffects(); removeListeners.forEach(function (f) { f(); }); removeListeners = [];
+      if (context) { context.onstatechange = null; try { Promise.resolve(context.close()).catch(function () {}); } catch (e) {} }
+    }
+    return { init: init, unlock: unlock, play: play, setSettings: setSettings, getState: getState, setHidden: setHidden, destroy: destroy };
+  }
+  return { create: create, normalizeSettings: settings, renderMusic: renderMusic, renderEffect: renderEffect,
+    effectNames: Object.keys(EFFECTS), storageKey: STORAGE_KEY };
+});
+
+</script>
+<script>
+(function(){
+  'use strict';
+  const G=window.StudioGame, $=id=>document.getElementById(id);
+  const SAVE='loop_studio_run_v2', META='loop_studio_meta_v1';
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const yen=n=>'¥'+Math.round(n).toLocaleString('zh-CN');
+  const pct=(n,d)=>Math.max(0,Math.min(100,Math.floor(n/d*100)));
+  let run=null,meta=G.emptyMeta(),view='home',tab='work',hiddenPrompt=false,setupGenre='story',toastTimer,storageOK=true;
+  try{const m=JSON.parse(localStorage.getItem(META)||'null');if(m&&m.version===1&&Number.isFinite(m.exp)&&m.exp>=0&&m.receipts&&typeof m.receipts==='object'&&Array.isArray(m.history))meta=m;const s=JSON.parse(localStorage.getItem(SAVE)||'null');if(G.validateRun(s))run=s;}catch{}
+  const audio=window.DSHAudio.create(window);audio.init(updateAudio);
+  function updateAudio(){const a=audio.getState();const muted=a.settings?.muted??a.muted;const b=$('audio-toggle');b.classList.toggle('on',!muted);b.setAttribute('aria-label',muted?'开启声音':'关闭声音');b.title=muted?'开启声音':'关闭声音';}
+  function save(){try{if(run)localStorage.setItem(SAVE,JSON.stringify(run));localStorage.setItem(META,JSON.stringify(meta));}catch{if(storageOK){storageOK=false;toast('浏览器未允许保存，当前进度仅在本次打开期间保留。');}}}
+  function toast(text){clearTimeout(toastTimer);$('toast').textContent=text;$('toast').classList.add('toast');toastTimer=setTimeout(()=>$('toast').classList.remove('toast'),3200);}
+  function disabled(ok){return ok?'':' disabled';}
+  function busy(){return !run||run.over||run.pendingEvent||run.pendingCards;}
+  function bar(value,max,color){return `<div class="progress" style="--bar:${color||'var(--teal)'}"><span style="width:${pct(value,max)}%"></span></div>`;}
+  function title(eye,name,sub,right=''){return `<div class="title-row"><div><div class="eyebrow">${eye}</div><h1>${name}</h1>${sub?`<p class="sub">${sub}</p>`:''}</div>${right}</div>`;}
+  function officeSVG(){
+    const people=run&&!run.over?G.teamSize(run):4;
+    const desks=[{x:156,y:170,c:'#92bca8'},{x:268,y:170,c:'#a6afe0'},{x:213,y:239,c:'#d8bb80'},{x:325,y:239,c:'#d8a991'}];
+    return `<svg class="office-art" viewBox="0 0 530 350" aria-label="像素风工作室，团队在温暖灯光下制作游戏" role="img"><defs><pattern id="floor" width="38" height="38" patternUnits="userSpaceOnUse" patternTransform="matrix(1 .5 -1 .5 0 0)"><rect width="38" height="38" fill="#384a43"/><path d="M0 0h38v38" fill="none" stroke="#4a5a4f" stroke-width="1"/></pattern><linearGradient id="windowlight" x2="0" y2="1"><stop stop-color="#a1c6ae"/><stop offset="1" stop-color="#6d9c91"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="6"/></filter></defs><ellipse cx="283" cy="276" rx="185" ry="52" fill="#0f191c" opacity=".3"/><path d="M76 169 276 68 466 163 267 268Z" fill="#263932"/><path d="M76 169v48l191 98v-47Z" fill="#26352f"/><path d="M267 268v47l199-100v-52Z" fill="#1c2e2b"/><path d="M76 169 276 68 466 163 267 268Z" fill="url(#floor)"/><path d="M76 169V72L276-27v95Z" fill="#506258" transform="translate(0 24)"/><path d="M276 92V-3l190 95v95Z" fill="#344c46"/><path d="M99 105 190 60v58l-91 45Z" fill="#253d39" stroke="#72887b" stroke-width="4"/><path d="M105 106 184 67v48l-79 39Z" fill="url(#windowlight)"/><path d="M144 87v48M106 129l77-39" stroke="#3e5c50" stroke-width="4"/><path d="M107 128 113 110l8-4 2 10 9-20 9-5 3 24 11-23 12-6 8 14 8-4v18l-78 39Z" fill="#42665a" opacity=".55"/><path d="M147 142 270 203 334 171 188 115Z" fill="#e4d5a9" opacity=".065"/><path d="m219 53 33-16v29l-33 17Z" fill="#c7b794"/><path d="m225 56 20-10v16l-20 10Z" fill="#718b72"/><path d="M304 49 358 76v42l-54-27Z" fill="#233d37" stroke="#789082" stroke-width="2"/><path d="m313 65 34 17m-34-7 25 13m-25-3 30 15" stroke="#b0b68e" stroke-width="2"/><path d="m386 99 55 28v8l-55-28Z" fill="#a18a65"/><path d="m390 92 5 2v10l-5-2m9-3 5 2v8l-5-2m10-2 5 2v8l-5-2m8-3 5 2v9l-5-2" fill="#91ab96" stroke="#6d8a77" stroke-width="2"/>
+    <g transform="translate(90 174)"><path d="m0 0 21-10 17 8-20 10Z" fill="#bc9a6a"/><path d="M0 0v18l18 10V8m0 20 20-10V-2" fill="#6b6044"/><path d="M18-5v-38" stroke="#547d64" stroke-width="4"/><path d="M18-16C-8-18-8-35 1-31c13 2 15 8 17 15m0-5c23-6 26-22 17-21-15 0-19 12-17 21m0-9c-14-9-13-23-7-21 10 2 11 13 7 21" fill="#739b78"/></g>
+    ${desks.map((d,i)=>`<g transform="translate(${d.x} ${d.y})"><path d="m-25 0 49-25L72-1 23 24Z" fill="#b2966b" stroke="#ccb184" stroke-width="1"/><path d="M-25 0v6l48 25v-7m49-25v7L23 31v-7" fill="#73684f"/><path d="M-19 9v27m79-24v26M22 31v24" stroke="#374039" stroke-width="5"/><path d="m0-11 29-15v24L0 13Z" fill="#1b2b30" stroke="#667f76" stroke-width="2"/><path d="m3-10 23-12v18L3 8Z" fill="${d.c}" opacity=".65"/><path d="m6-10 8-4m-8 9 15-8m-15 13 10-5" stroke="#d7e0c9" stroke-width="1" opacity=".6"/><path d="m13 13 12-6 12 6-12 6Z" fill="#566c60"/><path d="m29 8 17-8 12 6-17 8Z" fill="#aeb8a0"/><path d="m54-7 6-3v9l-6 3Z" fill="#d5c3a1"/>${i<people?`<g><path d="M8 37v15l13 7 12-7V39" fill="#26363a"/><path d="m8 34 13-7 13 7-13 7Z" fill="#526b61"/><path d="M12 23v17l10 6 9-5V23" fill="${d.c}"/><path d="m12 22 10-5 9 5v10l-9 5-10-5Z" fill="#d6ad87"/><path d="m10 19 11-6 12 6v7l-5-2-1-5-13 6-4-1Z" fill="${i%2?'#76624a':'#3c3c34'}"/><path d="m15 42-9-8m22 9 9-9" stroke="${d.c}" stroke-width="5"/></g>`:''}</g>`).join('')}
+    <path d="m407 178 27-14 15 8-27 14Z" fill="#9d8c68"/><path d="M407 178v32l15 8v-32m27-14v32l-27 14v-32" fill="#526252"/><path d="m415 181 10-5 8 4-10 5Z" fill="#b7ba9e"/><path d="m396 155 6-3v18l-6 3Z" fill="#d9c198"/><path d="m384 150 16-20 17 20-17 8Z" fill="#dac28c"/><ellipse cx="401" cy="151" rx="15" ry="5" fill="#f5d795" opacity=".22" filter="url(#glow)"/></svg>`;
+  }
+  function home(){const live=run&&!run.over;return title('MAKE SOMETHING WORTH PLAYING','每一周，离好游戏更近一步。','一间小工作室，一个新点子，还有属于你的制作人故事。')+
+    `<section class="hero"><div class="hero-copy"><div class="eyebrow">下一个好点子 · 等你开工</div><h1>从一个点子，<br>到一款真正的游戏。</h1><p>安排团队，探索技术蓝图，应对开发中的意外。<br>时间没有终点，预算会提醒你何时该发售。</p><div class="hero-buttons"><button class="btn-primary" data-action="${live?'continue':'setup'}">${live?'继续开发「'+esc(run.name)+'」':'＋ 立项，开始第一款游戏'} <span>↗</span></button>${live?'<button class="btn-ghost" data-action="setup">新项目</button>':'<button class="btn-ghost" data-action="help">了解怎么玩 →</button>'}</div><p class="hero-note">回合开发 · 每周随机事件 · 技术构筑 · 局外成长</p></div><div class="home-office">${officeSVG()}</div></section>
+    <div class="section-heading"><h2>这一次，你想做什么？</h2><small>三种项目方向，各有不同的开发重点</small></div><div class="genre-grid">${G.GENRES.map((g,i)=>`<article class="genre-card" style="--accent:${['#d8b879','#80b4cf','#b29bce'][i]}"><div class="genre-icon">${g.icon}</div><h3>${g.name}</h3><div class="genre-meta">${g.tag}</div><p>${g.desc}</p><button data-action="setup" data-genre="${g.id}">选择这个方向 <span>↗</span></button></article>`).join('')}</div>
+    <div class="home-bottom"><div class="home-tip"><span>◷</span><div><h3>开发多久，由你决定</h3><p>没有固定回合上限。团队、项目范围与技术债决定每周成本。</p></div></div><div class="home-tip"><span>◇</span><div><h3>每一作，都是新的开始</h3><p>完成作品获得经验，解锁技术蓝图与下一局的开局加成。</p></div></div></div>`;
+  }
+  function game(){if(!run)return title('YOUR NEXT PROJECT','工作室还没有项目','先选一个喜欢的方向，开始制作。')+`<section class="panel empty"><div class="empty-icon">▦</div><h2>好游戏，总要从第一周开始。</h2><p>新项目将以四人团队起步，你来决定每个人的工作。</p><button data-action="setup" class="btn-primary">＋ 开始一个新项目</button></section>`;
+    const s=run,c=G.cost(s),q=G.quality(s),f=G.forecast(s),g=G.GENRES.find(g=>g.id===s.genre),p=G.preview(s),active=!busy();
+    const stage=s.over?'项目已结束':G.canRelease(s)?'已具备发售条件':s.milestones.includes('content')?'打磨与发行':s.milestones.includes('prototype')?'全力制作':'原型探索';
+    let html=title('PROJECT WORKBENCH',esc(s.name),`${g.name} · ${esc(g.subtitle)}`,`<div class="title-badges"><span class="pill gold">第 ${s.week} 周</span><span class="pill">${stage}</span></div>`);
+    if(s.over)html+=`<div class="notice">${s.result.released?'这款作品已经发售，感谢这一路的努力。':'这个项目已终止，制作经验已结算。'} <button class="btn-small" data-action="result">查看结算</button> <button class="btn-small" data-action="setup">开启下一款作品 ↗</button></div>`;
+    if(!s.over&&s.money<c.total)html+=`<div class="notice">资金已不足以推进下一周。${G.canRelease(s)?'当前版本可以发售。':'可尝试发行融资、缩减团队，或终止项目保留里程碑经验。'}${s.money<100?' 当前资金不足以支付缩编安置费。':''} <button class="btn-small btn-ghost" data-action="abort">终止项目并结算</button></div>`;
+    html+=`<div class="stats"><div class="stat"><div class="label">项目资金 <span>◉</span></div><div class="value gold num">${yen(s.money)}</div><div class="note">累计开发投入 ${yen(s.spent)}</div></div><div class="stat"><div class="label">预计可维持 <span>◷</span></div><div class="value ${s.money/c.total<3?'red':'teal'} num">${Math.floor(s.money/c.total)}<small>周</small></div><div class="note">按当前成本估算，无固定期限</div></div><div class="stat"><div class="label">每周开发成本 <span>↘</span></div><div class="value num">${yen(c.total)}</div><div class="note">工资 ${yen(c.wages)} / 维护 ${yen(c.overhead)} / 工具 ${yen(c.tools)}</div></div><div class="stat"><div class="label">工作室伙伴 <span>♧</span></div><div class="value num">${G.teamSize(s)}<small>/ 8 人</small></div><div class="note">士气 ${Math.round(s.morale)} · 技术债 ${Math.round(s.debt)}${s.reserve?' · 待分配 '+s.reserve+' 人':''}</div></div></div>`;
+    html+=strategyPanel(s,p);
+    html+=`<div class="tabs" role="tablist"><button role="tab" aria-selected="${tab==='work'}" class="${tab==='work'?'active':''}" data-action="tab" data-tab="work">开发现场</button><button role="tab" aria-selected="${tab==='features'}" class="${tab==='features'?'active':''}" data-action="tab" data-tab="features">功能与蓝图 <small>${s.features.length+s.cards.length}</small></button><button role="tab" aria-selected="${tab==='logs'}" class="${tab==='logs'?'active':''}" data-action="tab" data-tab="logs">开发记录</button></div>`;
+    if(tab==='logs')return html+logs();
+    if(tab==='features')return html+features();
+    html+=`<div class="workspace"><div class="stack"><section class="panel scene-panel"><div class="scene-caption"><small>一间小工作室，一群认真做游戏的人</small><p>${s.focus==='ops'?'把作品送到玩家手里，也是一门手艺。':s.pace==='crunch'?'灯还亮着，记得照顾好团队。':'窗外的时间在走，手里的世界在生长。'}</p></div>${officeSVG()}<span class="scene-foot">● 工作室${s.over?'已收工':'开发中'}</span><span class="scene-week">WEEK ${String(s.week).padStart(2,'0')}</span></section>
+      <section class="panel"><div class="panel-head"><h2>本周开发安排</h2><small>主攻 +50% · 同岗协作递减</small></div>${G.JOBS.map(j=>job(s,j,p,active)).join('')}<div class="work-note"><span>${s.reserve?`<b>${s.reserve} 人待分配</b> · 点击对应工作的 ＋ 安排岗位`:'调整岗位：先点 − 腾出人手，再点 ＋ 分配'}</span><b>${s.managed?'本周管理行动已用':'本周管理行动 0 / 1'}</b></div></section>
+      <section class="panel"><div class="panel-head"><h2>团队与资金</h2><small>管理行动每周一次</small></div><div class="panel-body"><p class="team-desc">新伙伴加入当前主攻岗位，每人每周基础工资 ¥72。缩编需要支付 ¥100 安置费，至少保留 2 人。调整岗位不消耗管理行动，但新增到岗人数本周有 20% 磨合损失。第 2 人起仅发挥 45% 产能，流水线蓝图可改善。</p><div class="team-actions"><button data-action="hire"${disabled(active&&!s.managed&&G.teamSize(s)<8&&s.money>=180)}>＋ 招募伙伴 <span class="muted">¥180</span></button><button data-action="downsize"${disabled(active&&!s.managed&&G.teamSize(s)>2&&s.money>=100)}>− 缩减规模 <span class="muted">¥100</span></button></div><div class="funding"><div><b>发行合作 · 预付款 ${yen(2200)}</b><p>${s.funding?'已签订，发行收入分成 22%':'核心开发达到 30% 后可签一次，收入分成 22%'}</p></div><button class="btn-small" data-action="funding"${disabled(active&&!s.funding&&['design','code','art'].reduce((a,k)=>a+G.progress(s,k),0)/3>=.3)}>${s.funding?'已合作':'了解合作'}</button></div></div></section></div>
+      <div class="stack">${eventPanel(s)}<section class="panel"><div class="panel-head"><h2>作品品质</h2><small>题材与功能共同决定潜力</small></div><div class="panel-body"><div class="quality-row">${[['play','可玩性','var(--gold)'],['visual','表现力','#b29bce'],['stable','稳定性','var(--teal)']].map(([key,label,color])=>`<div><span class="quality-num num" style="color:${color}">${q[key]}</span><label>${label}</label>${bar(q[key],100,color)}</div>`).join('')}</div><p class="quality-note">严重问题 <span class="${s.bugs>10?'red':'teal'}">${s.bugs}</span> 个 · ${g.name}更关注${s.genre==='story'?'可玩性与表现':s.genre==='action'?'可玩性与稳定性':'可玩性与系统深度'}。<br>完成后的策划、美术可继续打磨，收益逐渐降低。</p></div></section>
+      <section class="panel"><div class="panel-head"><h2>发售准备</h2><span class="pill dim">${G.goals(s).filter(g=>g.ok).length} / 5</span></div><div class="panel-body"><div class="goal-list">${G.goals(s).map(g=>`<div class="goal ${g.ok?'done':''}"><span>${g.ok?'✓':'·'}</span><span>${g.name}</span><span>${g.value}</span></div>`).join('')}</div><button class="btn-teal release-btn" data-action="release"${disabled(G.canRelease(s))}>${s.over?'项目已结束':G.canRelease(s)?'准备好了，发售这款游戏':'完成准备后即可发售'} <span>↗</span></button><div class="financial"><div>当前版本收入预估<strong>${yen(f.low)}—${yen(f.high)}</strong></div><div>回本销量参考<strong>${f.breakeven.toLocaleString()} 份</strong></div></div><p class="quality-note">预估已扣发行商分成；按每份净收 ¥24 计算回本销量。发售收入会有 ±15% 波动。</p></div></section>
+      <section class="panel"><div class="panel-head"><h2>技术构筑</h2><small>${s.cards.length} 张蓝图生效中</small></div><div class="panel-body"><div class="pill-list">${s.cards.map(id=>`<span class="pill gold" title="${esc(G.CARDS.find(c=>c.id===id).desc)}">◇ ${G.CARDS.find(c=>c.id===id).name}</span>`).join('')||'<span class="muted">选择开局蓝图，开始你的路线。</span>'}</div>${s.effects.length?`<p class="quality-note">短期效果：${s.effects.map(e=>esc(e.name)+' · 剩 '+e.weeks+' 周').join(' / ')}</p>`:''}</div></section></div></div>`;
+    return html;
+  }
+  function strategyPanel(s,p){const o=G.objectiveStatus(s,s.over&&s.result.released?s.result:undefined),active=!busy(),stalled=p?Object.entries(p.bottlenecks).filter(([id,n])=>n>1):[];return `<section class="strategy-panel"><div class="strategy-title"><div><span class="eyebrow">本作的制作人目标</span><h2>${o.name} <span class="pill ${o.ok?'':'dim'}">${s.over?(s.result.released?(o.ok?'已达成':'未达成'):'项目终止'):o.ok?'预计达成':!o.ready?'尚未完成':'还需取舍'}</span></h2><p>${s.objective==='acclaim'?'评分达到 82，需选对功能并打磨品质':'发售后结余至少 ¥1,200，控制投入和持续费用'} · 达成额外 +40 EXP</p></div><div class="objective-value ${o.ok?'teal':'gold'}">${s.objective==='acclaim'?o.value+' / 82':yen(o.value)}<small>${s.over&&s.result.released?'发售实际结算':s.objective==='acclaim'?'当前品质预估':'按当前品质估算，未计未来成本'}</small></div></div><div class="strategy-flow"><span>设计成果</span><b>→</b><span>程序 / 美术</span><b>→</b><span>测试覆盖</span><b>→</b><span>上架提交</span></div><div class="strategy-bottom"><p>${s.designLocked?'✓ 范围已冻结：程序 / 美术 +12%，新问题 −25%，不能增删功能。':'设计达到 60% 后可冻结范围：提高实现效率，换取放弃临时扩功能。'}</p><button class="btn-small ${s.designLocked?'btn-ghost':'btn-teal'}" data-action="freeze"${disabled(active&&!s.managed&&G.progress(s,'design')>=.6&&(!s.designLocked||s.money>=180))}>${s.designLocked?'解冻 ¥180 / 返工':'冻结设计范围'}</button></div>${stalled.length?`<p class="bottleneck-warning">预计闲置产能：${stalled.map(([id,n])=>G.JOBS.find(j=>j.id===id).short+' '+Math.round(n)).join(' / ')}。检查上游设计、可测试内容，或把人手转到别处。</p>`:''}</section>`;}
+  function job(s,j,p,active){const focus=s.focus===j.id;let content;if(j.id==='ops'){content=`<div class="ops-progress"><div><div class="progress-label"><span>资质准备</span><b>${pct(s.qualification,70)}%</b></div>${bar(s.qualification,70,j.color)}</div><div><div class="progress-label"><span>上架准备</span><b>${pct(s.listing,80)}%</b></div>${bar(s.listing,80,j.color)}</div></div><div class="ops-mode">${[['auto','依次推进'],['qualification','只做资质'],['listing','只做上架']].map(([id,n])=>`<button data-action="ops" data-mode="${id}" class="${s.opsMode===id?'selected':''}"${disabled(active)}>${n}</button>`).join('')}</div><p class="ops-note">上架最后 20% 需核心完成。本周产能 ${p?p.production.ops:Math.round(G.throughput(s,'ops'))}，筹备完成后应及时调岗。</p>`;}else{const value=p?Math.max(0,p.work[j.id]-s.work[j.id]):0;const cap=G.workLimit(s,j.id);content=`<div class="progress-label"><span>${Math.floor(s.work[j.id])} / ${s.req[j.id]} 工作量</span><b>${G.progress(s,j.id)>=1?(j.id==='test'?'覆盖完成，可继续修复':'完成，继续打磨'):`${pct(s.work[j.id],s.req[j.id])}% · 下周 +${Math.round(value)}`}</b></div>${bar(s.work[j.id],s.req[j.id],j.color)}${j.id==='test'?`<div class="ops-mode">${[['qa','功能验收'],['refactor','重构偿债']].map(([id,n])=>`<button data-action="testmode" data-mode="${id}" class="${s.testMode===id?'selected':''}"${disabled(active)}>${n}</button>`).join('')}</div><p class="ops-note">${s.testMode==='refactor'?'本周不增加覆盖率，优先降低技术债；只少量修复问题。':'覆盖率受已实现内容限制；验收修复问题，不清理技术债。'}</p>`:j.id!=='design'?`<p class="ops-note">设计成果支持最多 ${Math.floor(cap)} 工作量。${s.debt>6?' 技术债正在拖慢实现效率。':''}</p>`:''}`;}
+    const ramp=s.people[j.id]>(s.lastPeople[j.id]||0);return `<div class="job ${focus?'focus':''}" style="--job-color:${j.color}"><div class="job-line"><span class="job-symbol">${j.icon}</span><div class="job-name"><strong>${j.name}</strong><small>${ramp?'新到岗人手本周有磨合损失':s.people[j.id]>1?'同岗额外人手效率 '+Math.round(G.mods(s).crowd*100)+'%':j.id==='ops'?'独立筹备，不增加品质':j.id==='test'?'验收与偿债，需要取舍':'上游成果决定有效工作量'}</small></div><button class="focus-btn ${focus?'selected':''}" data-action="focus" data-job="${j.id}"${disabled(active)}>${focus?'✦ 主攻':'设为主攻'}</button><div class="assigner"><button aria-label="从${j.name}调出一人" data-action="assign" data-job="${j.id}" data-delta="-1"${disabled(active&&s.people[j.id]>0)}>−</button><span>${s.people[j.id]}</span><button aria-label="向${j.name}分配一人" data-action="assign" data-job="${j.id}" data-delta="1"${disabled(active&&s.reserve>0)}>＋</button></div></div>${content}</div>`;
+  }
+  function eventPanel(s){const pending=G.event(s);const last=s.logs.find(x=>x.text.includes('：')&&!x.text.startsWith('完成第')&&!x.text.startsWith('采用技术')&&!x.text.startsWith('扩展功能'));
+    return `<section class="panel event-empty"><div class="event-eyebrow"><span>✧ ${pending?'本周事件 · 等待决定':'开发中的小插曲'}</span><span>${pending?'待处理':'每周 1 次'}</span></div><h3>${pending?pending.title:s.week===1?'故事，从第一周开始。':'每一步，都有新的可能。'}</h3><p>${pending?pending.text:s.week===1?'安排好伙伴的岗位，选一个本周主攻方向。推进一周后，会发生属于这个项目的随机事件。':'灵感、意外、合作与团队日常，都会影响这款作品的诞生。事件与开发状态有关。'}</p>${pending?'<button class="btn-teal btn-small" style="margin-top:16px" data-action="prompt">处理这个事件 →</button>':last?`<div class="event-last">最近记录 · ${esc(last.text)}</div>`:''}</section>`;
+  }
+  function features(){const s=run,active=!busy();return `<p class="legend">功能与题材的契合会影响收入与品质上限。越晚加入，返工越多；每项功能持续增加 ¥22/周维护。冻结范围后不能增删。</p><section class="panel">${G.FEATURES.map(f=>{const owned=s.features.includes(f.id),p=G.featurePreview(s,f.id),req=owned?s.featureWork[f.id]:p.req;return `<div class="feature-row"><div><h3>${owned?'✓ ':''}${f.name} <span class="pill ${p.fit>=1.1?'gold':'dim'}">${p.fit>=1.1?'题材契合':p.fit<.9?'方向偏离':'通用功能'}</span></h3><p>${f.desc} · 玩法潜力 +${Math.round(f.play*p.fit)} / 表现潜力 +${Math.round(f.visual*p.fit)}</p><small>${Object.entries(req).map(([k,v])=>G.JOBS.find(j=>j.id===k).short+' +'+v).join(' · ')}<br>技术债 +${p.debt} · 维护 +22/周${!owned?' · 当前返工 +'+p.rework+'%':''}</small></div><button class="${owned?'btn-ghost':'btn-teal'}" data-action="${owned?'cut':'feature'}" data-id="${f.id}"${disabled(active&&!s.managed&&!s.designLocked&&(owned||s.money>=f.cost))}>${owned?'删减功能':'+ 加入 '+yen(f.cost)}</button></div>`;}).join('')}</section><div class="section-heading"><h2>本项目的技术路线</h2><small>蓝图可以放弃，收益与代价一并保留</small></div><div class="tool-grid">${s.cards.map(id=>card(G.CARDS.find(c=>c.id===id),false,true)).join('')||'<p class="legend">轻量开发 · 没有采用蓝图</p>'}</div>`;}
+
+  function logs(){return `<section class="panel"><div class="panel-head"><h2>开发日志</h2><small>保留最近 70 条</small></div><div class="log-list">${run.logs.map(l=>`<div class="log-row ${l.kind}"><time>第 ${l.week} 周</time><span>${esc(l.text)}</span></div>`).join('')}</div></section><div class="section-heading"><h2>每周收支</h2><small>事件中的支出另计入累计投入</small></div><section class="panel table-wrap"><table class="ledger"><thead><tr><th>开发周</th><th>基础支出</th><th>结余资金</th><th>当时评分</th></tr></thead><tbody>${run.history.slice().reverse().map(h=>`<tr><td>第 ${h.week} 周</td><td>${yen(h.cost)}</td><td>${yen(h.money)}</td><td>${Math.round(h.score)}</td></tr>`).join('')||'<tr><td colspan="4">推进第一周后，这里会记录项目收支。</td></tr>'}</tbody></table></section>`;}
+  function card(c,locked,owned){return `<article class="tool-card ${locked?'locked':''}"><div class="tag">◇ ${c.tag}蓝图</div><h3>${c.name}</h3><p>${c.desc}</p><div class="card-bottom"><span>${locked?'制作经验达到 '+c.unlock+' 解锁':'已加入随机蓝图池'}</span><span class="${owned?'teal':'muted'}">${owned?'本局已采用 ✓':locked?'未解锁':'已开放'}</span></div></article>`;}
+  function blueprints(){return title('THE TOOLBOX','每一张蓝图，一种开发思路。','开局与开发里程碑提供三选一。随机组合，形成你的制作方法。',`<span class="pill gold">${G.CARDS.filter(c=>c.unlock<=meta.exp).length} / ${G.CARDS.length} 已开放</span>`)+`<div class="tool-grid">${G.CARDS.map(c=>card(c,c.unlock>meta.exp,run&&run.cards.includes(c.id))).join('')}</div>`;}
+  function career(){const released=meta.history.filter(h=>h.released),best=Math.max(0,...released.map(h=>h.score));return title('THE PRODUCER JOURNAL','作品会结束，经验会留下。','每一次尝试，都让下一款游戏多一点可能。')+`<div class="career-summary"><div class="stat"><span class="label">累计制作经验</span><div class="value gold">${meta.exp}</div><span class="note">每局仅结算一次</span></div><div class="stat"><span class="label">已发售作品</span><div class="value teal">${released.length}<small>款</small></div><span class="note">共经历 ${meta.history.length} 个项目</span></div><div class="stat"><span class="label">最高作品评分</span><div class="value">${best||'—'}</div><span class="note">开局加成额度 ${G.capacity(meta)} 点</span></div></div><section class="panel"><div class="panel-head"><h2>下一局的准备</h2><small>累计解锁，不扣除经验</small></div><div class="panel-body"><div class="unlock-list">${G.BUFFS.map(b=>`<div class="unlock ${b.unlock>meta.exp?'locked':''}"><span>${b.unlock>meta.exp?b.unlock+' 经验':'已解锁'}</span><strong>${b.name}</strong><p>${b.desc} · 携带 ${b.cost} 点</p></div>`).join('')}<div class="unlock ${meta.exp<260?'locked':''}"><span>${meta.exp<260?'260 经验':'已解锁'}</span><strong>额外携带额度</strong><p>开局加成额度由 2 点提升到 3 点</p></div></div></div></section><div class="section-heading"><h2>你的作品履历</h2><small>名字、成绩与这一路的选择</small></div>${meta.history.length?meta.history.map(h=>`<article class="career-record"><div><h3>${esc(h.name)} <span class="pill ${h.released?'':'dim'}">${h.released?'已发售':'已终止'}</span></h3><p>${G.GENRES.find(g=>g.id===h.genre)?.name||'独立游戏'} · 开发 ${h.weeks} 周 · 成本 ${yen(h.cost)} · ${h.released?'项目结余 '+yen(h.profit):'保留里程碑经验'}</p><p>${h.cards.map(id=>G.CARDS.find(c=>c.id===id)?.name||'').join(' / ')}</p></div><div class="record-score">${h.released?h.score:'—'}<small>制作经验 +${h.exp}</small></div></article>`).join(''):`<section class="panel empty"><div class="empty-icon">↗</div><h2>第一份作品，还在路上。</h2><p>发售作品或终止一个已达成里程碑的项目后，履历会记录在这里。</p><button class="btn-primary" data-action="${run&&!run.over?'continue':'setup'}">${run&&!run.over?'回到开发现场':'开始第一款游戏'}</button></section>`}`;}
+  function render(){const labels={home:'工作室大厅',game:'开发现场',blueprints:'技术蓝图',career:'制作人履历'};document.querySelectorAll('.sidebar nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$('location').textContent=labels[view];$('run-dot').style.display=run&&!run.over?'':'none';const next=[80,160,260,400].find(n=>n>meta.exp);$('meta-mini').innerHTML=`<div class="side-growth"><small class="muted">制作人经验</small><div style="margin-top:8px"><strong class="gold">${meta.exp}</strong><small class="muted">EXP</small></div>${bar(meta.exp,next||meta.exp||1)}<p style="margin-top:9px">${next?'距离下一解锁还差 '+(next-meta.exp)+' 经验':'全部成长内容已开放'}</p></div>`;
+    $('app').innerHTML=({home,game,blueprints,career}[view])();renderFooter();save();if(view==='game'&&!hiddenPrompt&&run&&!run.over){if(run.pendingEvent)showEvent();else if(run.pendingCards)showCards();}}
+  function renderFooter(){if(view!=='game'||!run||run.over){$('footer').innerHTML='';return;}const s=run,c=G.cost(s),pending=s.pendingEvent||s.pendingCards;$('footer').innerHTML=`<footer class="actionbar"><div><p><strong>第 ${s.week} 周 · ${G.JOBS.find(j=>j.id===s.focus).name}</strong><span class="break-mobile">　${s.reserve?s.reserve+' 人尚未分配岗位':'岗位调整与主攻切换不消耗时间'}</span></p><p class="${s.money<c.total?'danger-text':''}" style="margin-top:4px">${pending?'完成当前选择后才能继续开发':s.money<c.total?'预算不足，请处理资金或结束项目':'推进后支付 '+yen(c.total)+'，并触发一次随机事件'}</p></div><div class="action-controls"><div class="pace" aria-label="开发节奏">${[['rest','休整'],['normal','正常'],['crunch','赶工']].map(([id,n])=>`<button data-action="pace" data-pace="${id}" title="${id==='rest'?'效率 70%，士气 +12':id==='crunch'?'效率 135%，士气 −10，增加问题与技术债':'标准效率，士气 +1'}" class="${s.pace===id?'selected':''}"${disabled(!busy())}>${n}</button>`).join('')}</div><button data-action="${pending?'prompt':'advance'}" class="btn-primary next-week"${disabled(pending||s.money>=c.total)}>${pending?'完成当前选择':'推进一周'}　→</button></div></footer>`;}
+  const dialog=$('dialog');let dialogKind='';
+  function showDialog(html,kind){dialogKind=kind;dialog.innerHTML=`<div class="dialog-body">${html}</div>`;if(!dialog.open)dialog.showModal();}
+  function close(){dialog.close();dialogKind='';}
+  function dialogHeader(eye,name,closable=true){return `<div class="dialog-header"><div><div class="eyebrow">${eye}</div><h2 id="dialog-title">${name}</h2></div>${closable?'<button class="close-btn" data-action="close" aria-label="关闭窗口">×</button>':''}</div>`;}
+  function setup(genreId){setupGenre=genreId||setupGenre;const g=G.GENRES.find(g=>g.id===setupGenre);showDialog(dialogHeader('A NEW BEGINNING','立项，开始新的作品。')+`<p class="dialog-desc">四位伙伴，${yen(7600)} 启动资金。没有固定开发期限，每周的支出由你控制。</p><form id="setup-form"><div class="setup-genres">${G.GENRES.map(x=>`<button type="button" class="${x.id===setupGenre?'selected':''}" data-action="setup-genre" data-genre="${x.id}">${x.icon} ${x.name}</button>`).join('')}</div><label class="field"><span>作品名称</span><input name="name" maxlength="18" required value="${esc(g.title)}" autocomplete="off"></label><label class="field"><span>这款作品的目标 · 达成额外 +40 EXP</span><select name="objective"><option value="profit">商业回报：项目结余至少 ¥1,200</option><option value="acclaim">口碑佳作：作品评分至少 82</option></select></label><div class="radio-line"><label><input type="radio" name="difficulty" value="normal" checked> 标准开发</label><label><input type="radio" name="difficulty" value="hard"> 困难 · 更少资金 / 工资 +15%</label></div><div class="progress-label"><span>开局加成 · 最多 ${G.capacity(meta)} 点</span><b>累计 ${meta.exp} EXP</b></div><div class="buff-options">${G.BUFFS.map((b,i)=>`<label class="buff-option ${b.unlock>meta.exp?'locked':''}"><input type="checkbox" name="buff" value="${b.id}" ${i<2?'checked':''} ${b.unlock>meta.exp?'disabled':''}><span><strong>${b.name} · ${b.cost} 点</strong><small>${b.desc}${b.unlock>meta.exp?' / '+b.unlock+' 经验解锁':''}</small></span></label>`).join('')}</div><details style="margin-top:17px;font-size:10px;color:var(--muted)"><summary>固定种子（可选，用于重玩同一组随机选择）</summary><label class="field" style="margin-top:10px;margin-bottom:0"><input name="seed" type="number" min="1" max="4294967295" placeholder="留空则随机生成"></label></details>${run&&!run.over?'<p class="warning-note">开始新项目会结束当前项目，并结算已有里程碑经验。请先确认当前进度。</p>':''}<div id="setup-error" class="warning-note" role="alert"></div><div class="dialog-actions"><button type="button" class="btn-ghost" data-action="close">再想想</button><button class="btn-primary" type="submit">开始本次开发 →</button></div></form>`,'setup');}
+  function showCards(){hiddenPrompt=false;showDialog(dialogHeader('CHOOSE YOUR APPROACH',run.cards.length?'新的阶段，新的可能。':'选择你的第一张技术蓝图。')+`<p class="dialog-desc">选中的蓝图立即生效，持续整个项目。每张蓝图都有收益与代价，可按预算与目标决定是否采用。</p><div class="blueprint-choices">${run.pendingCards.map(id=>{const c=G.CARDS.find(x=>x.id===id);return `<button class="blueprint-choice" data-action="card" data-id="${id}"><span class="card-symbol">◇</span><strong>${c.name}</strong><small>${c.desc}</small><span class="pick">采用这张蓝图 ↗</span></button>`;}).join('')}</div><div class="dialog-actions"><button class="btn-ghost" data-action="card" data-id="skip">放弃本轮，保持轻量</button></div><p class="quality-note">关闭可先检查预算，再从底栏返回选择。</p>`,'cards');}
+  function showEvent(){const e=G.event(run);hiddenPrompt=false;showDialog(dialogHeader('WEEK '+String(run.week-1).padStart(2,'0')+' · '+e.tag,e.title)+`<div class="event-image" aria-hidden="true">${{inspiration:'✦',palette:'◈',coffee:'☕',backup:'▣',forms:'▤',feedback:'✉',bug:'⌘',showcase:'✧',scope:'◇',tired:'☾',break:'♧',discount:'◉',compat:'⌘',debt:'⌘'}[e.id]||'✦'}</div><p class="dialog-desc">${e.text}</p><div class="event-options">${e.choices.map((c,i)=>`<button class="event-option" data-action="event" data-index="${i}"${disabled(G.eventChoiceStatus(run,i).ok)}><div><strong>${c.label}</strong><small>${c.hint}${!G.eventChoiceStatus(run,i).ok?' · '+G.eventChoiceStatus(run,i).reason:''}</small></div><span>↗</span></button>`).join('')}</div><p class="quality-note">你的决定会自动保存。同一开发周只发生一次事件。</p>`,'event');}
+  function result(){const r=run.result;showDialog(dialogHeader('THE END OF THIS CHAPTER',r.released?'「'+esc(r.name)+'」发售了。':'给下一个点子，留一点空间。')+`<div class="result-grade">${r.released?r.score:'—'}<small>${r.released?'/ 100':'项目已终止'}</small></div><div class="result-title">${r.released?(r.score>=80?'值得被记住的佳作':r.score>=65?'完成度出色的独立作品':r.score>=50?'一次认真而完整的尝试':'第一步，已经迈出去了。'):'这段制作经历，依然有价值。'}</div><div class="result-grid"><div><label>开发时间</label><strong>${r.weeks} 周</strong></div><div><label>累计投入</label><strong>${yen(r.cost)}</strong></div><div><label>发售收入</label><strong>${yen(r.revenue)}</strong></div><div><label>项目结余（含融资）</label><strong class="${r.profit>=0?'teal':'red'}">${yen(r.profit)}</strong></div><div><label>本次制作经验</label><strong class="gold">+${r.exp} EXP</strong></div><div><label>累计制作经验</label><strong>${meta.exp} EXP</strong></div></div><p class="result-note">${r.released?(r.objectiveOK?'✓ 制作人目标达成，额外 +40 EXP。':'本作未达成制作人目标，仍保留基础经验。'):''}<br>团队与资金每局重置，经验与解锁保留。</p><div class="dialog-actions"><button data-action="career" class="btn-ghost">查看作品履历</button><button data-action="setup" class="btn-primary">下一款作品 →</button></div>`,'result');}
+  function release(){if(!G.canRelease(run))return;const f=G.forecast(run);showDialog(dialogHeader('READY TO SHIP','让玩家，走进你的世界。')+`<p class="dialog-desc">五项发售条件已经全部满足。你可以现在发售，也可以继续承担每周成本，进一步打磨作品。</p><div class="result-grid"><div><label>当前评分预估</label><strong>${Math.round(f.score)}</strong></div><div><label>累计开发成本</label><strong>${yen(run.spent)}</strong></div><div><label>中位收入预估</label><strong class="gold">${yen(f.revenue)}</strong></div></div><p class="quality-note">发售收入在预估中位数上下 15% 内波动，已计入发行商分成。发售后，本项目结束并结算经验。<br>本作目标：${G.objectiveStatus(run).name}，当前${G.objectiveStatus(run).ok?'预计达成':'尚未达成'}；实际收入决定商业目标。</p><div class="dialog-actions"><button data-action="close" class="btn-ghost">继续打磨</button><button data-action="confirm-release" class="btn-primary">正式发售 ↗</button></div>`,'release');}
+  function help(){showDialog(dialogHeader('STRATEGY HANDBOOK','决定做什么，也决定放弃什么。')+`<div class="manual"><p><strong>先确定目标：</strong>商业回报要求项目结余至少 ¥1,200；口碑佳作要求评分 82。可以未达成目标就发售，但拿不到额外 40 EXP。</p><p><strong>开发存在依赖：</strong>设计决定程序与美术可实现的工作量；测试只能覆盖已经实现的内容。面板会预告闲置产能，盲目堆人会浪费工资。</p><p><strong>协作不是线性叠加：</strong>同岗第一人发挥 100%，额外人手各为 45%；主攻 +50%。新到岗人手有一周 20% 磨合损失。协作流水线可改变这条规则。</p><p><strong>冻结设计：</strong>设计达 60% 后可冻结范围，程序 / 美术 +12%，新问题 −25%。此时不能增删功能，事件也不能扩范围。解冻花 ¥180，设计 +8、技术债 +4；冻结和解冻都占本周管理行动。</p><p><strong>验收还是重构：</strong>功能验收推进测试覆盖并修问题；重构不推进覆盖，优先偿还技术债。技术债会增加维护并拖慢实现，过度赶工需要补偿。</p><p><strong>蓝图有代价：</strong>工具可能增加每周支出、降低另一岗位效率或抽取收入分成。可以放弃本轮，不必每张都收。</p><p><strong>功能有方向：</strong>分支叙事契合叙事冒险，战斗契合动作，动态世界契合经营。越晚加入功能，返工越多；每项另有持续维护费。</p><p><strong>开发节奏：</strong>正常士气 +1；休整效率 70%、士气 +12；赶工效率 135%、士气 −10，并增加技术债与问题。士气也会影响效率。</p><p><strong>发售与成长：</strong>五项发售条件满足后可以随时发售，没有固定回合上限。经验、履历与旧版共用，在途项目使用新版独立存档。</p></div><div class="dialog-actions"><button data-action="close" class="btn-primary">开始做取舍</button></div>`,'help');}
+
+  function finish(released){const r=G.finish(run,released);if(!r){toast('请先完成当前选择，或检查发售准备。');return;}meta=G.settle(meta,run);close();save();render();result();}
+  document.addEventListener('submit',e=>{if(e.target.id!=='setup-form')return;e.preventDefault();const fd=new FormData(e.target),buffs=fd.getAll('buff');let next;try{next=G.newRun({genre:setupGenre,name:fd.get('name'),hard:fd.get('difficulty')==='hard',seed:fd.get('seed'),objective:fd.get('objective'),buffs},meta);}catch(err){$('setup-error').textContent=err.message;return;}if(run&&!run.over){if(run.pendingCards)run.pendingCards=null;if(run.pendingEvent)run.pendingEvent=null;G.finish(run,false);meta=G.settle(meta,run);}run=next;view='game';tab='work';hiddenPrompt=false;close();render();window.scrollTo({top:0,behavior:'smooth'});});
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;e.preventDefault();const a=b.dataset.action;
+    if(a==='close'){hiddenPrompt=true;close();return;}
+    if(a==='audio'){const st=audio.getState();audio.setSettings({muted:!(st.settings?.muted??st.muted)});audio.unlock();return;}
+    if(a==='help'){help();return;}
+    if(a==='setup'){setup(b.dataset.genre);return;}
+    if(a==='setup-genre'){const form=$('setup-form'),name=form?.elements.name.value,normal=form?.elements.difficulty.value,objective=form?.elements.objective.value,buffs=form?[...form.querySelectorAll('[name=buff]:checked')].map(el=>el.value):[],seed=form?.elements.seed.value;const old=G.GENRES.find(g=>g.id===setupGenre).title;setup(b.dataset.genre);if(name&&name!==old)$('setup-form').elements.name.value=name;if(normal)$('setup-form').elements.difficulty.value=normal;if(objective)$('setup-form').elements.objective.value=objective;if(seed)$('setup-form').elements.seed.value=seed;$('setup-form').querySelectorAll('[name=buff]').forEach(el=>el.checked=buffs.includes(el.value));return;}
+    if(['home','nav','continue','career'].includes(a)){view=a==='nav'?b.dataset.view:a==='continue'?'game':a==='career'?'career':'home';close();hiddenPrompt=false;render();window.scrollTo({top:0,behavior:'smooth'});return;}
+    if(a==='result'){result();return;}
+    if(a==='tab'){tab=b.dataset.tab;render();return;}
+    if(!run||run.over)return;
+    if(a==='prompt'){if(run.pendingEvent)showEvent();else if(run.pendingCards)showCards();return;}
+    if(a==='card'){if(G.chooseCard(run,b.dataset.id)){close();hiddenPrompt=false;render();}return;}
+    if(a==='event'){if(G.resolveEvent(run,Number(b.dataset.index))){close();hiddenPrompt=false;render();}return;}
+    if(a==='release'){release();return;}
+    if(a==='confirm-release'){finish(true);return;}
+    if(a==='confirm-abort'){finish(false);return;}
+    if(a==='abort'){showDialog(dialogHeader('PAUSE THIS PROJECT','结束这个项目？')+`<p class="dialog-desc">当前作品不会发售。已完成的 ${run.milestones.length} 个里程碑可保留 ${Math.min(30,run.milestones.length*8)} 点经验，已投入的资金和本局进度不会带到下一作。</p><div class="dialog-actions"><button data-action="close" class="btn-ghost">继续开发</button><button data-action="confirm-abort">结束并结算</button></div>`,'abort');return;}
+    if(busy()){toast('请先完成当前事件或蓝图选择。');return;}
+    let ok=true;
+    if(a==='focus'){run.focus=b.dataset.job;}
+    if(a==='ops'){run.opsMode=b.dataset.mode;}
+    if(a==='testmode'){run.testMode=b.dataset.mode;}
+    if(a==='freeze')ok=G.freeze(run);
+    if(a==='pace'){run.pace=b.dataset.pace;}
+    if(a==='assign')ok=G.assign(run,b.dataset.job,Number(b.dataset.delta));
+    if(a==='hire')ok=G.hire(run);
+    if(a==='downsize')ok=G.downsize(run);
+    if(a==='feature')ok=G.feature(run,b.dataset.id);
+    if(a==='cut')ok=G.cutFeature(run,b.dataset.id);
+    if(a==='funding'){showDialog(dialogHeader('PUBLISHING PARTNERSHIP','给开发，多一点余地。')+`<p class="dialog-desc">发行商愿意预付 ¥2,200，换取本作发售收入的 22%。这笔资金不增加品质，也不降低开发工作量，每个项目只能签一次。</p><p class="quality-note">发售收入预估将自动按扣除分成后的数值显示。</p><div class="dialog-actions"><button data-action="close" class="btn-ghost">先不合作</button><button class="btn-primary" data-action="confirm-funding">接受合作，获得 ¥2,200</button></div>`,'funding');return;}
+    if(a==='confirm-funding'){ok=G.funding(run);close();}
+    if(a==='advance'){const r=G.advance(run);ok=r.ok;if(!ok)toast(r.reason);hiddenPrompt=false;}
+    if(!ok&&a!=='advance')toast('当前条件不满足，操作未执行。');render();
+  });
+  dialog.addEventListener('cancel',()=>{hiddenPrompt=true;dialogKind='';});
+  document.addEventListener('keydown',e=>{if(e.key===' '&&view==='game'&&!dialog.open&&!['INPUT','SELECT','TEXTAREA','BUTTON'].includes(document.activeElement.tagName)){e.preventDefault();document.querySelector('.next-week')?.click();}});
+  // Terminating a project is always visible from its history tab, including an exhausted budget.
+  const originalLogs=logs;logs=function(){return originalLogs()+(!run.over?'<div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="btn-ghost btn-small" data-action="abort">终止当前项目并结算</button></div>':'');};
+  if(run&&run.over){meta=G.settle(meta,run);}render();
+})();
+
+</script>
+</body>
+</html>

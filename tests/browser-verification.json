@@ -1,0 +1,36 @@
+{
+  "version": "0.2.0",
+  "date": "2026-11-04",
+  "surface": "localhost / in-app Chromium browser",
+  "actualRun": {
+    "genre": "story",
+    "objective": "profit",
+    "weeks": 13,
+    "score": 74,
+    "cost": 4399,
+    "revenue": 6810,
+    "profitIncludingEventIncome": 2651,
+    "experience": 161,
+    "objectiveAchieved": true
+  },
+  "verified": [
+    "objective selection survives genre switch",
+    "scope freeze blocks all feature buttons",
+    "blueprint decline",
+    "QA versus refactor mode descriptions",
+    "event and milestone modal progression",
+    "full release and exact actual objective result",
+    "automatic save restored after tab recovery and reload",
+    "320px and 390px viewports without document horizontal overflow",
+    "no browser console warnings or errors"
+  ],
+  "offline": {
+    "inlineScripts": 3,
+    "syntaxChecked": true,
+    "externalRuntimeAssets": false
+  },
+  "limitations": [
+    "Single-file package syntax and inlining checked; direct file navigation not exercised in browser.",
+    "Simulated strategies are examples, not optimal solutions or player win rates."
+  ]
+}
