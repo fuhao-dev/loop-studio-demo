@@ -13,7 +13,7 @@ const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),scripts=[...html
 assert.equal(scripts.length,4,'offline package includes the people module');
 scripts.forEach((m,i)=>new vm.Script(m[1],{filename:'offline-script-'+i}));
 assert.ok(!/<script\b[^>]*\bsrc=|<link\b[^>]*rel=["']stylesheet/i.test(html),'offline scripts and styles embedded');
-assert.ok(html.includes('v0.8.1 DEMO')&&html.includes('loop_studio_career_v8'),'offline build current version and isolated save key');
+assert.ok(html.includes('v0.9.0 DEMO')&&html.includes('loop_studio_career_v9'),'offline build current version and isolated save key');
 for(const f of ['engine.js','audio.js','characters-ui.js','app.js'])new vm.Script(fs.readFileSync(path.join(root,'dist',f),'utf8'),{filename:f});
 console.log('UI checks passed: individual ramp hints, unavailable role, escaped names, four inline scripts, current offline build.');
 
