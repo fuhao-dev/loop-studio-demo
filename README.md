@@ -2,6 +2,10 @@
 
 游戏开发题材的回合制肉鸽经营 Demo。每周支付开发成本、安排人物推进完成度、处理一次随机事件。没有固定回合上限，没有任务系统。项目可以暂停、恢复和互相切换，同一时间只推进一个项目。双击根目录 `index.html` 即可离线试玩，无需安装或联网，声音默认关闭。
 
+**[▶ 在线试玩：天才程序员带我做游戏](https://fuhao-dev.github.io/loop-studio-demo/)**
+
+试玩页由 GitHub Pages 从 `main` 分支根目录发布，支持电脑与手机浏览器；进度保存在当前浏览器本机。
+
 ![紧凑进度卡](docs/compact-progress-preview.png)
 
 ## v0.9.4：进度卡、买量收支与当前版本事件
@@ -176,6 +180,18 @@ npm test
 ```
 
 修改 `dist/` 后重新生成根目录离线单文件。纯规则位于 `dist/engine.js`，人物卡在 `characters-ui.js`，交互和单快照保存位于 `app.js`。
+
+### TapTap H5 包
+
+沿用周目小镇的上传结构：ZIP 内只有一个英文游戏文件夹 `genius-programmer/`，入口为 `genius-programmer/index.html`；只包含运行单文件和 `LICENSE`，不混入源码目录、截图、测试或 Git 信息。脚本校验包体不超过 300MB、安全路径、唯一顶层目录，并解压逐文件核对 SHA-256。版本与来源提交、大小及哈希写在 ZIP 外的 `manifest.json`。
+
+在仓库根目录执行（需要 Node.js 18+、PowerShell 7+）：
+
+```powershell
+pwsh -File scripts/package-taptap-h5.ps1
+```
+
+产物默认写到仓库同级的 `taptap-h5-v0.9.4/`。输出目录已有同版产物时会停止，避免覆盖；可通过 `-OutputRoot` 指定新目录。上传 ZIP 时选择 **横屏 / landscape**。包内使用本机存档，不包含 TapTap 登录、云存档、广告或支付 SDK；游戏中的广告变现与买量均为经营模拟。
 
 自动验证通过 39 组通用规则、16 组完成度、18 组生涯、15 组规模检查、23 局合法操作模拟、160 次随机结果及 120 次预览区间验证。包括各规模立项资金差 ¥1 时拒绝且不改生涯、刚好达标可启动且不预扣、两种模式同薪与无主攻产出；另通过 14 组暂停、恢复、切换、共享收支与存档验证。报告见 `tests/verification.json` 与 `tests/scale-verification.json`。长流程规模模拟显式提供 30,000 × 规模倍率的测试资金，不代表新生涯余额或胜率。
 
