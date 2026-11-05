@@ -1,36 +1,33 @@
 {
-  "version": "0.2.0",
-  "date": "2026-11-04",
+  "version": "0.4.0",
+  "date": "2026-11-05",
   "surface": "localhost / in-app Chromium browser",
-  "actualRun": {
-    "genre": "story",
-    "objective": "profit",
-    "weeks": 13,
-    "score": 74,
-    "cost": 4399,
-    "revenue": 6810,
-    "profitIncludingEventIncome": 2651,
-    "experience": 161,
-    "objectiveAchieved": true
-  },
-  "verified": [
-    "objective selection survives genre switch",
-    "scope freeze blocks all feature buttons",
-    "blueprint decline",
-    "QA versus refactor mode descriptions",
-    "event and milestone modal progression",
-    "full release and exact actual objective result",
-    "automatic save restored after tab recovery and reload",
-    "320px and 390px viewports without document horizontal overflow",
-    "no browser console warnings or errors"
+  "runs": [
+    {"seed":44001,"template":"designer","genre":"story","route":"full","initialExperience":443,"weeks":20,"rating":"A+","ratings":{"content":"A-","framework":"S-","commerce":"A+","promotion":"A"},"crew":["小周","阿策","林绘"],"cost":6128,"adSpend":300,"adRevenue":538,"organicRevenue":4695,"profit":1305,"exp":161,"experienceAfterReload":604},
+    {"seed":44001,"template":"designer","genre":"story","route":"ad-risk","initialExperience":604,"weeks":5,"rating":"D+","ratings":{"content":"D-","framework":"D+","commerce":"D+","promotion":"C+"},"crew":["小周","阿策"],"cost":1790,"adSpend":500,"adRevenue":200,"organicRevenue":910,"profit":-680,"exp":47,"experienceAfterReload":651,"publicityProgress":0}
   ],
-  "offline": {
-    "inlineScripts": 3,
-    "syntaxChecked": true,
-    "externalRuntimeAssets": false
-  },
+  "verified": [
+    "five named categories and thirteen independent progress items",
+    "four initially unknown ratings; listing status explicitly shown",
+    "thirteen real work choices grouped in the individual assignment selector",
+    "unsupported professional skill disables matching work choices",
+    "no ad cost with budget selected but no assigned worker",
+    "weekly ad spending and future return shown separately",
+    "progress-gated named recruitment",
+    "two complete legal UI playthroughs through events and blueprint decisions",
+    "observed unknown, three-question, one-question and exact ratings during full route",
+    "full publicity reveals current true grade without forced release",
+    "review requires completed materials; release button enables only after both reach 100%",
+    "zero publicity route can release; true grade disclosed only at release",
+    "D+ ad return lower than spending",
+    "settlement has natural revenue, ad return and complete named cast",
+    "reload preserves total experience without duplicate rewards and earlier v0.2/v0.3 records",
+    "390px and 320px document widths have no horizontal overflow",
+    "320px publicity, budget and rating fields visually inspected",
+    "no console warnings or errors"
+  ],
   "limitations": [
-    "Single-file package syntax and inlining checked; direct file navigation not exercised in browser.",
-    "Simulated strategies are examples, not optimal solutions or player win rates."
+    "No long-term balance or player win-rate claim.",
+    "Offline package shares the tested engine and UI; direct file navigation is not exercised by browser automation."
   ]
 }
