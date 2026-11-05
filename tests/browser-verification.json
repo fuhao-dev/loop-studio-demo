@@ -69,5 +69,35 @@
     "Full release simulations, scale-invariant production and revenue are covered by rule tests.",
     "Full-page screenshot timed out; saved the normal desktop viewport instead.",
     "Extension-origin warnings excluded from application checks."
-  ]
+  ],
+  "uiUpdate": {
+    "version": "0.7.1",
+    "date": "2026-11-05",
+    "scope": "Morale and technical-debt contextual explanations; no game-rule changes.",
+    "observed": {
+      "morale": 90,
+      "productionFactorPercent": 96.6,
+      "debt": 7,
+      "codeProductionFactorPercent": 93,
+      "extraWeeklyBaseMaintenance": 14,
+      "newBugMultiplier": 1.28,
+      "frameworkPenalty": 1.26
+    },
+    "verified": [
+      "Question buttons appear after the two status numbers.",
+      "Mouse hover opens preview; moving into the explanation body keeps it open.",
+      "Moving away closes the unpinned preview.",
+      "Clicking pins the explanation while moving the pointer elsewhere.",
+      "Outside click, close button and Escape dismiss the explanation.",
+      "Tab focus opens preview; Enter pins it; closing restores focus to its trigger.",
+      "Adding the combat feature raises debt from 0 to 7; reopening the explanation shows recalculated effects.",
+      "Opening and closing explanations keeps week and funds unchanged.",
+      "320px click interaction shows a scrollable explanation within viewport height and no horizontal document overflow.",
+      "Default viewport restored, owned browser tab closed and local preview server stopped."
+    ],
+    "limits": [
+      "Narrow-screen behavior tested through browser clicks, not physical touchscreen hardware.",
+      "Existing UI checks and targeted browser checks were run; unchanged engine simulations were not rerun."
+    ]
+  }
 }
