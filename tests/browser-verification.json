@@ -1,26 +1,32 @@
 {
-  "version": "0.5.0",
+  "version": "0.6.0",
   "date": "2026-11-05",
   "surface": "localhost / Microsoft Edge via computer-use",
-  "runs": [
-    {"seed":55001,"template":"designer","genre":"story","mode":"real","initialExperience":0,"weeks":9,"rating":"D+","ratings":{"content":"D","framework":"D","commerce":"C+","promotion":"C"},"crew":["小周","阿策"],"cost":2656,"adSpend":0,"organicRevenue":1067,"profit":-1589,"exp":76,"experienceAfterSettlement":76,"observedPaymentCompletion":[58.7,70,85,35.8,84.9],"observedPaymentSoftCap":[70,85,100],"observedNegativePercentagePoints":-49.2,"materials":100,"review":100},
-    {"seed":55002,"template":"designer","genre":"story","mode":"ideal","initialExperience":76,"weeks":8,"rating":"D","ratings":{"content":"C","framework":"D-","commerce":"D-","promotion":"D-"},"crew":["你","阿策"],"cost":2106,"adSpend":0,"organicRevenue":698,"profit":-1288,"exp":46,"experienceAfterSettlement":122,"observedGameplayCompletion":[48.9,70,70,70,70,70,70,70],"gameplaySoftCap":70,"materials":100,"review":100}
-  ],
+  "campaign": {
+    "start": {"wallet":7600,"heroName":"小周","skills":{"design":100,"code":100,"art":100,"test":100,"ops":100},"team":["hero","ace"]},
+    "level1": {"seed":44001,"mode":"ideal","weeks":16,"released":true,"rating":"A-","cost":5798,"funding":2200,"organicRevenue":3726,"adSpend":400,"adRevenue":515,"profit":643,"exp":113,"walletBeforeRelease":4002,"walletAfterRelease":8243,"team":["hero","ace","lin"],"knownPartners":["lin","shen","tang","wen"]},
+    "betweenLevels": {"trained":"code","skillBefore":100,"skillAfter":105,"trainingCostExp":40,"expRemaining":73,"recruited":"shen","recruitCost":180,"wallet":8063,"team":["hero","ace","lin","shen"],"verifiedAfterReload":true},
+    "level2": {"seed":66002,"mode":"real","initialWallet":8063,"initialTeam":["hero","ace","lin","shen"],"initialCode":105,"allThirteenCompletionReset":true,"softCapsResetTo70":true,"weeklyWages":405,"weeklyCost":495,"weeks":1,"released":false,"exp":0,"walletAfterAbort":7568},
+    "afterReload": {"nextStage":3,"wallet":7568,"code":105,"exp":73,"team":["hero","ace","lin","shen"]}
+  },
   "verified": [
-    "both renamed modes and their rules visible in setup",
-    "percentage completion, per-item soft limit and 100-percent hard limit visible",
-    "ideal work stops at 70 percent and stays there without an unlock",
-    "event unlocks raise the soft cap without directly changing completion",
-    "real slowdown, coupled-stage warning, and over-70 risk range visible",
-    "over-70 negative completion observed and next-week actual delta displayed",
-    "listing jobs reach 100 percent in both modes without soft-cap unlocks",
-    "release remains disabled until both listing items are complete",
-    "both completed projects reveal actual ratings and settle experience",
-    "reload restores ideal completion, assignment and limits",
-    "reload after settlement does not re-grant experience",
-    "320px and 390px layouts have no horizontal overflow",
-    "no localhost application console errors; extension-origin warnings excluded",
-    "temporary viewport reset, owned test tab closed, preview server stopped"
+    "new career schema; no reads or migration of old saves",
+    "no blueprint navigation, opening blueprint selection, character templates or starting bonus cards",
+    "project opens directly into playable workbench",
+    "weekly spending reflected immediately in shared career balance",
+    "in-project recruit becomes global member",
+    "release revenue enters wallet exactly once",
+    "training consumes experience and keeps funds unchanged",
+    "between-level recruiting spends 180 and persists",
+    "reload retains trained ability, global team and wallet",
+    "next level inherits balance and all four characters; wages include entire team",
+    "project completion, caps, bugs and morale reset without resetting career",
+    "training blocked during active project",
+    "abort keeps remaining funds, trained attributes and all partners",
+    "zero-experience abort does not settle twice after reload",
+    "320px and 390px layouts have no horizontal overflow; narrow summary stacks vertically",
+    "no localhost application console errors; extension-origin logs excluded",
+    "temporary viewport reset, owned preview tab closed and preview server stopped"
   ],
-  "limits": ["Targeted smoke tests, not representative player strategies or win rates.","Boundary, collateral and preview-range coverage lives in completion.test.cjs."]
+  "limits": ["One targeted campaign, not player win rates or final balance.","Rule tests cover duplicate settlements, global dismissal, unaffordable starts and attribute limits."]
 }
