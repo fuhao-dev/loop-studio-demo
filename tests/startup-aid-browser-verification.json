@@ -1,0 +1,36 @@
+{
+  "version": "0.9.2",
+  "date": "2026-11-05",
+  "browser": "Microsoft Edge via actual UI on localhost offline build",
+  "before": {
+    "wallet": 4806,
+    "exp": 76,
+    "team": 2,
+    "activeProject": 4,
+    "week": 4,
+    "spent": 774,
+    "paused": 2
+  },
+  "grant": {
+    "amount": 2794,
+    "walletAfter": 7600,
+    "eligibleThreshold": 5440,
+    "target": 7600
+  },
+  "flows": [
+    "Banner available on active project before pausing",
+    "Pause preserves original project and opens history",
+    "New-project dialog offers aid while launch is disabled",
+    "Claim keeps typed name, acclaim objective and real mode; micro launch becomes enabled",
+    "Successful launch of project 6 with 7600; aid banner absent",
+    "Switch back to original project, reload, reopen workbench: week 4, spent 774, commerce 23.3%, wallet 7600, exp 76, team 2",
+    "320px viewport document width 305px; viewport override reset and test tab closed"
+  ],
+  "screenshots": [
+    "docs/startup-aid-preview.png",
+    "docs/aid-received-preview.png"
+  ],
+  "engineChecks": 12,
+  "totalRuleChecks": 135,
+  "revenueFormulaChanged": false
+}

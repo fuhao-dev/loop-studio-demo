@@ -1,0 +1,58 @@
+{
+  "version": "0.9.4",
+  "date": "2026-11-05",
+  "browser": "Microsoft Edge",
+  "target": "http://127.0.0.1:4178/",
+  "workflow": "UI-only verification against the rebuilt offline page, using an existing test career",
+  "zeroBudget": {
+    "assigned": "天才程序员 / 买量",
+    "budget": 0,
+    "warnings": ["岗位选项", "人物产出", "买量工作卡", "推广设置", "推进前弹框"],
+    "cancel": {"weekBefore": 4, "weekAfter": 4, "walletBefore": 8347, "walletAfter": 8347},
+    "budgetShortcut": "去设置买量预算 opens the promotion module and focuses its budget selector",
+    "fundedWeek": {"budget": 100, "cost": 358, "wagesAndMaintenance": 258, "walletBefore": 8347, "walletAfter": 7989, "acquisitionProgressPercent": 28.3},
+    "forecastAfterSpending100": {"grossLow": 15, "grossHigh": 380, "netLow": -85, "netHigh": 280}
+  },
+  "compactProgress": {
+    "visible": ["完成度", "软上限或上架目标", "本周预计", "上周实际", "状态提示"],
+    "expandable": ["工作描述", "完成与需求点数", "基础产能", "刚性上限", "依赖名称与数值", "周初依赖规则", "分工及能力", "真实模式说明", "人物产出依据"],
+    "defaultDetails": "collapsed",
+    "desktopPromotionRowHeightPx": 164,
+    "mobile": {"viewportWidth": 320, "documentWidth": 305, "cardWidth": 227, "cardScrollWidth": 227, "frameworkRowHeightsPx": [179, 179, 204], "budgetDialogWidth": 270.67, "dialogScrollWidth": 269, "horizontalOverflow": false},
+    "viewportOverrideReset": true
+  },
+  "events": {
+    "poolCount": 24,
+    "browserObservedUpdatedEvents": ["compat", "feedback", "palette", "break", "backup"],
+    "eventContext": ["微型游戏 · 自然收入 ×1", "理想模式"],
+    "footer": "每周一次事件；解锁软上限后仍需工作，不直接增减完成度。选择会自动保存。",
+    "engineSelectionCases": 160,
+    "newEventConditionsCovered": ["ad_plan", "scale_review", "market_watch", "cash_review", "team_exchange"]
+  },
+  "release": {
+    "project": 4,
+    "name": "留待明天的点子",
+    "mode": "理想模式",
+    "weeks": 9,
+    "grade": "D",
+    "adSpend": 100,
+    "adRate": 0.25,
+    "adGrossRevenue": 25,
+    "adNetRevenue": -75,
+    "organicBaseRevenue": 1046,
+    "marketMultiplier": 1.29,
+    "organicRevenue": 1349,
+    "totalReleaseRevenue": 1374,
+    "costIncludingAds": 2422,
+    "ownEventIncomeFromEarlierWeeks": 120,
+    "projectProfit": -928,
+    "walletBeforeRelease": 6699,
+    "walletAfterRelease": 8073,
+    "expBefore": 171,
+    "expAfter": 214,
+    "reloadAndHistory": "same report values, wallet 8073 and EXP 214; no duplicate receipts or reroll"
+  },
+  "screenshots": ["docs/compact-progress-preview.png", "docs/progress-details-preview.png", "docs/zero-budget-preview.png", "docs/current-events-preview.png", "docs/net-return-preview.png"],
+  "applicationConsoleErrors": 0,
+  "note": "Browser extension liveness/listener warnings were present and excluded from application errors. Test runs demonstrate behavior, not player win rates."
+}

@@ -1,0 +1,14 @@
+{
+  "version": "0.9.4",
+  "date": "2026-11-05",
+  "checks": 14,
+  "scope": [
+    "Pause/resume/switch without parallel work or money duplication",
+    "Shared wallet, roster and skills refreshed on resume",
+    "Frozen pending events and RNG survive save/reload",
+    "Per-project settlement and history are isolated"
+  ],
+  "limits": [
+    "Browser UI verified separately."
+  ]
+}

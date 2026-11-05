@@ -1,0 +1,63 @@
+{
+  "version": "0.9.0",
+  "date": "2026-11-05",
+  "browser": "Microsoft Edge, actual UI actions against the offline build served on localhost",
+  "identity": {
+    "gameTitle": "天才程序员带我做游戏",
+    "companion": "天才程序员",
+    "description": "白发有角龙娘，强的可怕。",
+    "skills": [145, 145, 145, 145, 145],
+    "avatar": "White hair and dragon horns visible in the character card"
+  },
+  "workflow": [
+    "Started project 1, 龙娘的第一作, micro ideal mode, seed 99001, with 7600 shared funds.",
+    "Advanced one week for 258, closed the pending event 藏在角落里的边界问题, and paused. No experience or additional costs were awarded or charged.",
+    "Reloaded and resumed project 1. The same pending event returned; resolved its free cap-unlock choice.",
+    "Used the pause-and-create flow to start project 2, 现实里的小作品, micro real mode, seed 99002.",
+    "After one week in each project, switched between them. Each retained its work, jobs, and week 2; both used the current shared balance 7084 rather than the older balance 7342.",
+    "Reloaded with project 1 active and project 2 paused, then switched back to project 2.",
+    "Played project 2 for six more weeks to complete materials and review, choosing free cap-unlock event options. Released after seven development weeks without requiring other modules to reach 100%.",
+    "Created and terminated project 3, 放弃的实验, without advancing a week.",
+    "Created and paused project 4, 留待明天的点子, without advancing a week. Resumed project 1.",
+    "Reloaded the rebuilt final UI and verified four records and the shared balance were retained.",
+    "Verified active, paused, aborted, and released filters each show the single corresponding product.",
+    "Expanded the released product's module progress and team, opened its settlement report while project 1 remained active, and returned through 查看开发历史. Shared funds and experience remained unchanged."
+  ],
+  "releasedProduct": {
+    "name": "现实里的小作品",
+    "mode": "real",
+    "weeks": 7,
+    "rating": "D+",
+    "totalCompletionPercent": 18.5,
+    "listingCompletionPercent": 100,
+    "cost": 1812,
+    "revenue": 1224,
+    "profit": -588,
+    "experience": 76
+  },
+  "finalState": {
+    "sharedWallet": 6754,
+    "availableExperience": 76,
+    "globalTeamSize": 2,
+    "products": 4,
+    "active": 1,
+    "paused": 1,
+    "released": 1,
+    "aborted": 1,
+    "activeProject": "龙娘的第一作",
+    "pausedProject": "留待明天的点子",
+    "balanceEquation": "7600 - 258 - 1812 + 1224 = 6754"
+  },
+  "responsive": {
+    "viewportWidth": 320,
+    "documentWidth": 305,
+    "historyPageNoHorizontalOverflow": true,
+    "developmentPageNoHorizontalOverflow": true,
+    "temporaryViewportReset": true
+  },
+  "screenshots": ["docs/projects-preview.png", "docs/dragon-programmer-preview.png"],
+  "limits": [
+    "One manually played release is a workflow check, not a win-rate or economy-balance estimate.",
+    "Global training, roster changes, repeated switching and corrupt-snapshot rejection are covered by the separate project engine tests."
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "version": "0.8.1",
+  "date": "2026-11-05",
+  "surface": "127.0.0.1 / Microsoft Edge via computer-use",
+  "scope": "Presentation change; engine and v8 save format unchanged.",
+  "modules": [
+    {
+      "id": "content",
+      "title": "可玩性",
+      "jobs": [
+        "theme",
+        "gameplay",
+        "subtheme"
+      ]
+    },
+    {
+      "id": "framework",
+      "title": "完善度",
+      "jobs": [
+        "development",
+        "systems",
+        "qa"
+      ]
+    },
+    {
+      "id": "commerce",
+      "title": "商业化效果",
+      "jobs": [
+        "ads",
+        "payment",
+        "ip"
+      ]
+    },
+    {
+      "id": "promotion",
+      "title": "推广效果",
+      "jobs": [
+        "publicity",
+        "acquisition"
+      ]
+    },
+    {
+      "id": "release",
+      "title": "能否上架",
+      "jobs": [
+        "materials",
+        "review"
+      ]
+    }
+  ],
+  "switching": {
+    "workGroupsInDOM": 1,
+    "allFiveReachable": true,
+    "walletBefore": 7342,
+    "walletAfterFiveSwitches": 7342,
+    "weekBefore": 1,
+    "weekAfterFiveSwitches": 1,
+    "progressBefore": [
+      "0.0%",
+      "0.0%",
+      "0.0%",
+      "0.0%",
+      "0.0%"
+    ]
+  },
+  "weeklyUpdate": {
+    "mode": "ideal",
+    "openingWallet": 7342,
+    "spent": 258,
+    "wallet": 7084,
+    "week": 2,
+    "event": "feedback",
+    "choice": "整理玩家调研",
+    "selectedModuleBefore": "commerce",
+    "selectedModuleAfter": "commerce",
+    "moduleProgress": [
+      "6.7%",
+      "6.7%",
+      "0.0%",
+      "0.0%",
+      "0.0%"
+    ],
+    "ratings": [
+      "?????",
+      "?????",
+      "?????",
+      "?????",
+      "未就绪"
+    ],
+    "contentHeader": "总完成度 6.7% · 3 项工作"
+  },
+  "preservation": {
+    "moduleAfterTeamTabRoundTrip": "commerce",
+    "adBudgetAfterLeavingAndReturning": 100,
+    "adBudgetRestoredAfterTesting": 0,
+    "assignmentsUnchanged": true
+  },
+  "keyboard": {
+    "homeSelects": "content",
+    "arrowRightSelects": "framework",
+    "endSelects": "release",
+    "focusFollowsSelection": true
+  },
+  "responsive": {
+    "viewport": 320,
+    "documentWidth": 305,
+    "moduleNavClientWidth": 235,
+    "moduleNavScrollWidth": 767,
+    "navHorizontallyScrollable": true,
+    "pageOverflow": false,
+    "endSelectsAndFocusesRelease": true,
+    "viewportReset": true
+  },
+  "guideCollapsedByDefault": true,
+  "screenshot": "docs/modules-preview.png",
+  "validation": [
+    "npm run build",
+    "node tests/ui.test.cjs",
+    "git diff --check",
+    "Browser exercised every module and all thirteen job mappings, ordinary UI only."
+  ],
+  "limits": [
+    "The previous v0.8.0 rules and simulations remain applicable because engine.js was not changed.",
+    "No new-career reset or injected funds were used in browser verification."
+  ]
+}

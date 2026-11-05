@@ -1,0 +1,158 @@
+{
+  "version": "0.9.1",
+  "date": "2026-11-05",
+  "browser": "Microsoft Edge, actual UI actions against the offline build served on localhost",
+  "production": {
+    "engineRegression": {
+      "companion": "天才程序员",
+      "rawCapacityEquivalentPercent": 22.5,
+      "dependencyLimitedEstimatePercent": 5.5,
+      "actualPercent": 5.5,
+      "source": "tests/production.test.cjs"
+    },
+    "idealModeBrowserCheck": {
+      "project": "龙娘的第一作",
+      "weekBefore": 2,
+      "estimatePercent": 5.4,
+      "actualPercent": 5.4,
+      "completionAfterPercent": 25.4,
+      "hint": "受上游完成度限制"
+    },
+    "realModeBrowserCheck": {
+      "project": "稳定预估验证",
+      "completionBeforePercent": 40.3,
+      "fullEfficiencyEstimatePercent": 20.3,
+      "actualPercent": 13.2,
+      "completionAfterPercent": 53.5,
+      "rule": "Estimates exclude real-mode phase slowdown, random rework and random spillover. Actual settlement retains these rules.",
+      "labels": [
+        "满效率预估",
+        "上周实际",
+        "满效率预估，不含真实模式减速、返工与牵连"
+      ]
+    },
+    "units": "Observed crew estimates, work rows and event cap hints use %, while raw production uses 点."
+  },
+  "dependencies": [
+    "Development shows current game-content completion and the allowed dependency cap.",
+    "Systems show development completion and the allowed dependency cap.",
+    "Testing shows both development and systems completion and the allowed dependency cap.",
+    "Review shows materials completion and requires 100% materials. Observed allowed cap 0% with materials 0%.",
+    "Hints state that dependencies use beginning-of-week progress and non-listing work remains subject to its soft cap."
+  ],
+  "nameValidation": {
+    "liveBlockedExamples": [
+      "Chinese abusive phrase separated by punctuation",
+      "Full-width English profanity",
+      "Common explicit-content phrase"
+    ],
+    "message": "当前名字不合适，请换个名字。",
+    "ordinaryEnglishAccepted": "Classical Studio",
+    "invalidNameSubmitDisabled": true,
+    "enterDoesNotStartInvalidProject": true,
+    "invalidNamePreservedAndRecheckedAcrossScaleSwitch": true,
+    "largeProjectStillBlockedByFundsAfterNameChanges": true,
+    "correctedNameStartedSuccessfully": "稳定预估验证",
+    "localOnly": true
+  },
+  "guidePanel": {
+    "tabs": [
+      "开发现场",
+      "团队人物",
+      "功能规划",
+      "开发记录"
+    ],
+    "singleIdenticalCollapsiblePanelPerTab": true,
+    "collapsedStatePreservedAcrossTabs": true,
+    "expandedStatePreservedAcrossTabs": true,
+    "expandedStatePreservedAfterHistoryRoundTrip": true,
+    "reloadDefaultsToCollapsed": true
+  },
+  "responsive": {
+    "viewportWidth": 320,
+    "documentWidth": 305,
+    "dependencyHintWrapsWithoutHorizontalOverflow": true,
+    "temporaryViewportReset": true
+  },
+  "reload": {
+    "projectName": "稳定预估验证",
+    "week": 4,
+    "wallet": 5719,
+    "experience": 76,
+    "pausedProjects": 2,
+    "fullEfficiencyNoteRetained": true
+  },
+  "automated": {
+    "command": "npm test",
+    "ruleChecks": 123,
+    "nameChecks": 7,
+    "productionAndDependencyChecks": 8,
+    "legalOperationSimulations": 23,
+    "randomOutcomeTrials": 160,
+    "internalRandomBoundaryTrials": 120,
+    "additionalProductionRandomTrials": 60,
+    "allPassed": true,
+    "workOptionChecks": 6
+  },
+  "screenshots": [
+    "docs/production-preview.png",
+    "docs/dependency-preview.png",
+    "docs/name-validation-preview.png",
+    "docs/work-options-preview.png",
+    "docs/cap-warning-preview.png"
+  ],
+  "limits": [
+    "Name screening is a finite curated local dictionary, not exhaustive semantic moderation.",
+    "The real-mode full-efficiency estimate intentionally may differ from actual settlement.",
+    "Browser workflows validate behavior, not economy balance or win rate."
+  ],
+  "workOptions": {
+    "allThirteenOptionsShow": [
+      "current completion %",
+      "soft cap %, or no soft cap for listing",
+      "proposed job progress % after this assignment",
+      "member capability %"
+    ],
+    "estimatesInclude": "Hypothetical reassignment, ramp-up, same-role teamwork, upstream limits and completion caps. Full efficiency excludes real-mode penalties.",
+    "liveExample": "⚠ 已到软上限 · 用户付费 · 完成 70.0% / 软上限 70% · 预计 0% · 能力 145%",
+    "manualRoute": "Switched to the paused ideal-mode project 留待明天的点子, assigned both founders to payment, worked two weeks to reach its 70% soft cap, and resolved events without raising this cap.",
+    "inlineWarnings": 2,
+    "dialogCombinesSameRoleMembers": true,
+    "clickAdvanceOpensWarningBeforeSpending": true,
+    "cancel": {
+      "week": 3,
+      "wallet": 5064,
+      "unchanged": true
+    },
+    "confirm": {
+      "weekBefore": 3,
+      "weekAfter": 4,
+      "walletBefore": 5064,
+      "walletAfter": 4806,
+      "chargedExactlyOnce": 258,
+      "eventTriggered": true
+    },
+    "keyboardSpaceAlsoOpensWarning": true,
+    "warningPopupResponsive": {
+      "viewportWidth": 320,
+      "documentWidth": 305,
+      "dialogWidth": 270.67,
+      "noHorizontalOverflow": true
+    },
+    "finalReload": {
+      "name": "留待明天的点子",
+      "week": 4,
+      "wallet": 4806,
+      "experience": 76,
+      "pausedProjects": 2,
+      "warningCount": 2,
+      "completion": 70,
+      "softCap": 70,
+      "estimate": 0
+    },
+    "screenshots": [
+      "docs/work-options-preview.png",
+      "docs/cap-warning-preview.png"
+    ]
+  }
+}

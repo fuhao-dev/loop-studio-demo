@@ -1,0 +1,71 @@
+{
+  "version": "0.9.4",
+  "date": "2026-11-05",
+  "checks": 15,
+  "firstWeek": [
+    {
+      "scale": "micro",
+      "multiplier": 1,
+      "totalBaseWork": 544,
+      "gameplayRequirement": 48,
+      "gameplayProduction": 9.66,
+      "gameplayGain": 9.66,
+      "gameplayCompletion": 0.20125
+    },
+    {
+      "scale": "small",
+      "multiplier": 3,
+      "totalBaseWork": 1632,
+      "gameplayRequirement": 144,
+      "gameplayProduction": 9.66,
+      "gameplayGain": 9.66,
+      "gameplayCompletion": 0.06708333333333333
+    },
+    {
+      "scale": "medium",
+      "multiplier": 9,
+      "totalBaseWork": 4896,
+      "gameplayRequirement": 432,
+      "gameplayProduction": 9.66,
+      "gameplayGain": 9.66,
+      "gameplayCompletion": 0.022361111111111113
+    },
+    {
+      "scale": "large",
+      "multiplier": 27,
+      "totalBaseWork": 14688,
+      "gameplayRequirement": 1296,
+      "gameplayProduction": 9.66,
+      "gameplayGain": 9.66,
+      "gameplayCompletion": 0.007453703703703704
+    }
+  ],
+  "listingOnlyExamples": [
+    {
+      "scale": "micro",
+      "weeks": 6,
+      "cost": 1548
+    },
+    {
+      "scale": "small",
+      "weeks": 14,
+      "cost": 3624
+    },
+    {
+      "scale": "medium",
+      "weeks": 38,
+      "cost": 10182
+    },
+    {
+      "scale": "large",
+      "weeks": 112,
+      "cost": 32864
+    }
+  ],
+  "limits": [
+    "Same ability, assignment, pace, morale and teamwork conditions; raw weekly production does not depend on scale.",
+    "Dependencies, caps and real-mode phases still constrain actual gains.",
+    "Listing-only duration examples use a seeded starting balance of 30000 × scale multiplier; not fresh-career balance or win-rate estimates.",
+    "All scales share quality and ad-return rules; natural revenue scales by 1/3/9/27 and receives logarithmic market randomness of 0.10–10.00."
+  ]
+}

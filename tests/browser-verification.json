@@ -1,33 +1,92 @@
 {
-  "version": "0.4.0",
+  "version": "0.8.0",
   "date": "2026-11-05",
-  "surface": "localhost / in-app Chromium browser",
-  "runs": [
-    {"seed":44001,"template":"designer","genre":"story","route":"full","initialExperience":443,"weeks":20,"rating":"A+","ratings":{"content":"A-","framework":"S-","commerce":"A+","promotion":"A"},"crew":["小周","阿策","林绘"],"cost":6128,"adSpend":300,"adRevenue":538,"organicRevenue":4695,"profit":1305,"exp":161,"experienceAfterReload":604},
-    {"seed":44001,"template":"designer","genre":"story","route":"ad-risk","initialExperience":604,"weeks":5,"rating":"D+","ratings":{"content":"D-","framework":"D+","commerce":"D+","promotion":"C+"},"crew":["小周","阿策"],"cost":1790,"adSpend":500,"adRevenue":200,"organicRevenue":910,"profit":-680,"exp":47,"experienceAfterReload":651,"publicityProgress":0}
+  "surface": "127.0.0.1 / Microsoft Edge via computer-use",
+  "freshWallet": 7600,
+  "scalePlans": [
+    {
+      "scale": "micro",
+      "personWeeks": 54.4,
+      "minFunds": 5440,
+      "canStart": true
+    },
+    {
+      "scale": "small",
+      "personWeeks": 163.2,
+      "minFunds": 16320,
+      "canStart": false
+    },
+    {
+      "scale": "medium",
+      "personWeeks": 489.6,
+      "minFunds": 48960,
+      "canStart": false
+    },
+    {
+      "scale": "large",
+      "personWeeks": 1468.8,
+      "minFunds": 146880,
+      "canStart": false
+    }
   ],
-  "verified": [
-    "five named categories and thirteen independent progress items",
-    "four initially unknown ratings; listing status explicitly shown",
-    "thirteen real work choices grouped in the individual assignment selector",
-    "unsupported professional skill disables matching work choices",
-    "no ad cost with budget selected but no assigned worker",
-    "weekly ad spending and future return shown separately",
-    "progress-gated named recruitment",
-    "two complete legal UI playthroughs through events and blueprint decisions",
-    "observed unknown, three-question, one-question and exact ratings during full route",
-    "full publicity reveals current true grade without forced release",
-    "review requires completed materials; release button enables only after both reach 100%",
-    "zero publicity route can release; true grade disclosed only at release",
-    "D+ ad return lower than spending",
-    "settlement has natural revenue, ad return and complete named cast",
-    "reload preserves total experience without duplicate rewards and earlier v0.2/v0.3 records",
-    "390px and 320px document widths have no horizontal overflow",
-    "320px publicity, budget and rating fields visually inspected",
-    "no console warnings or errors"
+  "largeSetup": {
+    "required": 146880,
+    "current": 7600,
+    "shortfall": 139280,
+    "submitDisabled": true
+  },
+  "switchingScalePreserves": {
+    "name": true,
+    "mode": true
+  },
+  "modeCopy": {
+    "ideal": "理想模式 · 稳定推进",
+    "real": "真实模式 · 感受一下现实吧",
+    "bottomRealRulesRemoved": true
+  },
+  "realFirstWeek": {
+    "seed": 77001,
+    "scale": "micro",
+    "startingWallet": 7600,
+    "spent": 258,
+    "wages": 168,
+    "maintenance": 90,
+    "endingWallet": 7342,
+    "heroGamePlayWork": 9.66,
+    "displayedCompletion": 20.1,
+    "focusControls": 0,
+    "event": "inspiration",
+    "choice": "拓展玩法表达",
+    "softCapAfterChoice": 85
+  },
+  "reloadRestores": {
+    "wallet": 7342,
+    "gameplayCompletion": 20.1,
+    "mode": "real"
+  },
+  "nextIdealProject": {
+    "stage": 2,
+    "startingWallet": 7342,
+    "spentOnStart": 0,
+    "wages": 168,
+    "maintenance": 90,
+    "firstWeeklyCost": 258
+  },
+  "responsive320": {
+    "viewport": 320,
+    "documentWidth": 305,
+    "metricPopupWidth": 296,
+    "setupDialogWidth": 270.67,
+    "largeSubmitDisabled": true,
+    "overflow": false
+  },
+  "screenshots": [
+    "docs/funding-preview.png",
+    "docs/workbench-v0.8.png"
   ],
-  "limitations": [
-    "No long-term balance or player win-rate claim.",
-    "Offline package shares the tested engine and UI; direct file navigation is not exercised by browser automation."
+  "limits": [
+    "Browser used ordinary UI only; no injected wallet or state.",
+    "Higher-scale funding boundaries and full development simulations are covered in engine tests, not manually played in browser.",
+    "Standard person-week funding rate is a provisional launch threshold, not a promise of actual total cost."
   ]
 }
