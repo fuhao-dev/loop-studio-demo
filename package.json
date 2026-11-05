@@ -1,11 +1,11 @@
 {
   "name": "loop-studio-demo",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "private": true,
   "description": "天才程序员带我做游戏：游戏开发题材的回合制肉鸽经营 Demo",
   "license": "MIT",
   "scripts": {
-    "test": "node tests/engine.test.cjs && node tests/completion.test.cjs && node tests/career.test.cjs && node tests/projects.test.cjs && node tests/scale.test.cjs && node tests/ui.test.cjs",
+    "test": "node tests/engine.test.cjs && node tests/completion.test.cjs && node tests/career.test.cjs && node tests/projects.test.cjs && node tests/scale.test.cjs && node tests/name-validation.test.cjs && node tests/production.test.cjs && node tests/work-options.test.cjs && node tests/ui.test.cjs",
     "build": "node build-offline.cjs"
   },
   "engines": {
