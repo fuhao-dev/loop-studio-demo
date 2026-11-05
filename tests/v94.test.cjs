@@ -18,7 +18,7 @@ check('net buying projections and settlement deduct spend for all grades and pub
   for(let i=0;i<15;i++)for(const share of [0,.22]){const s=rateReady((i+.5)/15*100);s.share=share;const p=G.adProjection(s),r=G.finish(s,true);assert.equal(r.adNetRevenue,r.adRevenue-1000);assert.equal(p.netLow,p.low-1000);assert.equal(p.netHigh,p.high-1000);assert.equal(p.netLow,r.adNetRevenue);assert.equal(p.netHigh,r.adNetRevenue);assert.equal(r.profit,r.revenue-s.spent);assert.equal(r.revenue,r.organicRevenue+r.adRevenue);if(i<6)assert.ok(r.adNetRevenue<0);}
 });
 check('aborting a paid campaign reports the lost spend without deducting it twice',()=>{
-  const s=rateReady(50),r=G.finish(s,false);assert.equal(r.adRevenue,0);assert.equal(r.adNetRevenue,-1000);assert.equal(r.profit,-1000);assert.equal(r.walletEnd,r.walletStart-1000);
+  const s=rateReady(50),r=G.finish(s,false);assert.equal(r.adRevenue,0);assert.equal(r.adNetRevenue,-1000);assert.equal(r.profit,r.recovery-1000);assert.equal(r.walletEnd,r.walletStart-1000+r.recovery);assert.equal(r.revenue,0);
 });
 check('total release forecasts still include gross buying receipts',()=>{
   const s=rateReady(50),f=G.forecast(s);assert.equal(f.ad.netLow,f.ad.low-1000);const noAds=G.copy(s);noAds.adSpend=0;const other=G.forecast(noAds);assert.equal(f.low-other.low,f.ad.low);assert.equal(f.high-other.high,f.ad.high);
