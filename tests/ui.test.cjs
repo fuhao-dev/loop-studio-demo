@@ -37,7 +37,7 @@ const home=renderHome();assert.equal((home.match(/class="scale-card"/g)||[]).len
 const setupCode=source.slice(source.indexOf('  function setup('),source.indexOf('  function showEvent('));let dialogMarkup='';
 const setupContext={startupAidNotice:()=>'',updateProjectNameValidation:()=>true,G,run:null,meta:G.emptyMeta(),setupScale:'micro',showDialog:s=>dialogMarkup=s,dialogHeader:()=>'',esc:String,yen:n=>'¥'+n,disabled:ok=>ok?'':' disabled'};
 vm.runInNewContext(setupCode+';setup("large")',setupContext);assert.equal((dialogMarkup.match(/data-action="setup-scale"/g)||[]).length,4);assert.ok(dialogMarkup.includes('大型游戏 · 需要 1,468.8 人周工作量')&&dialogMarkup.includes('同能力、同状态的人员每周产出相同'));
-for(const scale of G.SCALES){const m=G.emptyMeta();m.wallet=200000;const s=G.newRun({scale:scale.id},m);const row=renderJob(s,G.JOBS.find(j=>j.id==='gameplay'),G.preview(s),true);assert.ok(row.includes('/ '+48*scale.multiplier+' 点'));assert.ok(row.includes('本周基础产能 9.7 点'));assert.ok(window.StudioPeople.strip(s,true).includes('基础产能 9.7 点'));}
+for(const scale of G.SCALES){const m=G.emptyMeta();m.wallet=200000;const s=G.newRun({scale:scale.id},m);const row=renderJob(s,G.JOBS.find(j=>j.id==='gameplay'),G.preview(s),true);assert.ok(row.includes('/ '+48*scale.multiplier+' 点'));assert.ok(row.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').includes('本周基础产能 9.7 点'));assert.ok(window.StudioPeople.strip(s,true).includes('基础产能 9.7 点'));}
 assert.ok(!/G\.GENRES|setup-genre|data-genre|题材契合|方向偏离/.test(source));console.log('Scale UI passed: four cards, setup totals, work points, fixed weekly output and no genre selector.');
 
 assert.ok(!source.includes('主攻')&&!source.includes('data-action="focus"'));
