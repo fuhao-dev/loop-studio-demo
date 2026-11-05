@@ -13,6 +13,18 @@ const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),scripts=[...html
 assert.equal(scripts.length,4,'offline package includes the people module');
 scripts.forEach((m,i)=>new vm.Script(m[1],{filename:'offline-script-'+i}));
 assert.ok(!/<script\b[^>]*\bsrc=|<link\b[^>]*rel=["']stylesheet/i.test(html),'offline scripts and styles embedded');
-assert.ok(html.includes('v0.4.0 DEMO')&&html.includes('loop_studio_run_v4'),'offline build current version and isolated save key');
+assert.ok(html.includes('v0.5.0 DEMO')&&html.includes('loop_studio_run_v5'),'offline build current version and isolated save key');
 for(const f of ['engine.js','audio.js','characters-ui.js','app.js'])new vm.Script(fs.readFileSync(path.join(root,'dist',f),'utf8'),{filename:f});
 console.log('UI checks passed: individual ramp hints, unavailable role, escaped names, four inline scripts, current offline build.');
+
+// Exercise the actual work-row renderer, including concealed real-mode rolls.
+const source=fs.readFileSync(path.join(root,'dist/app.js'),'utf8'),jobCode=source.slice(source.indexOf('  function job('),source.indexOf('  function ratingTile('));
+const renderJob=vm.runInNewContext(jobCode+';job',{G,esc:v=>String(v),disabled:ok=>ok?'':' disabled'});
+const real=G.newRun({hard:true});G.chooseCard(real,'skip');real.softCaps.payment=1;real.work.payment=real.req.payment*.8;G.assignMember(real,'hero','payment');
+const row=renderJob(real,G.JOBS.find(j=>j.id==='payment'),G.preview(real),true);
+assert.ok(row.includes('完成度')&&row.includes('刚性上限 100%')&&row.includes('各 50%')&&row.includes(' ～ '));
+assert.ok(!row.includes('工作量'));
+const listing=renderJob(real,G.JOBS.find(j=>j.id==='materials'),G.preview(real),true);
+assert.ok(listing.includes('无软上限')&&!listing.includes('随机增减'));
+assert.ok(source.includes('理想模式')&&source.includes('真实模式'));
+console.log('Completion UI passed: percentage labels, both caps, risk range, listing exception, mode names.');

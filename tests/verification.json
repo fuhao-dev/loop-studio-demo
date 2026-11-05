@@ -1,9 +1,9 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "date": "2026-11-05",
   "checks": 40,
   "simulatedRuns": 45,
-  "fullWorkReleases": 30,
+  "balancedWorkReleases": 30,
   "optionalRouteReleases": 15,
   "runs": [
     {
@@ -11,570 +11,570 @@
       "template": "designer",
       "genre": "story",
       "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A+",
-      "cost": 5465,
-      "adSpend": 200,
-      "adRevenue": 359,
-      "profit": 2627,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "designer",
-      "genre": "story",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A+",
-      "cost": 6029,
-      "adSpend": 200,
-      "adRevenue": 359,
-      "profit": 2063,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "designer",
-      "genre": "action",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 21,
-      "rating": "A+",
-      "cost": 6471,
-      "adSpend": 400,
-      "adRevenue": 718,
-      "profit": 2150,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "designer",
-      "genre": "action",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 21,
-      "rating": "A+",
-      "cost": 7131,
-      "adSpend": 400,
-      "adRevenue": 718,
-      "profit": 1490,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "designer",
-      "genre": "sim",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 21,
-      "rating": "A+",
-      "cost": 6977,
-      "adSpend": 400,
-      "adRevenue": 718,
-      "profit": 1641,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "designer",
-      "genre": "sim",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 21,
-      "rating": "A+",
-      "cost": 7680,
-      "adSpend": 400,
-      "adRevenue": 718,
-      "profit": 938,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "engineer",
-      "genre": "story",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A+",
-      "cost": 6437,
-      "adSpend": 200,
-      "adRevenue": 359,
-      "profit": 1649,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "engineer",
-      "genre": "story",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A+",
-      "cost": 7100,
-      "adSpend": 200,
-      "adRevenue": 359,
-      "profit": 986,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "engineer",
-      "genre": "action",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 21,
-      "rating": "A+",
-      "cost": 6388,
-      "adSpend": 300,
-      "adRevenue": 538,
-      "profit": 2053,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "engineer",
-      "genre": "action",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 21,
-      "rating": "A+",
-      "cost": 7048,
-      "adSpend": 300,
-      "adRevenue": 538,
-      "profit": 1393,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "engineer",
-      "genre": "sim",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A+",
-      "cost": 6607,
-      "adSpend": 500,
-      "adRevenue": 897,
-      "profit": 2028,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "engineer",
-      "genre": "sim",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A+",
-      "cost": 7257,
-      "adSpend": 500,
-      "adRevenue": 897,
-      "profit": 1378,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "artist",
-      "genre": "story",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A",
-      "cost": 5785,
-      "adSpend": 400,
-      "adRevenue": 608,
-      "profit": 2544,
-      "crew": [
-        "hero",
-        "ace",
-        "shen"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "artist",
-      "genre": "story",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A",
-      "cost": 6349,
-      "adSpend": 400,
-      "adRevenue": 608,
-      "profit": 1980,
-      "crew": [
-        "hero",
-        "ace",
-        "shen"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "artist",
-      "genre": "action",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 19,
-      "rating": "A+",
-      "cost": 5957,
-      "adSpend": 300,
-      "adRevenue": 538,
-      "profit": 2221,
-      "crew": [
-        "hero",
-        "ace",
-        "shen"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "artist",
-      "genre": "action",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 19,
-      "rating": "A+",
-      "cost": 6553,
-      "adSpend": 300,
-      "adRevenue": 538,
-      "profit": 1625,
-      "crew": [
-        "hero",
-        "ace",
-        "shen"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "artist",
-      "genre": "sim",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A+",
-      "cost": 5562,
-      "adSpend": 200,
-      "adRevenue": 359,
-      "profit": 2531,
-      "crew": [
-        "hero",
-        "ace",
-        "shen"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "artist",
-      "genre": "sim",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A+",
-      "cost": 6126,
-      "adSpend": 200,
-      "adRevenue": 359,
-      "profit": 1967,
-      "crew": [
-        "hero",
-        "ace",
-        "shen"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "tester",
-      "genre": "story",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 19,
-      "rating": "A+",
-      "cost": 6374,
-      "adSpend": 400,
-      "adRevenue": 718,
-      "profit": 2001,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "tester",
-      "genre": "story",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 19,
-      "rating": "A+",
-      "cost": 7013,
-      "adSpend": 400,
-      "adRevenue": 718,
-      "profit": 1362,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "tester",
-      "genre": "action",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 20,
-      "rating": "A+",
-      "cost": 6810,
-      "adSpend": 500,
-      "adRevenue": 897,
-      "profit": 997,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "tester",
-      "genre": "action",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 20,
-      "rating": "A+",
-      "cost": 7488,
-      "adSpend": 500,
-      "adRevenue": 897,
-      "profit": 319,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "tester",
-      "genre": "sim",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 21,
-      "rating": "A+",
-      "cost": 6668,
-      "adSpend": 200,
-      "adRevenue": 359,
-      "profit": 1594,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "tester",
-      "genre": "sim",
-      "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 21,
-      "rating": "A+",
-      "cost": 7365,
-      "adSpend": 200,
-      "adRevenue": 359,
-      "profit": 897,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "producer",
-      "genre": "story",
-      "hard": false,
-      "route": "full-with-recruit",
+      "route": "balanced-with-recruit",
       "weeks": 16,
-      "rating": "A+",
-      "cost": 5816,
-      "adSpend": 300,
-      "adRevenue": 538,
-      "profit": 2774,
+      "rating": "A-",
+      "cost": 5687,
+      "adSpend": 400,
+      "adRevenue": 515,
+      "profit": 1184,
       "crew": [
         "hero",
         "ace",
         "lin"
       ],
-      "allThirteenComplete": true
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "designer",
+      "genre": "story",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 13,
+      "rating": "B-",
+      "cost": 4547,
+      "adSpend": 400,
+      "adRevenue": 328,
+      "profit": 195,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "designer",
+      "genre": "action",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 17,
+      "rating": "A-",
+      "cost": 5418,
+      "adSpend": 200,
+      "adRevenue": 257,
+      "profit": 1634,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "designer",
+      "genre": "action",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 16,
+      "rating": "B",
+      "cost": 5268,
+      "adSpend": 300,
+      "adRevenue": 281,
+      "profit": -338,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "designer",
+      "genre": "sim",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 18,
+      "rating": "B+",
+      "cost": 5489,
+      "adSpend": 300,
+      "adRevenue": 328,
+      "profit": 458,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "designer",
+      "genre": "sim",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 15,
+      "rating": "B-",
+      "cost": 4886,
+      "adSpend": 200,
+      "adRevenue": 164,
+      "profit": -542,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "engineer",
+      "genre": "story",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 16,
+      "rating": "A-",
+      "cost": 4931,
+      "adSpend": 300,
+      "adRevenue": 386,
+      "profit": 2192,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "engineer",
+      "genre": "story",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 12,
+      "rating": "B-",
+      "cost": 4359,
+      "adSpend": 500,
+      "adRevenue": 410,
+      "profit": 738,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "engineer",
+      "genre": "action",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 15,
+      "rating": "A-",
+      "cost": 4980,
+      "adSpend": 300,
+      "adRevenue": 386,
+      "profit": 1074,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "engineer",
+      "genre": "action",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 14,
+      "rating": "B",
+      "cost": 4663,
+      "adSpend": 200,
+      "adRevenue": 187,
+      "profit": 223,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "engineer",
+      "genre": "sim",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 15,
+      "rating": "B+",
+      "cost": 4525,
+      "adSpend": 200,
+      "adRevenue": 218,
+      "profit": 1238,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "engineer",
+      "genre": "sim",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 15,
+      "rating": "B-",
+      "cost": 5178,
+      "adSpend": 400,
+      "adRevenue": 328,
+      "profit": -700,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "artist",
+      "genre": "story",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 15,
+      "rating": "A-",
+      "cost": 4951,
+      "adSpend": 300,
+      "adRevenue": 386,
+      "profit": 1057,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "artist",
+      "genre": "story",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 12,
+      "rating": "B-",
+      "cost": 4222,
+      "adSpend": 300,
+      "adRevenue": 246,
+      "profit": 800,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "artist",
+      "genre": "action",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 15,
+      "rating": "A-",
+      "cost": 5604,
+      "adSpend": 300,
+      "adRevenue": 386,
+      "profit": 409,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "artist",
+      "genre": "action",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 13,
+      "rating": "B-",
+      "cost": 4847,
+      "adSpend": 200,
+      "adRevenue": 164,
+      "profit": -122,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "artist",
+      "genre": "sim",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 16,
+      "rating": "A-",
+      "cost": 4882,
+      "adSpend": 200,
+      "adRevenue": 257,
+      "profit": 1568,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "artist",
+      "genre": "sim",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 15,
+      "rating": "B",
+      "cost": 4939,
+      "adSpend": 200,
+      "adRevenue": 187,
+      "profit": -500,
+      "crew": [
+        "hero",
+        "ace",
+        "shen"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "tester",
+      "genre": "story",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 16,
+      "rating": "B+",
+      "cost": 4924,
+      "adSpend": 300,
+      "adRevenue": 328,
+      "profit": 1473,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "tester",
+      "genre": "story",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 13,
+      "rating": "B-",
+      "cost": 4884,
+      "adSpend": 200,
+      "adRevenue": 164,
+      "profit": -214,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "tester",
+      "genre": "action",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 17,
+      "rating": "A-",
+      "cost": 5443,
+      "adSpend": 200,
+      "adRevenue": 257,
+      "profit": 1121,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "tester",
+      "genre": "action",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 15,
+      "rating": "B-",
+      "cost": 4855,
+      "adSpend": 200,
+      "adRevenue": 164,
+      "profit": -549,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "tester",
+      "genre": "sim",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 17,
+      "rating": "A-",
+      "cost": 5508,
+      "adSpend": 200,
+      "adRevenue": 257,
+      "profit": 1121,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "tester",
+      "genre": "sim",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "weeks": 15,
+      "rating": "B-",
+      "cost": 4855,
+      "adSpend": 200,
+      "adRevenue": 164,
+      "profit": -580,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "producer",
+      "genre": "story",
+      "hard": false,
+      "route": "balanced-with-recruit",
+      "weeks": 16,
+      "rating": "A-",
+      "cost": 5001,
+      "adSpend": 400,
+      "adRevenue": 515,
+      "profit": 2263,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
     },
     {
       "seed": 44001,
       "template": "producer",
       "genre": "story",
       "hard": true,
-      "route": "full-with-recruit",
+      "route": "balanced-with-recruit",
+      "weeks": 13,
+      "rating": "B",
+      "cost": 4346,
+      "adSpend": 200,
+      "adRevenue": 187,
+      "profit": 552,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ],
+      "targetsMet": true
+    },
+    {
+      "seed": 44001,
+      "template": "producer",
+      "genre": "action",
+      "hard": false,
+      "route": "balanced-with-recruit",
       "weeks": 16,
-      "rating": "A+",
-      "cost": 6401,
+      "rating": "A-",
+      "cost": 5590,
       "adSpend": 300,
-      "adRevenue": 538,
-      "profit": 2189,
+      "adRevenue": 386,
+      "profit": 1400,
       "crew": [
         "hero",
         "ace",
         "lin"
       ],
-      "allThirteenComplete": true
-    },
-    {
-      "seed": 44001,
-      "template": "producer",
-      "genre": "action",
-      "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A+",
-      "cost": 6150,
-      "adSpend": 400,
-      "adRevenue": 718,
-      "profit": 2328,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ],
-      "allThirteenComplete": true
+      "targetsMet": true
     },
     {
       "seed": 44001,
       "template": "producer",
       "genre": "action",
       "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 18,
-      "rating": "A+",
-      "cost": 6764,
-      "adSpend": 400,
-      "adRevenue": 718,
-      "profit": 1714,
+      "route": "balanced-with-recruit",
+      "weeks": 14,
+      "rating": "B",
+      "cost": 4571,
+      "adSpend": 200,
+      "adRevenue": 187,
+      "profit": 380,
       "crew": [
         "hero",
         "ace",
         "lin"
       ],
-      "allThirteenComplete": true
+      "targetsMet": true
     },
     {
       "seed": 44001,
       "template": "producer",
       "genre": "sim",
       "hard": false,
-      "route": "full-with-recruit",
-      "weeks": 17,
-      "rating": "A+",
-      "cost": 5581,
-      "adSpend": 300,
-      "adRevenue": 538,
-      "profit": 1929,
+      "route": "balanced-with-recruit",
+      "weeks": 15,
+      "rating": "B+",
+      "cost": 4446,
+      "adSpend": 200,
+      "adRevenue": 218,
+      "profit": 1214,
       "crew": [
         "hero",
         "ace",
         "lin"
       ],
-      "allThirteenComplete": true
+      "targetsMet": true
     },
     {
       "seed": 44001,
       "template": "producer",
       "genre": "sim",
       "hard": true,
-      "route": "full-with-recruit",
-      "weeks": 17,
-      "rating": "A+",
-      "cost": 6143,
-      "adSpend": 300,
-      "adRevenue": 538,
-      "profit": 1367,
+      "route": "balanced-with-recruit",
+      "weeks": 15,
+      "rating": "B-",
+      "cost": 4854,
+      "adSpend": 200,
+      "adRevenue": 164,
+      "profit": -466,
       "crew": [
         "hero",
         "ace",
         "lin"
       ],
-      "allThirteenComplete": true
+      "targetsMet": true
     },
     {
       "template": "designer",
@@ -583,7 +583,7 @@
       "rating": "D",
       "adSpend": 0,
       "adRevenue": 0,
-      "profit": -303,
+      "profit": -139,
       "crew": [
         "hero",
         "ace"
@@ -592,11 +592,11 @@
     {
       "template": "designer",
       "route": "no-promo",
-      "weeks": 18,
-      "rating": "A",
+      "weeks": 16,
+      "rating": "B+",
       "adSpend": 0,
       "adRevenue": 0,
-      "profit": 3088,
+      "profit": 1964,
       "crew": [
         "hero",
         "ace"
@@ -606,10 +606,10 @@
       "template": "designer",
       "route": "ad-risk",
       "weeks": 5,
-      "rating": "D+",
-      "adSpend": 500,
-      "adRevenue": 200,
-      "profit": -673,
+      "rating": "D",
+      "adSpend": 400,
+      "adRevenue": 100,
+      "profit": -740,
       "crew": [
         "hero",
         "ace"
@@ -622,7 +622,7 @@
       "rating": "D",
       "adSpend": 0,
       "adRevenue": 0,
-      "profit": -303,
+      "profit": -139,
       "crew": [
         "hero",
         "ace"
@@ -631,11 +631,11 @@
     {
       "template": "engineer",
       "route": "no-promo",
-      "weeks": 19,
-      "rating": "A",
+      "weeks": 15,
+      "rating": "B+",
       "adSpend": 0,
       "adRevenue": 0,
-      "profit": 1887,
+      "profit": 1920,
       "crew": [
         "hero",
         "ace"
@@ -643,90 +643,90 @@
     },
     {
       "template": "engineer",
+      "route": "ad-risk",
+      "weeks": 5,
+      "rating": "D",
+      "adSpend": 400,
+      "adRevenue": 100,
+      "profit": -740,
+      "crew": [
+        "hero",
+        "ace"
+      ]
+    },
+    {
+      "template": "artist",
+      "route": "early",
+      "weeks": 4,
+      "rating": "D",
+      "adSpend": 0,
+      "adRevenue": 0,
+      "profit": -139,
+      "crew": [
+        "hero",
+        "ace"
+      ]
+    },
+    {
+      "template": "artist",
+      "route": "no-promo",
+      "weeks": 14,
+      "rating": "B+",
+      "adSpend": 0,
+      "adRevenue": 0,
+      "profit": 1939,
+      "crew": [
+        "hero",
+        "ace"
+      ]
+    },
+    {
+      "template": "artist",
+      "route": "ad-risk",
+      "weeks": 5,
+      "rating": "D",
+      "adSpend": 500,
+      "adRevenue": 125,
+      "profit": -815,
+      "crew": [
+        "hero",
+        "ace"
+      ]
+    },
+    {
+      "template": "tester",
+      "route": "early",
+      "weeks": 4,
+      "rating": "D",
+      "adSpend": 0,
+      "adRevenue": 0,
+      "profit": -139,
+      "crew": [
+        "hero",
+        "ace"
+      ]
+    },
+    {
+      "template": "tester",
+      "route": "no-promo",
+      "weeks": 17,
+      "rating": "B+",
+      "adSpend": 0,
+      "adRevenue": 0,
+      "profit": 2556,
+      "crew": [
+        "hero",
+        "ace"
+      ]
+    },
+    {
+      "template": "tester",
       "route": "ad-risk",
       "weeks": 6,
-      "rating": "D+",
-      "adSpend": 500,
-      "adRevenue": 200,
-      "profit": -1065,
-      "crew": [
-        "hero",
-        "ace"
-      ]
-    },
-    {
-      "template": "artist",
-      "route": "early",
-      "weeks": 4,
       "rating": "D",
-      "adSpend": 0,
-      "adRevenue": 0,
-      "profit": -303,
-      "crew": [
-        "hero",
-        "ace"
-      ]
-    },
-    {
-      "template": "artist",
-      "route": "no-promo",
-      "weeks": 20,
-      "rating": "A",
-      "adSpend": 0,
-      "adRevenue": 0,
-      "profit": 1974,
-      "crew": [
-        "hero",
-        "ace"
-      ]
-    },
-    {
-      "template": "artist",
-      "route": "ad-risk",
-      "weeks": 5,
-      "rating": "D+",
-      "adSpend": 500,
-      "adRevenue": 200,
-      "profit": -673,
-      "crew": [
-        "hero",
-        "ace"
-      ]
-    },
-    {
-      "template": "tester",
-      "route": "early",
-      "weeks": 4,
-      "rating": "D",
-      "adSpend": 0,
-      "adRevenue": 0,
-      "profit": -303,
-      "crew": [
-        "hero",
-        "ace"
-      ]
-    },
-    {
-      "template": "tester",
-      "route": "no-promo",
-      "weeks": 19,
-      "rating": "A",
-      "adSpend": 0,
-      "adRevenue": 0,
-      "profit": 1907,
-      "crew": [
-        "hero",
-        "ace"
-      ]
-    },
-    {
-      "template": "tester",
-      "route": "ad-risk",
-      "weeks": 6,
-      "rating": "D+",
       "adSpend": 200,
-      "adRevenue": 80,
-      "profit": -885,
+      "adRevenue": 50,
+      "profit": -858,
       "crew": [
         "hero",
         "ace"
@@ -739,7 +739,7 @@
       "rating": "D",
       "adSpend": 0,
       "adRevenue": 0,
-      "profit": -303,
+      "profit": -139,
       "crew": [
         "hero",
         "ace"
@@ -749,10 +749,10 @@
       "template": "producer",
       "route": "no-promo",
       "weeks": 16,
-      "rating": "A",
+      "rating": "B+",
       "adSpend": 0,
       "adRevenue": 0,
-      "profit": 3132,
+      "profit": 2488,
       "crew": [
         "hero",
         "ace"
@@ -761,11 +761,11 @@
     {
       "template": "producer",
       "route": "ad-risk",
-      "weeks": 5,
-      "rating": "D+",
+      "weeks": 4,
+      "rating": "D",
       "adSpend": 300,
-      "adRevenue": 120,
-      "profit": -553,
+      "adRevenue": 75,
+      "profit": -329,
       "crew": [
         "hero",
         "ace"
