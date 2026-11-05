@@ -1,168 +1,35 @@
 {
-  "version": "0.6.0",
+  "version": "0.7.0",
   "date": "2026-11-05",
   "checks": 39,
-  "simulatedRuns": 27,
+  "simulatedRuns": 23,
   "runs": [
     {
       "seed": 44001,
-      "genre": "story",
+      "scale": "micro",
       "hard": false,
       "route": "balanced-with-recruit",
-      "weeks": 16,
-      "rating": "A-",
-      "cost": 5798,
-      "walletEnd": 8243,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44001,
-      "genre": "story",
-      "hard": true,
-      "route": "balanced-with-recruit",
-      "weeks": 13,
-      "rating": "B-",
-      "cost": 4891,
-      "walletEnd": 7157,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44001,
-      "genre": "action",
-      "hard": false,
-      "route": "balanced-with-recruit",
-      "weeks": 17,
-      "rating": "A-",
-      "cost": 6332,
-      "walletEnd": 8149,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44001,
-      "genre": "action",
-      "hard": true,
-      "route": "balanced-with-recruit",
-      "weeks": 14,
-      "rating": "B-",
-      "cost": 5184,
-      "walletEnd": 7100,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44001,
-      "genre": "sim",
-      "hard": false,
-      "route": "balanced-with-recruit",
-      "weeks": 19,
-      "rating": "A-",
-      "cost": 6572,
-      "walletEnd": 7685,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44001,
-      "genre": "sim",
-      "hard": true,
-      "route": "balanced-with-recruit",
-      "weeks": 15,
-      "rating": "B-",
-      "cost": 5475,
-      "walletEnd": 6922,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44002,
-      "genre": "story",
-      "hard": false,
-      "route": "balanced-with-recruit",
-      "weeks": 16,
-      "rating": "B+",
-      "cost": 5766,
-      "walletEnd": 7263,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44002,
-      "genre": "story",
-      "hard": true,
-      "route": "balanced-with-recruit",
-      "weeks": 13,
-      "rating": "C+",
-      "cost": 4883,
-      "walletEnd": 6421,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44002,
-      "genre": "action",
-      "hard": false,
-      "route": "balanced-with-recruit",
-      "weeks": 17,
-      "rating": "B+",
-      "cost": 6303,
-      "walletEnd": 7674,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44002,
-      "genre": "action",
-      "hard": true,
-      "route": "balanced-with-recruit",
-      "weeks": 15,
-      "rating": "C+",
-      "cost": 5550,
-      "walletEnd": 6184,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44002,
-      "genre": "sim",
-      "hard": false,
-      "route": "balanced-with-recruit",
+      "initialWallet": 7600,
       "weeks": 18,
-      "rating": "B+",
-      "cost": 6085,
-      "walletEnd": 6710,
+      "rating": "A-",
+      "cost": 6408,
+      "walletEnd": 8539,
+      "crew": [
+        "hero",
+        "ace",
+        "lin"
+      ]
+    },
+    {
+      "seed": 44001,
+      "scale": "micro",
+      "hard": true,
+      "route": "balanced-with-recruit",
+      "initialWallet": 7600,
+      "weeks": 14,
+      "rating": "B-",
+      "cost": 5186,
+      "walletEnd": 6970,
       "crew": [
         "hero",
         "ace",
@@ -171,58 +38,14 @@
     },
     {
       "seed": 44002,
-      "genre": "sim",
-      "hard": true,
-      "route": "balanced-with-recruit",
-      "weeks": 14,
-      "rating": "C+",
-      "cost": 4962,
-      "walletEnd": 6412,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44003,
-      "genre": "story",
+      "scale": "micro",
       "hard": false,
       "route": "balanced-with-recruit",
-      "weeks": 16,
-      "rating": "B+",
-      "cost": 5666,
-      "walletEnd": 7955,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44003,
-      "genre": "story",
-      "hard": true,
-      "route": "balanced-with-recruit",
-      "weeks": 13,
-      "rating": "C+",
-      "cost": 4883,
-      "walletEnd": 7108,
-      "crew": [
-        "hero",
-        "ace",
-        "lin"
-      ]
-    },
-    {
-      "seed": 44003,
-      "genre": "action",
-      "hard": false,
-      "route": "balanced-with-recruit",
+      "initialWallet": 7600,
       "weeks": 17,
       "rating": "B+",
-      "cost": 6304,
-      "walletEnd": 8098,
+      "cost": 5920,
+      "walletEnd": 7585,
       "crew": [
         "hero",
         "ace",
@@ -230,14 +53,15 @@
       ]
     },
     {
-      "seed": 44003,
-      "genre": "action",
+      "seed": 44002,
+      "scale": "micro",
       "hard": true,
       "route": "balanced-with-recruit",
+      "initialWallet": 7600,
       "weeks": 14,
       "rating": "C+",
-      "cost": 5166,
-      "walletEnd": 6989,
+      "cost": 5168,
+      "walletEnd": 6157,
       "crew": [
         "hero",
         "ace",
@@ -246,13 +70,14 @@
     },
     {
       "seed": 44003,
-      "genre": "sim",
+      "scale": "micro",
       "hard": false,
       "route": "balanced-with-recruit",
-      "weeks": 20,
+      "initialWallet": 7600,
+      "weeks": 17,
       "rating": "B+",
-      "cost": 6775,
-      "walletEnd": 7213,
+      "cost": 5920,
+      "walletEnd": 7751,
       "crew": [
         "hero",
         "ace",
@@ -261,18 +86,107 @@
     },
     {
       "seed": 44003,
-      "genre": "sim",
+      "scale": "micro",
       "hard": true,
       "route": "balanced-with-recruit",
-      "weeks": 15,
+      "initialWallet": 7600,
+      "weeks": 14,
       "rating": "C+",
-      "cost": 5447,
-      "walletEnd": 6910,
+      "cost": 5168,
+      "walletEnd": 6862,
       "crew": [
         "hero",
         "ace",
         "lin"
       ]
+    },
+    {
+      "seed": 44001,
+      "scale": "micro",
+      "hard": false,
+      "route": "funded-scale-integration",
+      "initialWallet": 30000,
+      "weeks": 18,
+      "rating": "A-",
+      "cost": 6408,
+      "walletEnd": 30939
+    },
+    {
+      "seed": 44001,
+      "scale": "micro",
+      "hard": true,
+      "route": "funded-scale-integration",
+      "initialWallet": 30000,
+      "weeks": 14,
+      "rating": "B-",
+      "cost": 5186,
+      "walletEnd": 29370
+    },
+    {
+      "seed": 44001,
+      "scale": "small",
+      "hard": false,
+      "route": "funded-scale-integration",
+      "initialWallet": 90000,
+      "weeks": 40,
+      "rating": "B+",
+      "cost": 14028,
+      "walletEnd": 82632
+    },
+    {
+      "seed": 44001,
+      "scale": "small",
+      "hard": true,
+      "route": "funded-scale-integration",
+      "initialWallet": 90000,
+      "weeks": 37,
+      "rating": "B-",
+      "cost": 13507,
+      "walletEnd": 81066
+    },
+    {
+      "seed": 44001,
+      "scale": "medium",
+      "hard": false,
+      "route": "funded-scale-integration",
+      "initialWallet": 270000,
+      "weeks": 111,
+      "rating": "B+",
+      "cost": 38684,
+      "walletEnd": 239120
+    },
+    {
+      "seed": 44001,
+      "scale": "medium",
+      "hard": true,
+      "route": "funded-scale-integration",
+      "initialWallet": 270000,
+      "weeks": 106,
+      "rating": "B-",
+      "cost": 37991,
+      "walletEnd": 237756
+    },
+    {
+      "seed": 44001,
+      "scale": "large",
+      "hard": false,
+      "route": "funded-scale-integration",
+      "initialWallet": 810000,
+      "weeks": 321,
+      "rating": "B",
+      "cost": 123847,
+      "walletEnd": 697188
+    },
+    {
+      "seed": 44001,
+      "scale": "large",
+      "hard": true,
+      "route": "funded-scale-integration",
+      "initialWallet": 810000,
+      "weeks": 331,
+      "rating": "C+",
+      "cost": 133159,
+      "walletEnd": 686713
     },
     {
       "seed": 44001,
@@ -290,7 +204,7 @@
       "rating": "B+",
       "adSpend": 0,
       "adRevenue": 0,
-      "walletEnd": 8881
+      "walletEnd": 8525
     },
     {
       "seed": 44001,
@@ -313,11 +227,11 @@
     {
       "seed": 44002,
       "route": "no-promo",
-      "weeks": 16,
-      "rating": "B+",
+      "weeks": 17,
+      "rating": "B",
       "adSpend": 0,
       "adRevenue": 0,
-      "walletEnd": 8068
+      "walletEnd": 8267
     },
     {
       "seed": 44002,
@@ -344,7 +258,7 @@
       "rating": "B",
       "adSpend": 0,
       "adRevenue": 0,
-      "walletEnd": 8640
+      "walletEnd": 8320
     },
     {
       "seed": 44003,
@@ -359,7 +273,7 @@
   "limits": [
     "Example strategies, not win rates.",
     "No templates, starting cards or blueprints.",
-    "Planner does not read hidden potential; each standalone simulation starts a fresh career.",
+    "Planner does not read hidden potential; fresh-career runs use 7600; scale integration fixtures explicitly use 30000 × scale multiplier to test long projects.",
     "Cross-level ledger and roster behavior covered in career.test.cjs."
   ]
 }

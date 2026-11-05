@@ -1,32 +1,73 @@
 {
-  "version": "0.6.0",
+  "version": "0.7.0",
   "date": "2026-11-05",
-  "surface": "localhost / Microsoft Edge via computer-use",
-  "campaign": {
-    "start": {"wallet":7600,"heroName":"小周","skills":{"design":100,"code":100,"art":100,"test":100,"ops":100},"team":["hero","ace"]},
-    "level1": {"seed":44001,"mode":"ideal","weeks":16,"released":true,"rating":"A-","cost":5798,"funding":2200,"organicRevenue":3726,"adSpend":400,"adRevenue":515,"profit":643,"exp":113,"walletBeforeRelease":4002,"walletAfterRelease":8243,"team":["hero","ace","lin"],"knownPartners":["lin","shen","tang","wen"]},
-    "betweenLevels": {"trained":"code","skillBefore":100,"skillAfter":105,"trainingCostExp":40,"expRemaining":73,"recruited":"shen","recruitCost":180,"wallet":8063,"team":["hero","ace","lin","shen"],"verifiedAfterReload":true},
-    "level2": {"seed":66002,"mode":"real","initialWallet":8063,"initialTeam":["hero","ace","lin","shen"],"initialCode":105,"allThirteenCompletionReset":true,"softCapsResetTo70":true,"weeklyWages":405,"weeklyCost":495,"weeks":1,"released":false,"exp":0,"walletAfterAbort":7568},
-    "afterReload": {"nextStage":3,"wallet":7568,"code":105,"exp":73,"team":["hero","ace","lin","shen"]}
-  },
-  "verified": [
-    "new career schema; no reads or migration of old saves",
-    "no blueprint navigation, opening blueprint selection, character templates or starting bonus cards",
-    "project opens directly into playable workbench",
-    "weekly spending reflected immediately in shared career balance",
-    "in-project recruit becomes global member",
-    "release revenue enters wallet exactly once",
-    "training consumes experience and keeps funds unchanged",
-    "between-level recruiting spends 180 and persists",
-    "reload retains trained ability, global team and wallet",
-    "next level inherits balance and all four characters; wages include entire team",
-    "project completion, caps, bugs and morale reset without resetting career",
-    "training blocked during active project",
-    "abort keeps remaining funds, trained attributes and all partners",
-    "zero-experience abort does not settle twice after reload",
-    "320px and 390px layouts have no horizontal overflow; narrow summary stacks vertically",
-    "no localhost application console errors; extension-origin logs excluded",
-    "temporary viewport reset, owned preview tab closed and preview server stopped"
+  "surface": "127.0.0.1 / Microsoft Edge via computer-use",
+  "seed": 77001,
+  "mode": "ideal",
+  "team": [
+    "hero",
+    "ace"
   ],
-  "limits": ["One targeted campaign, not player win rates or final balance.","Rule tests cover duplicate settlements, global dismissal, unaffordable starts and attribute limits."]
+  "heroSkills": 100,
+  "focus": "gameplay",
+  "firstWeeks": [
+    {
+      "scale": "micro",
+      "requirement": 48,
+      "displayedWork": 14.5,
+      "displayedCompletion": 30.2,
+      "cost": 258,
+      "walletAfterAbort": 7342,
+      "before": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 0.0%\n软上限 70% · 刚性上限 100%\n已完成 0.0 / 48 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +30.2 个百分点\n你 · 100%",
+      "after": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 30.2%\n软上限 85% · 刚性上限 100%\n已完成 14.5 / 48 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +30.3 个百分点\n上周实际 +30.2 个百分点\n你 · 100%"
+    },
+    {
+      "scale": "small",
+      "requirement": 144,
+      "displayedWork": 14.5,
+      "displayedCompletion": 10.1,
+      "cost": 258,
+      "walletAfterAbort": 7084,
+      "before": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 0.0%\n软上限 70% · 刚性上限 100%\n已完成 0.0 / 144 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +10.1 个百分点\n你 · 100%",
+      "after": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 10.1%\n软上限 85% · 刚性上限 100%\n已完成 14.5 / 144 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +10.1 个百分点\n上周实际 +10.1 个百分点\n你 · 100%"
+    },
+    {
+      "scale": "medium",
+      "requirement": 432,
+      "displayedWork": 14.5,
+      "displayedCompletion": 3.4,
+      "cost": 258,
+      "walletAfterAbort": 6826,
+      "before": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 0.0%\n软上限 70% · 刚性上限 100%\n已完成 0.0 / 432 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +3.4 个百分点\n你 · 100%",
+      "after": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 3.4%\n软上限 85% · 刚性上限 100%\n已完成 14.5 / 432 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +3.4 个百分点\n上周实际 +3.4 个百分点\n你 · 100%"
+    },
+    {
+      "scale": "large",
+      "requirement": 1296,
+      "displayedWork": 14.5,
+      "displayedCompletion": 1.1,
+      "cost": 258,
+      "walletAfterAbort": 6568,
+      "before": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 0.0%\n软上限 70% · 刚性上限 100%\n已完成 0.0 / 1296 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +1.1 个百分点\n你 · 100%",
+      "after": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 1.1%\n软上限 85% · 刚性上限 100%\n已完成 14.5 / 1296 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +1.1 个百分点\n上周实际 +1.1 个百分点\n你 · 100%"
+    }
+  ],
+  "verified": [
+    "Four scale choices replace project genre selection; thirteen work items remain.",
+    "Custom title, acclaim goal and real mode survive switching scale.",
+    "Same first-week displayed work output; completion changes with demand.",
+    "Event raises soft cap from 70 to 85 without changing completed points.",
+    "Medium scale, 432 point demand and 3.4 percent completion survive reload.",
+    "Abort result and career history contain selected project scale.",
+    "Four one-week aborts retain 6568 funds and next stage 5; no repeat grant.",
+    "390px and 320px workbench, 320px home and scale dialog have no horizontal overflow.",
+    "Navigation uses immediate scrolling after observed interaction interference.",
+    "Owned test tab closed; viewport override reset; local preview server stopped."
+  ],
+  "limits": [
+    "Browser campaign tested first-week comparisons and abort flow, not a full release at every scale.",
+    "Full release simulations, scale-invariant production and revenue are covered by rule tests.",
+    "Full-page screenshot timed out; saved the normal desktop viewport instead.",
+    "Extension-origin warnings excluded from application checks."
+  ]
 }

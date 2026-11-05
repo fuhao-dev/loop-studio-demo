@@ -13,7 +13,7 @@ const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),scripts=[...html
 assert.equal(scripts.length,4,'offline package includes the people module');
 scripts.forEach((m,i)=>new vm.Script(m[1],{filename:'offline-script-'+i}));
 assert.ok(!/<script\b[^>]*\bsrc=|<link\b[^>]*rel=["']stylesheet/i.test(html),'offline scripts and styles embedded');
-assert.ok(html.includes('v0.6.0 DEMO')&&html.includes('loop_studio_career_v6'),'offline build current version and isolated save key');
+assert.ok(html.includes('v0.7.0 DEMO')&&html.includes('loop_studio_career_v7'),'offline build current version and isolated save key');
 for(const f of ['engine.js','audio.js','characters-ui.js','app.js'])new vm.Script(fs.readFileSync(path.join(root,'dist',f),'utf8'),{filename:f});
 console.log('UI checks passed: individual ramp hints, unavailable role, escaped names, four inline scripts, current offline build.');
 
@@ -23,10 +23,19 @@ const renderJob=vm.runInNewContext(jobCode+';job',{G,esc:v=>String(v),disabled:o
 const real=G.newRun({hard:true});real.softCaps.payment=1;real.work.payment=real.req.payment*.8;G.assignMember(real,'hero','payment');
 const row=renderJob(real,G.JOBS.find(j=>j.id==='payment'),G.preview(real),true);
 assert.ok(row.includes('完成度')&&row.includes('刚性上限 100%')&&row.includes('各 50%')&&row.includes(' ～ '));
-assert.ok(!row.includes('工作量'));
+assert.ok(row.includes('本周基础产能')&&row.includes('已完成'));
 const listing=renderJob(real,G.JOBS.find(j=>j.id==='materials'),G.preview(real),true);
 assert.ok(listing.includes('无软上限')&&!listing.includes('随机增减'));
 assert.ok(source.includes('理想模式')&&source.includes('真实模式'));
 console.log('Completion UI passed: percentage labels, both caps, risk range, listing exception, mode names.');
 
 assert.ok(!/G\.(CARDS|BUFFS|TEMPLATES)|pendingCards|showCards/.test(source));assert.ok(!html.includes('name="template"')&&!html.includes('data-view="blueprints"'));assert.equal(window.StudioPeople.setup,undefined);assert.ok(source.includes('G.syncCareer(meta,run)')&&source.includes('JSON.stringify({meta,run})'));console.log('Career UI checks passed: no starting cards or blueprints, one shared snapshot.');
+
+const homeCode=source.slice(source.indexOf('  function home('),source.indexOf('  function game('));
+const renderHome=vm.runInNewContext(homeCode+';home',{G,run:null,meta:G.emptyMeta(),title:()=>'',careerStats:()=>'',officeSVG:()=>'',esc:String});
+const home=renderHome();assert.equal((home.match(/class="scale-card"/g)||[]).length,4);assert.ok(home.includes('14,688')&&home.includes('1 : 3 : 9 : 27'));
+const setupCode=source.slice(source.indexOf('  function setup('),source.indexOf('  function showEvent('));let dialogMarkup='';
+const setupContext={G,run:null,meta:G.emptyMeta(),setupScale:'micro',showDialog:s=>dialogMarkup=s,dialogHeader:()=>'',esc:String,yen:n=>'¥'+n};
+vm.runInNewContext(setupCode+';setup("large")',setupContext);assert.equal((dialogMarkup.match(/data-action="setup-scale"/g)||[]).length,4);assert.ok(dialogMarkup.includes('大型游戏 · 基础总需求 14,688 点')&&dialogMarkup.includes('同能力、同状态的人员每周产出相同'));
+for(const scale of G.SCALES){const s=G.newRun({scale:scale.id});const row=renderJob(s,G.JOBS.find(j=>j.id==='gameplay'),G.preview(s),true);assert.ok(row.includes('/ '+48*scale.multiplier+' 点'));assert.ok(row.includes('本周基础产能 14.5 点'));assert.ok(window.StudioPeople.strip(s,true).includes('周产出 14.5 点'));}
+assert.ok(!/G\.GENRES|setup-genre|data-genre|题材契合|方向偏离/.test(source));console.log('Scale UI passed: four cards, setup totals, work points, fixed weekly output and no genre selector.');
