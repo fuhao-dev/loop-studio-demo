@@ -1,103 +1,92 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "date": "2026-11-05",
   "surface": "127.0.0.1 / Microsoft Edge via computer-use",
-  "seed": 77001,
-  "mode": "ideal",
-  "team": [
-    "hero",
-    "ace"
-  ],
-  "heroSkills": 100,
-  "focus": "gameplay",
-  "firstWeeks": [
+  "freshWallet": 7600,
+  "scalePlans": [
     {
       "scale": "micro",
-      "requirement": 48,
-      "displayedWork": 14.5,
-      "displayedCompletion": 30.2,
-      "cost": 258,
-      "walletAfterAbort": 7342,
-      "before": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 0.0%\n软上限 70% · 刚性上限 100%\n已完成 0.0 / 48 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +30.2 个百分点\n你 · 100%",
-      "after": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 30.2%\n软上限 85% · 刚性上限 100%\n已完成 14.5 / 48 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +30.3 个百分点\n上周实际 +30.2 个百分点\n你 · 100%"
+      "personWeeks": 54.4,
+      "minFunds": 5440,
+      "canStart": true
     },
     {
       "scale": "small",
-      "requirement": 144,
-      "displayedWork": 14.5,
-      "displayedCompletion": 10.1,
-      "cost": 258,
-      "walletAfterAbort": 7084,
-      "before": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 0.0%\n软上限 70% · 刚性上限 100%\n已完成 0.0 / 144 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +10.1 个百分点\n你 · 100%",
-      "after": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 10.1%\n软上限 85% · 刚性上限 100%\n已完成 14.5 / 144 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +10.1 个百分点\n上周实际 +10.1 个百分点\n你 · 100%"
+      "personWeeks": 163.2,
+      "minFunds": 16320,
+      "canStart": false
     },
     {
       "scale": "medium",
-      "requirement": 432,
-      "displayedWork": 14.5,
-      "displayedCompletion": 3.4,
-      "cost": 258,
-      "walletAfterAbort": 6826,
-      "before": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 0.0%\n软上限 70% · 刚性上限 100%\n已完成 0.0 / 432 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +3.4 个百分点\n你 · 100%",
-      "after": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 3.4%\n软上限 85% · 刚性上限 100%\n已完成 14.5 / 432 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +3.4 个百分点\n上周实际 +3.4 个百分点\n你 · 100%"
+      "personWeeks": 489.6,
+      "minFunds": 48960,
+      "canStart": false
     },
     {
       "scale": "large",
-      "requirement": 1296,
-      "displayedWork": 14.5,
-      "displayedCompletion": 1.1,
-      "cost": 258,
-      "walletAfterAbort": 6568,
-      "before": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 0.0%\n软上限 70% · 刚性上限 100%\n已完成 0.0 / 1296 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +1.1 个百分点\n你 · 100%",
-      "after": "玩法\n打磨规则、循环和核心体验。\n✦ 主攻\n完成度 1.1%\n软上限 85% · 刚性上限 100%\n已完成 14.5 / 1296 点\n本周基础产能 14.5 点（未计阶段与上限）\n正常推进\n本周 +1.1 个百分点\n上周实际 +1.1 个百分点\n你 · 100%"
+      "personWeeks": 1468.8,
+      "minFunds": 146880,
+      "canStart": false
     }
   ],
-  "verified": [
-    "Four scale choices replace project genre selection; thirteen work items remain.",
-    "Custom title, acclaim goal and real mode survive switching scale.",
-    "Same first-week displayed work output; completion changes with demand.",
-    "Event raises soft cap from 70 to 85 without changing completed points.",
-    "Medium scale, 432 point demand and 3.4 percent completion survive reload.",
-    "Abort result and career history contain selected project scale.",
-    "Four one-week aborts retain 6568 funds and next stage 5; no repeat grant.",
-    "390px and 320px workbench, 320px home and scale dialog have no horizontal overflow.",
-    "Navigation uses immediate scrolling after observed interaction interference.",
-    "Owned test tab closed; viewport override reset; local preview server stopped."
+  "largeSetup": {
+    "required": 146880,
+    "current": 7600,
+    "shortfall": 139280,
+    "submitDisabled": true
+  },
+  "switchingScalePreserves": {
+    "name": true,
+    "mode": true
+  },
+  "modeCopy": {
+    "ideal": "理想模式 · 稳定推进",
+    "real": "真实模式 · 感受一下现实吧",
+    "bottomRealRulesRemoved": true
+  },
+  "realFirstWeek": {
+    "seed": 77001,
+    "scale": "micro",
+    "startingWallet": 7600,
+    "spent": 258,
+    "wages": 168,
+    "maintenance": 90,
+    "endingWallet": 7342,
+    "heroGamePlayWork": 9.66,
+    "displayedCompletion": 20.1,
+    "focusControls": 0,
+    "event": "inspiration",
+    "choice": "拓展玩法表达",
+    "softCapAfterChoice": 85
+  },
+  "reloadRestores": {
+    "wallet": 7342,
+    "gameplayCompletion": 20.1,
+    "mode": "real"
+  },
+  "nextIdealProject": {
+    "stage": 2,
+    "startingWallet": 7342,
+    "spentOnStart": 0,
+    "wages": 168,
+    "maintenance": 90,
+    "firstWeeklyCost": 258
+  },
+  "responsive320": {
+    "viewport": 320,
+    "documentWidth": 305,
+    "metricPopupWidth": 296,
+    "setupDialogWidth": 270.67,
+    "largeSubmitDisabled": true,
+    "overflow": false
+  },
+  "screenshots": [
+    "docs/funding-preview.png",
+    "docs/workbench-v0.8.png"
   ],
   "limits": [
-    "Browser campaign tested first-week comparisons and abort flow, not a full release at every scale.",
-    "Full release simulations, scale-invariant production and revenue are covered by rule tests.",
-    "Full-page screenshot timed out; saved the normal desktop viewport instead.",
-    "Extension-origin warnings excluded from application checks."
-  ],
-  "uiUpdate": {
-    "version": "0.7.1",
-    "date": "2026-11-05",
-    "scope": "Morale and technical-debt contextual explanations; no game-rule changes.",
-    "observed": {
-      "morale": 90,
-      "productionFactorPercent": 96.6,
-      "debt": 7,
-      "codeProductionFactorPercent": 93,
-      "extraWeeklyBaseMaintenance": 14,
-      "newBugMultiplier": 1.28,
-      "frameworkPenalty": 1.26
-    },
-    "verified": [
-      "Question buttons appear after the two status numbers.",
-      "Mouse hover opens preview; moving into the explanation body keeps it open.",
-      "Moving away closes the unpinned preview.",
-      "Clicking pins the explanation while moving the pointer elsewhere.",
-      "Outside click, close button and Escape dismiss the explanation.",
-      "Tab focus opens preview; Enter pins it; closing restores focus to its trigger.",
-      "Adding the combat feature raises debt from 0 to 7; reopening the explanation shows recalculated effects.",
-      "Opening and closing explanations keeps week and funds unchanged.",
-      "320px click interaction shows a scrollable explanation within viewport height and no horizontal document overflow.",
-      "Default viewport restored, owned browser tab closed and local preview server stopped."
-    ],
-    "limits": [
-      "Narrow-screen behavior tested through browser clicks, not physical touchscreen hardware.",
-      "Existing UI checks and targeted browser checks were run; unchanged engine simulations were not rerun."
-    ]
-  }
+    "Browser used ordinary UI only; no injected wallet or state.",
+    "Higher-scale funding boundaries and full development simulations are covered in engine tests, not manually played in browser.",
+    "Standard person-week funding rate is a provisional launch threshold, not a promise of actual total cost."
+  ]
 }

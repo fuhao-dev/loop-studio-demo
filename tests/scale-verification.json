@@ -1,69 +1,69 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "date": "2026-11-05",
-  "checks": 11,
+  "checks": 15,
   "firstWeek": [
     {
       "scale": "micro",
       "multiplier": 1,
       "totalBaseWork": 544,
       "gameplayRequirement": 48,
-      "gameplayProduction": 14.49,
-      "gameplayGain": 14.49,
-      "gameplayCompletion": 0.301875
+      "gameplayProduction": 9.66,
+      "gameplayGain": 9.66,
+      "gameplayCompletion": 0.20125
     },
     {
       "scale": "small",
       "multiplier": 3,
       "totalBaseWork": 1632,
       "gameplayRequirement": 144,
-      "gameplayProduction": 14.49,
-      "gameplayGain": 14.49,
-      "gameplayCompletion": 0.100625
+      "gameplayProduction": 9.66,
+      "gameplayGain": 9.66,
+      "gameplayCompletion": 0.06708333333333333
     },
     {
       "scale": "medium",
       "multiplier": 9,
       "totalBaseWork": 4896,
       "gameplayRequirement": 432,
-      "gameplayProduction": 14.49,
-      "gameplayGain": 14.49,
-      "gameplayCompletion": 0.033541666666666664
+      "gameplayProduction": 9.66,
+      "gameplayGain": 9.66,
+      "gameplayCompletion": 0.022361111111111113
     },
     {
       "scale": "large",
       "multiplier": 27,
       "totalBaseWork": 14688,
       "gameplayRequirement": 1296,
-      "gameplayProduction": 14.49,
-      "gameplayGain": 14.49,
-      "gameplayCompletion": 0.011180555555555556
+      "gameplayProduction": 9.66,
+      "gameplayGain": 9.66,
+      "gameplayCompletion": 0.007453703703703704
     }
   ],
   "listingOnlyExamples": [
     {
       "scale": "micro",
-      "weeks": 4,
-      "cost": 1032
+      "weeks": 6,
+      "cost": 1548
     },
     {
       "scale": "small",
-      "weeks": 10,
-      "cost": 2580
+      "weeks": 14,
+      "cost": 3634
     },
     {
       "scale": "medium",
-      "weeks": 27,
-      "cost": 7118
+      "weeks": 40,
+      "cost": 10640
     },
     {
       "scale": "large",
-      "weeks": 77,
-      "cost": 21826
+      "weeks": 114,
+      "cost": 34516
     }
   ],
   "limits": [
-    "Same ability, assignment, focus, pace, morale and teamwork conditions; raw weekly production does not depend on scale.",
+    "Same ability, assignment, pace, morale and teamwork conditions; raw weekly production does not depend on scale.",
     "Dependencies, caps and real-mode phases still constrain actual gains.",
     "Listing-only duration examples use a seeded starting balance of 30000 × scale multiplier; not fresh-career balance or win-rate estimates.",
     "All scales share rating and revenue rules."

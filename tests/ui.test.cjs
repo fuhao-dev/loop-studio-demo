@@ -13,7 +13,7 @@ const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),scripts=[...html
 assert.equal(scripts.length,4,'offline package includes the people module');
 scripts.forEach((m,i)=>new vm.Script(m[1],{filename:'offline-script-'+i}));
 assert.ok(!/<script\b[^>]*\bsrc=|<link\b[^>]*rel=["']stylesheet/i.test(html),'offline scripts and styles embedded');
-assert.ok(html.includes('v0.7.1 DEMO')&&html.includes('loop_studio_career_v7'),'offline build current version and isolated save key');
+assert.ok(html.includes('v0.8.0 DEMO')&&html.includes('loop_studio_career_v8'),'offline build current version and isolated save key');
 for(const f of ['engine.js','audio.js','characters-ui.js','app.js'])new vm.Script(fs.readFileSync(path.join(root,'dist',f),'utf8'),{filename:f});
 console.log('UI checks passed: individual ramp hints, unavailable role, escaped names, four inline scripts, current offline build.');
 
@@ -32,10 +32,18 @@ console.log('Completion UI passed: percentage labels, both caps, risk range, lis
 assert.ok(!/G\.(CARDS|BUFFS|TEMPLATES)|pendingCards|showCards/.test(source));assert.ok(!html.includes('name="template"')&&!html.includes('data-view="blueprints"'));assert.equal(window.StudioPeople.setup,undefined);assert.ok(source.includes('G.syncCareer(meta,run)')&&source.includes('JSON.stringify({meta,run})'));console.log('Career UI checks passed: no starting cards or blueprints, one shared snapshot.');
 
 const homeCode=source.slice(source.indexOf('  function home('),source.indexOf('  function game('));
-const renderHome=vm.runInNewContext(homeCode+';home',{G,run:null,meta:G.emptyMeta(),title:()=>'',careerStats:()=>'',officeSVG:()=>'',esc:String});
-const home=renderHome();assert.equal((home.match(/class="scale-card"/g)||[]).length,4);assert.ok(home.includes('14,688')&&home.includes('1 : 3 : 9 : 27'));
+const renderHome=vm.runInNewContext(homeCode+';home',{G,run:null,meta:G.emptyMeta(),title:()=>'',careerStats:()=>'',officeSVG:()=>'',esc:String,yen:n=>'¥'+n,disabled:ok=>ok?'':' disabled'});
+const home=renderHome();assert.equal((home.match(/class="scale-card"/g)||[]).length,4);assert.ok(home.includes('1,468.8')&&home.includes('100% 能力')&&home.includes('资金不足'));
 const setupCode=source.slice(source.indexOf('  function setup('),source.indexOf('  function showEvent('));let dialogMarkup='';
-const setupContext={G,run:null,meta:G.emptyMeta(),setupScale:'micro',showDialog:s=>dialogMarkup=s,dialogHeader:()=>'',esc:String,yen:n=>'¥'+n};
-vm.runInNewContext(setupCode+';setup("large")',setupContext);assert.equal((dialogMarkup.match(/data-action="setup-scale"/g)||[]).length,4);assert.ok(dialogMarkup.includes('大型游戏 · 基础总需求 14,688 点')&&dialogMarkup.includes('同能力、同状态的人员每周产出相同'));
-for(const scale of G.SCALES){const s=G.newRun({scale:scale.id});const row=renderJob(s,G.JOBS.find(j=>j.id==='gameplay'),G.preview(s),true);assert.ok(row.includes('/ '+48*scale.multiplier+' 点'));assert.ok(row.includes('本周基础产能 14.5 点'));assert.ok(window.StudioPeople.strip(s,true).includes('周产出 14.5 点'));}
+const setupContext={G,run:null,meta:G.emptyMeta(),setupScale:'micro',showDialog:s=>dialogMarkup=s,dialogHeader:()=>'',esc:String,yen:n=>'¥'+n,disabled:ok=>ok?'':' disabled'};
+vm.runInNewContext(setupCode+';setup("large")',setupContext);assert.equal((dialogMarkup.match(/data-action="setup-scale"/g)||[]).length,4);assert.ok(dialogMarkup.includes('大型游戏 · 需要 1,468.8 人周工作量')&&dialogMarkup.includes('同能力、同状态的人员每周产出相同'));
+for(const scale of G.SCALES){const m=G.emptyMeta();m.wallet=200000;const s=G.newRun({scale:scale.id},m);const row=renderJob(s,G.JOBS.find(j=>j.id==='gameplay'),G.preview(s),true);assert.ok(row.includes('/ '+48*scale.multiplier+' 点'));assert.ok(row.includes('本周基础产能 9.7 点'));assert.ok(window.StudioPeople.strip(s,true).includes('周产出 9.7 点'));}
 assert.ok(!/G\.GENRES|setup-genre|data-genre|题材契合|方向偏离/.test(source));console.log('Scale UI passed: four cards, setup totals, work points, fixed weekly output and no genre selector.');
+
+assert.ok(!source.includes('主攻')&&!source.includes('data-action="focus"'));
+assert.ok(dialogMarkup.includes('真实模式 · 感受一下现实吧')&&dialogMarkup.includes('理想模式 · 稳定推进'));
+assert.ok(!dialogMarkup.includes('工资 +15%')&&!dialogMarkup.includes('非上架工作按完成度分段'));
+assert.match(dialogMarkup,/<button class="btn-primary" type="submit" disabled>资金不足，无法立项/);
+vm.runInNewContext(setupCode+';setup("micro")',setupContext);
+assert.match(dialogMarkup,/<button class="btn-primary" type="submit">开始本次开发/);
+console.log('Funding UI passed: insufficient large project blocked, affordable micro enabled, no focus, revised mode copy.');

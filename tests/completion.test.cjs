@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),G=require('../dist/engine.js'),{resolve}=require('./work-sim.cjs');
 let checks=0;function check(name,fn){fn();checks++;}
 function ready(hard=false,seed=55001){const s=G.newRun({hard,seed});return s;}
-function isolate(s,id){for(const m of s.team)G.assignMember(s,m.id,'idle');G.assignMember(s,'ace',id);s.team[1].lastJob=id;s.focus=id;return s;}
+function isolate(s,id){for(const m of s.team)G.assignMember(s,m.id,'idle');G.assignMember(s,'ace',id);s.team[1].lastJob=id;return s;}
 function set(s,id,p){s.work[id]=Math.round(s.req[id]*p*100)/100;}
 check('11 initial soft caps and two unrestricted listing jobs',()=>{const s=ready();assert.equal(Object.keys(s.softCaps).length,11);for(const j of G.JOBS)assert.equal(G.softCap(s,j.id),j.group==='release'?1:.7);});
 check('ideal work stops at 70 without raising actual progress through events',()=>{const s=isolate(ready(),'gameplay');set(s,'gameplay',.69);G.advance(s);assert.ok(Math.abs(G.progress(s,'gameplay')-.7)<1e-8);const before={...s.work};s.pendingEvent='inspiration';G.resolveEvent(s,0);assert.equal(G.softCap(s,'gameplay'),.85);assert.deepEqual(s.work,before);resolve(s);assert.ok(G.preview(s).gains.gameplay>0);});
