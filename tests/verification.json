@@ -1,5 +1,5 @@
 {
-  "version": "0.9.2",
+  "version": "0.9.3",
   "date": "2026-11-05",
   "checks": 39,
   "simulatedRuns": 23,
@@ -13,7 +13,7 @@
       "weeks": 19,
       "rating": "B+",
       "cost": 6591,
-      "walletEnd": 7013,
+      "walletEnd": 7111,
       "crew": [
         "hero",
         "ace",
@@ -29,7 +29,7 @@
       "weeks": 16,
       "rating": "B-",
       "cost": 5731,
-      "walletEnd": 6397,
+      "walletEnd": 4786,
       "crew": [
         "hero",
         "ace",
@@ -45,7 +45,7 @@
       "weeks": 19,
       "rating": "B",
       "cost": 6631,
-      "walletEnd": 6207,
+      "walletEnd": 5534,
       "crew": [
         "hero",
         "ace",
@@ -61,7 +61,7 @@
       "weeks": 17,
       "rating": "C+",
       "cost": 6039,
-      "walletEnd": 5959,
+      "walletEnd": 12769,
       "crew": [
         "hero",
         "ace",
@@ -77,7 +77,7 @@
       "weeks": 19,
       "rating": "B",
       "cost": 6532,
-      "walletEnd": 6730,
+      "walletEnd": 5214,
       "crew": [
         "hero",
         "ace",
@@ -93,7 +93,7 @@
       "weeks": 16,
       "rating": "C+",
       "cost": 5693,
-      "walletEnd": 6179,
+      "walletEnd": 4660,
       "crew": [
         "hero",
         "ace",
@@ -109,7 +109,7 @@
       "weeks": 19,
       "rating": "B+",
       "cost": 6591,
-      "walletEnd": 29413
+      "walletEnd": 29511
     },
     {
       "seed": 44001,
@@ -120,7 +120,7 @@
       "weeks": 16,
       "rating": "B-",
       "cost": 5731,
-      "walletEnd": 28797
+      "walletEnd": 27186
     },
     {
       "seed": 44001,
@@ -131,7 +131,7 @@
       "weeks": 46,
       "rating": "B+",
       "cost": 16091,
-      "walletEnd": 80522
+      "walletEnd": 133499
     },
     {
       "seed": 44001,
@@ -142,7 +142,7 @@
       "weeks": 44,
       "rating": "B-",
       "cost": 14376,
-      "walletEnd": 80606
+      "walletEnd": 109193
     },
     {
       "seed": 44001,
@@ -153,7 +153,7 @@
       "weeks": 135,
       "rating": "B",
       "cost": 48790,
-      "walletEnd": 229279
+      "walletEnd": 229928
     },
     {
       "seed": 44001,
@@ -164,7 +164,7 @@
       "weeks": 130,
       "rating": "C+",
       "cost": 44653,
-      "walletEnd": 232452
+      "walletEnd": 281109
     },
     {
       "seed": 44001,
@@ -175,7 +175,7 @@
       "weeks": 420,
       "rating": "B",
       "cost": 175186,
-      "walletEnd": 650689
+      "walletEnd": 672545
     },
     {
       "seed": 44001,
@@ -186,7 +186,7 @@
       "weeks": 427,
       "rating": "C+",
       "cost": 166581,
-      "walletEnd": 654942
+      "walletEnd": 675818
     },
     {
       "seed": 44001,
@@ -195,7 +195,7 @@
       "rating": "D",
       "adSpend": 0,
       "adRevenue": 0,
-      "walletEnd": 6743
+      "walletEnd": 6148
     },
     {
       "seed": 44001,
@@ -204,7 +204,7 @@
       "rating": "B",
       "adSpend": 0,
       "adRevenue": 0,
-      "walletEnd": 8370
+      "walletEnd": 19539
     },
     {
       "seed": 44001,
@@ -213,7 +213,7 @@
       "rating": "D",
       "adSpend": 300,
       "adRevenue": 75,
-      "walletEnd": 6359
+      "walletEnd": 5913
     },
     {
       "seed": 44002,
@@ -222,7 +222,7 @@
       "rating": "D-",
       "adSpend": 0,
       "adRevenue": 0,
-      "walletEnd": 6755
+      "walletEnd": 7984
     },
     {
       "seed": 44002,
@@ -231,7 +231,7 @@
       "rating": "B",
       "adSpend": 0,
       "adRevenue": 0,
-      "walletEnd": 7274
+      "walletEnd": 6676
     },
     {
       "seed": 44002,
@@ -240,7 +240,7 @@
       "rating": "D-",
       "adSpend": 300,
       "adRevenue": 45,
-      "walletEnd": 6308
+      "walletEnd": 11647
     },
     {
       "seed": 44003,
@@ -249,7 +249,7 @@
       "rating": "D-",
       "adSpend": 0,
       "adRevenue": 0,
-      "walletEnd": 6941
+      "walletEnd": 6697
     },
     {
       "seed": 44003,
@@ -258,7 +258,7 @@
       "rating": "B-",
       "adSpend": 0,
       "adRevenue": 0,
-      "walletEnd": 8021
+      "walletEnd": 10360
     },
     {
       "seed": 44003,
@@ -267,7 +267,7 @@
       "rating": "D",
       "adSpend": 300,
       "adRevenue": 75,
-      "walletEnd": 6543
+      "walletEnd": 7424
     }
   ],
   "limits": [

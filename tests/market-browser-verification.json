@@ -1,0 +1,61 @@
+{
+  "version": "0.9.3",
+  "date": "2026-11-05",
+  "browser": "Microsoft Edge through actual UI against localhost offline build",
+  "rules": {
+    "marketMin": 0.1,
+    "marketMax": 10,
+    "distribution": "rounded logarithmic uniform",
+    "scaleRevenueMultipliers": [
+      1,
+      3,
+      9,
+      27
+    ],
+    "appliesTo": "organic income only; paid acquisition remains tied to grade"
+  },
+  "release": {
+    "project": 6,
+    "name": "补助后的新点子",
+    "mode": "real",
+    "weeks": 6,
+    "forecastBeforeRelease": [
+      65,
+      135000
+    ],
+    "grade": "D+",
+    "organicBaseRevenue": 847,
+    "marketMultiplier": 2.71,
+    "scaleRevenueMultiplier": 1,
+    "organicRevenue": 2295,
+    "adRevenue": 0,
+    "cost": 1548,
+    "profit": 747,
+    "walletEnd": 8347,
+    "expGained": 95
+  },
+  "savedHistory": {
+    "reloaded": true,
+    "marketMultiplier": 2.71,
+    "organicRevenue": 2295,
+    "wallet": 8347,
+    "totalExp": 171,
+    "noDuplicateSettlement": true
+  },
+  "responsive": {
+    "viewport": 320,
+    "documentWidth": 305,
+    "dialogWidth": 270.67,
+    "dialogScrollWidth": 269
+  },
+  "automated": {
+    "ruleChecks": 149,
+    "marketChecks": 14,
+    "forecastCases": 80,
+    "distributionSamples": 10000
+  },
+  "screenshots": [
+    "docs/market-scales-preview.png",
+    "docs/market-result-preview.png"
+  ]
+}

@@ -60,3 +60,5 @@
 
 /* Career recovery without resetting progress. */
 .startup-aid{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 22px;margin-bottom:22px;border:1px solid #8a764e88;border-radius:9px;background:linear-gradient(110deg,#d8b87912,#81bea707)}.startup-aid strong{font-size:15px;font-weight:500;color:var(--gold)}.startup-aid p{font-size:12px;line-height:1.9;margin:7px 0;color:var(--text)}.startup-aid small{display:block;font-size:10px;line-height:1.8;color:var(--muted)}.startup-aid button{flex-shrink:0;font-size:12px}.dialog .startup-aid{flex-direction:column;align-items:stretch;padding:15px}.dialog .startup-aid button{align-self:flex-start}@media(max-width:650px){.startup-aid{flex-direction:column;align-items:stretch;padding:16px;gap:12px}.startup-aid button{align-self:flex-start;max-width:100%;white-space:normal}}
+
+.scale-return{color:var(--gold);font-size:12px;line-height:1.8;margin:0 0 14px}.scale-return small{display:block;color:var(--muted);font-size:10px}
