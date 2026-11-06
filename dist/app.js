@@ -1,6 +1,6 @@
 (function(){
   'use strict';
-  const G=window.StudioGame, P=window.StudioPeople, $=id=>document.getElementById(id);
+  const G=window.StudioGame, P=window.StudioPeople, T=window.StudioTutorial, $=id=>document.getElementById(id);
   const SAVE='loop_studio_career_v14';
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const yen=n=>{const value=Math.round(n);return (value<0?'−':'')+'¥'+Math.abs(value).toLocaleString('zh-CN');};
@@ -12,6 +12,53 @@
   const pct=(n,d)=>Math.max(0,Math.min(100,Math.floor(n/d*100)));
   let run=null,meta=G.emptyMeta(),view='home',tab='work',workModule='content',historyFilter='all',recruitFilter='all',hiddenPrompt=false,setupScale='micro',toastTimer,storageOK=true,guideOpen=false;
   try{const snapshot=JSON.parse(localStorage.getItem(SAVE)||'null');if(G.validateSnapshot(snapshot)){meta=snapshot.meta;run=snapshot.run;}}catch{}
+  let tutorial=T.empty();
+  try{const stored=JSON.parse(localStorage.getItem(T.KEY)||'null');if(T.valid(stored))tutorial=stored;}catch{}
+  function tutorialContext(){return {meta,run};}
+  function saveTutorial(){try{localStorage.setItem(T.KEY,JSON.stringify(tutorial));}catch{}}
+  function observeTutorial(signal='observe'){const previous=tutorial.step;tutorial=T.update(tutorial,signal,tutorialContext());if(tutorial.step!==previous)tutorial.minimized=false;saveTutorial();}
+  function tutorialWelcome(){
+    if(tutorial.status==='unseen'){tutorial.status='paused';saveTutorial();}
+    const resume=['active','paused'].includes(tutorial.status)&&tutorial.runId!==null;
+    showDialog(dialogHeader('YOUR FIRST GAME','和天才程序员，做出第一款游戏。')+`<div class="tutorial-welcome"><div>${P.portrait(G.COMPANION)}</div><p>从立项到发售，我陪你走一遍。<br>每一步都在真实项目中完成，进度会自动保存。</p></div><ol class="tutorial-outline"><li><b>先开工</b><span>选择规模，安排两人的工作</span></li><li><b>过一周</b><span>认识进度、成本与随机事件</span></li><li><b>做完一作</b><span>选择发行方式，完成上架，积累成长</span></li></ol><p class="quality-note">可以随时暂停或跳过，从侧栏「新手教程」继续查看。引导不会重置项目、改变随机结果或替你签约。</p><div class="dialog-actions"><button class="btn-ghost" data-action="tutorial-skip">我想自行探索</button>${resume?'<button class="btn-ghost" data-action="tutorial-start" data-restart="true">从当前项目重新学习</button>':''}<button class="btn-primary" data-action="tutorial-start">${resume?'继续新手教程':'开始新手教程 →'}</button></div>`,'tutorial-welcome');
+  }
+  function renderTutorial(){
+    const coach=$('tutorial-coach');document.querySelectorAll('.tutorial-target').forEach(el=>el.classList.remove('tutorial-target'));
+    coach.hidden=tutorial.status!=='active'||dialog.open;if(coach.hidden)return;
+    const d=T.detail(tutorial,tutorialContext());coach.className='tutorial-coach'+(tutorial.minimized?' minimized':'');
+    const ready=d.id==='release'&&run&&G.canRelease(run);
+    coach.innerHTML=`<div class="tutorial-coach-head"><span aria-hidden="true">◇</span><div><small>新手教程 ${d.index}／${d.total}</small><h2 id="tutorial-step-title">${esc(d.title)}</h2></div><button data-action="tutorial-minimize" aria-label="${tutorial.minimized?'展开':'收起'}新手教程" aria-expanded="${!tutorial.minimized}">${tutorial.minimized?'＋':'−'}</button></div>${tutorial.minimized?'':`<div class="tutorial-coach-content"><div class="tutorial-progress" aria-label="教程进度 ${d.index}／${d.total}"><i style="width:${d.index/d.total*100}%"></i></div><p>${esc(d.text)}</p><p class="tutorial-note">${esc(d.note)}</p><div class="tutorial-coach-actions"><button class="btn-primary" data-action="tutorial-go">${ready?'查看发售方案':esc(d.label)}</button>${d.id==='publisher'?'<button class="btn-ghost" data-action="tutorial-indie">选择独立发行</button>':''}${d.id==='release'?'<button class="btn-ghost" data-action="tutorial-growth">先了解后续成长</button>':''}</div><div class="tutorial-coach-foot"><button data-action="tutorial-pause">暂停引导</button><button data-action="tutorial-skip">跳过教程</button></div></div>`}`;
+    coach.setAttribute('aria-labelledby','tutorial-step-title');
+    if(view===d.view){const target=document.querySelector(d.target);if(target)target.classList.add('tutorial-target');}
+  }
+  function locateTutorial(){
+    const d=T.detail(tutorial,tutorialContext());
+    if(d.id==='project'){setup('micro');return;}
+    if(d.id==='event'){if(run?.pendingEvent)showEvent();else if(run?.eventResult?.unread)showEventResult();return;}
+    view=d.view;if(view==='game'){tab=d.id==='publisher'?'publisher':'work';if(d.id==='release')workModule='release';}
+    hiddenPrompt=false;render();
+    const target=document.querySelector(d.target);target?.scrollIntoView({block:'center',inline:'nearest'});
+    const control=target?.matches('button,select')?target:target?.querySelector('select,button');control?.focus({preventScroll:true});
+    if(innerWidth<741&&['assign','modules','week','release'].includes(d.id)){tutorial.minimized=true;saveTutorial();renderTutorial();}
+  }
+  function tutorialAction(action,button){
+    if(action==='tutorial'){tutorialWelcome();return true;}
+    if(!action.startsWith('tutorial-'))return false;
+    if(action==='tutorial-start'){tutorial=T.start(tutorial,tutorialContext(),button.dataset.restart==='true'||['done','skipped'].includes(tutorial.status));saveTutorial();close();render();locateTutorial();return true;}
+    if(action==='tutorial-skip'){tutorial={...tutorial,status:'skipped',minimized:false};saveTutorial();if(dialogKind==='tutorial-welcome')close();renderTutorial();return true;}
+    if(action==='tutorial-pause'){observeTutorial('pause');renderTutorial();toast('引导已暂停，可从侧栏「新手教程」继续。');return true;}
+    if(tutorial.status!=='active')return true;
+    if(action==='tutorial-minimize'){observeTutorial('minimize');renderTutorial();return true;}
+    if(action==='tutorial-indie'){observeTutorial('indie');render();locateTutorial();return true;}
+    if(action==='tutorial-growth'){observeTutorial('learn-growth');render();locateTutorial();return true;}
+    if(action==='tutorial-go'){
+      if(tutorial.step==='growth'){observeTutorial('finish');renderTutorial();toast('教程已完成，去做属于你的游戏吧。');return true;}
+      if(['caps','budget'].includes(tutorial.step)){observeTutorial('next');render();locateTutorial();return true;}
+      if(tutorial.step==='release'&&run&&G.canRelease(run)){release();return true;}
+      locateTutorial();return true;
+    }
+    return true;
+  }
 
   const audio=window.DSHAudio.create(window);audio.init(updateAudio);
   function updateAudio(){const a=audio.getState();const muted=a.settings?.muted??a.muted;const b=$('audio-toggle');b.classList.toggle('on',!muted);b.setAttribute('aria-label',muted?'开启声音':'关闭声音');b.title=muted?'开启声音':'关闭声音';}
@@ -61,7 +108,7 @@
     <path d="m407 178 27-14 15 8-27 14Z" fill="#9d8c68"/><path d="M407 178v32l15 8v-32m27-14v32l-27 14v-32" fill="#526252"/><path d="m415 181 10-5 8 4-10 5Z" fill="#b7ba9e"/><path d="m396 155 6-3v18l-6 3Z" fill="#d9c198"/><path d="m384 150 16-20 17 20-17 8Z" fill="#dac28c"/><ellipse cx="401" cy="151" rx="15" ry="5" fill="#f5d795" opacity=".22" filter="url(#glow)"/></svg>`;
   }
   function home(){const live=run&&!run.over;return title('MAKE SOMETHING WORTH PLAYING','天才程序员带我做游戏','一间小工作室，一个新点子，还有属于你的制作人故事。')+
-    `${careerStats()}<section class="hero"><div class="hero-copy"><div class="eyebrow">下一个好点子 · 等你开工</div><h1>从一个点子，<br>到一款真正的游戏。</h1><p>安排团队，积累主角能力，应对开发中的意外。<br>时间没有终点，预算会提醒你何时该发售。</p><div class="hero-buttons"><button class="btn-primary" data-action="${live?'continue':'setup'}">${live?'继续开发「'+esc(run.name)+'」':meta.stage===1?'＋ 立项，开始第一款游戏':'＋ 立项，开始新项目'} <span>↗</span></button>${live?'<button class="btn-ghost" data-action="setup">新项目</button>':'<button class="btn-ghost" data-action="help">了解怎么玩 →</button>'}</div><p class="hero-note">回合开发 · 每周随机事件 · 资金继承 · 全局团队</p></div><div class="home-office">${officeSVG()}</div></section>
+    `${careerStats()}<section class="hero"><div class="hero-copy"><div class="eyebrow">下一个好点子 · 等你开工</div><h1>从一个点子，<br>到一款真正的游戏。</h1><p>安排团队，积累主角能力，应对开发中的意外。<br>时间没有终点，预算会提醒你何时该发售。</p><div class="hero-buttons"><button class="btn-primary" data-action="${live?'continue':'setup'}">${live?'继续开发「'+esc(run.name)+'」':meta.stage===1?'＋ 立项，开始第一款游戏':'＋ 立项，开始新项目'} <span>↗</span></button>${live?'<button class="btn-ghost" data-action="setup">新项目</button>':'<button class="btn-ghost" data-action="tutorial">新手教程 →</button>'}</div><p class="hero-note">回合开发 · 每周随机事件 · 资金继承 · 全局团队</p></div><div class="home-office">${officeSVG()}</div></section>
     ${meta.pausedProjects.length?`<div class="notice">还有 ${meta.pausedProjects.length} 个已暂停项目，可以随时继续。<button class="btn-small" data-action="nav" data-view="history">查看并恢复开发 ↗</button></div>`:''}
     <div class="section-heading"><h2>这一次，做多大的游戏？</h2><small>四档规模 · 以 100% 能力计算标准人周</small></div><div class="scale-grid">${G.SCALES.map((g,i)=>`<article class="scale-card" style="--accent:${['#d8b879','#81bea7','#76a9e7','#bc9fe4'][i]}"><div class="scale-icon">${g.icon}</div><h3>${g.name}</h3><div class="scale-meta">${g.tag}</div><p>${g.desc}</p><div class="scale-work"><small>需要</small>${G.scalePlan(g.id).personWeeks.toLocaleString("zh-CN")}<small>人周工作量 · 100% 能力</small></div><div class="scale-funds ${meta.wallet<G.scalePlan(g.id).minFunds?'insufficient':''}">立项需要 ${yen(G.scalePlan(g.id).minFunds)}<small>${meta.wallet<G.scalePlan(g.id).minFunds?'资金不足 · 还差 '+yen(G.scalePlan(g.id).minFunds-meta.wallet):'当前资金可立项'}</small></div><div class="scale-return">自然收入 ×${g.revenueMultiplier}<small>市场随机 ×${G.MARKET_MIN.toFixed(2)}～${G.MARKET_MAX.toFixed(2)}</small></div><button data-action="setup" data-scale="${g.id}"${disabled(meta.wallet>=G.scalePlan(g.id).minFunds)}>${meta.wallet<G.scalePlan(g.id).minFunds?'资金不足':'选择这个规模 <span>↗</span>'}</button></article>`).join('')}</div>
     <div class="home-bottom"><div class="home-tip"><span>◷</span><div><h3>开发多久，由你决定</h3><p>没有固定回合上限。团队、项目范围与技术债决定每周成本。</p></div></div><div class="home-tip"><span>◇</span><div><h3>每一作，都是新的开始</h3><p>完成作品获得经验，训练主角；剩余资金与全体伙伴带到下一关。</p></div></div></div>`;
@@ -101,7 +148,7 @@
       <dl class="detail-grid"><div><dt>已完成</dt><dd>${s.work[j.id].toFixed(1)} / ${s.req[j.id]} 点</dd></div><div><dt>本周基础产能</dt><dd>${(p?.production[j.id]||0).toFixed(1)} 点</dd></div><div><dt>刚性上限 100%</dt><dd>${listing?'无软上限':'软上限 '+Math.round(cap*100)+'%'}</dd></div></dl>
       <p class="detail-foot">基础产能未计阶段与上限；${s.hard?'以上为满效率预估，未计真实模式的阶段减速、随机返工与牵连；实际变化可能不同。':'预计已计入上游依赖与完成度上限。'}</p>
       ${dependency?`<div class="dependency-card"><strong>上游依赖</strong>${dependency.sources.map(source=>`<span>${source.name}<b>${(source.value*100).toFixed(1)}%</b></span>`).join('')}<span>上游允许上限<b>${(dependency.cap*100).toFixed(1)}%</b></span><small>${j.id==='review'?'资料准备须到 100%':'仍受本项软上限限制'} · 按周初进度计算</small></div>`:''}
-      <div class="job-members">${G.publisherManaged(s,j.id)?'发行团队 · 每周 '+G.PUBLISHER_WEEKLY_WORK+' 点基础工作':assigned.map(m=>`<span style="color:${m.color}">${esc(m.name)} · ${G.taskSkill(m,j.id)}%${m.job!==m.lastJob?' · 磨合中':''}</span>`).join(' / ')||'未安排伙伴'}</div>
+      <div class="job-members">${G.publisherManaged(s,j.id)?'发行团队 · 每周 '+G.publisherWork(s)+' 点基础工作':assigned.map(m=>`<span style="color:${m.color}">${esc(m.name)} · ${G.taskSkill(m,j.id)}%${m.job!==m.lastJob?' · 磨合中':''}</span>`).join(' / ')||'未安排伙伴'}</div>
       ${atCap?'<p class="detail-foot">已到软上限，等待事件解锁。</p>':''}
       ${s.hard&&phase.spill?'<p class="detail-foot">本项实际推进的 20% 会从另一项非上架工作扣除；具体影响在推进后揭晓。</p>':''}
       ${s.hard&&phase.id==='uncertain'?'<p class="detail-foot">即使已满或触及上限，继续安排仍可能返工。增减各 50%，幅度为基础产能的 20%—100%。</p>':''}
@@ -163,8 +210,8 @@
     <section class="panel career-history-link"><div><h2>开发历史 · 已发售 ${released.length} 款</h2><p>查看正在开发、暂停、已发售和已结束的全部产品。</p></div><button data-action="nav" data-view="history" class="btn-small">打开开发历史 ↗</button></section>
     <p class="quality-note" style="margin-top:24px">结束全部未完成项目后，余额低于最低立项门槛时可领取创业补助，保留生涯进度。重新开始生涯会重置资金、能力、伙伴和履历。</p><button class="btn-ghost btn-small" data-action="reset-career"${disabled(!active)}>重新开始生涯</button>`;}
 
-  function render(){const guide=$('workbench-guide');if(guide)guideOpen=guide.open;hideMetricHelp();G.syncCareer(meta,run);const labels={home:'工作室大厅',game:'开发现场',career:'局外生涯',history:'开发历史',milestones:'开发里程碑'};document.querySelectorAll('.sidebar nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$('location').textContent=labels[view];$('run-dot').style.display=run&&!run.over?'':'none';$('meta-mini').innerHTML='<div class="side-growth"><small>生涯资金</small><div style="margin-top:8px"><strong class="gold">'+yen(meta.wallet)+'</strong></div><p>可用经验 '+meta.exp+' EXP<br>全局团队 '+(meta.partners.length+2)+'／'+G.reputationProfile(meta).teamCap+' 人 · 名誉 '+meta.reputation.toLocaleString('zh-CN',{maximumFractionDigits:3})+'<br>已暂停 '+meta.pausedProjects.length+' 个项目'+'</p></div>';
-    $('app').innerHTML=startupAidNotice()+({home,game,career,history:developmentHistory,milestones:developmentMilestones}[view])();renderFooter();save();if(view==='game'&&!hiddenPrompt&&run&&!run.over){if(run.pendingEvent)showEvent();else if(run.eventResult?.unread)showEventResult();}}
+  function render(){observeTutorial();const guide=$('workbench-guide');if(guide)guideOpen=guide.open;hideMetricHelp();G.syncCareer(meta,run);const labels={home:'工作室大厅',game:'开发现场',career:'局外生涯',history:'开发历史',milestones:'开发里程碑'};document.querySelectorAll('.sidebar nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));$('location').textContent=labels[view];$('run-dot').style.display=run&&!run.over?'':'none';$('meta-mini').innerHTML='<div class="side-growth"><small>生涯资金</small><div style="margin-top:8px"><strong class="gold">'+yen(meta.wallet)+'</strong></div><p>可用经验 '+meta.exp+' EXP<br>全局团队 '+(meta.partners.length+2)+'／'+G.reputationProfile(meta).teamCap+' 人 · 名誉 '+meta.reputation.toLocaleString('zh-CN',{maximumFractionDigits:3})+'<br>已暂停 '+meta.pausedProjects.length+' 个项目'+'</p></div>';
+    $('app').innerHTML=startupAidNotice()+({home,game,career,history:developmentHistory,milestones:developmentMilestones}[view])();renderFooter();save();renderTutorial();if(view==='game'&&!hiddenPrompt&&run&&!run.over){if(run.pendingEvent)showEvent();else if(run.eventResult?.unread)showEventResult();}}
   function renderFooter(){if(view!=='game'||!run||run.over){$('footer').innerHTML='';return;}const s=run,c=G.cost(s),pending=s.pendingEvent||s.eventResult?.unread;$('footer').innerHTML=`<footer class="actionbar"><div><p><strong>第 ${s.week} 周 · 团队开发</strong><span class="break-mobile">　${s.reserve?s.reserve+' 人尚未分配岗位':'岗位调整不消耗时间'}</span></p><p class="${s.money<c.total?'danger-text':''}" style="margin-top:4px">${pending?'完成当前选择后才能继续开发':s.money<c.total?'预算不足，请处理资金或结束项目':'推进后支付 '+yen(c.total)+'，并触发一次随机事件'}</p></div><div class="action-controls"><div class="pace" aria-label="开发节奏">${[['rest','休整'],['normal','正常'],['crunch','赶工']].map(([id,n])=>`<button data-action="pace" data-pace="${id}" title="${id==='rest'?'效率 70%，士气 +12':id==='crunch'?'效率 135%，士气 −10，增加技术债':'标准效率，士气 +1'}" class="${s.pace===id?'selected':''}"${disabled(!busy())}>${n}</button>`).join('')}</div><button data-action="${pending?'prompt':'advance'}" class="btn-primary next-week"${disabled(pending||s.money>=c.total)}>${pending?'完成当前选择':'推进一周'}　→</button></div></footer>`;}
   const metricPopup=document.createElement('aside');metricPopup.id='metric-help';metricPopup.className='metric-help';metricPopup.hidden=true;
   metricPopup.setAttribute('role','dialog');metricPopup.setAttribute('aria-modal','false');metricPopup.setAttribute('aria-labelledby','metric-help-title');document.body.append(metricPopup);
@@ -185,8 +232,8 @@
   window.addEventListener('scroll',positionMetricHelp,true);
 
   const dialog=$('dialog');let dialogKind='';
-  function showDialog(html,kind){hideMetricHelp();dialogKind=kind;dialog.innerHTML=`<div class="dialog-body">${html}</div>`;if(!dialog.open)dialog.showModal();}
-  function close(){dialog.close();dialogKind='';}
+  function showDialog(html,kind){hideMetricHelp();dialogKind=kind;const tip=T.dialogTip(kind,tutorial);html=(tip?'<aside class="tutorial-dialog-tip" aria-label="新手教程提示"><b>◇ 天才程序员的小提示</b><p>'+esc(tip)+'</p></aside>':'')+html;dialog.innerHTML=`<div class="dialog-body">${html}</div>`;if(!dialog.open)dialog.showModal();renderTutorial();}
+  function close(){dialog.close();dialogKind='';renderTutorial();}
   function dialogHeader(eye,name,closable=true){return `<div class="dialog-header"><div><div class="eyebrow">${eye}</div><h2 id="dialog-title">${name}</h2></div>${closable?'<button class="close-btn" data-action="close" aria-label="关闭窗口">×</button>':''}</div>`;}
   function updateProjectNameValidation(){
     const form=$('setup-form');if(!form)return false;
@@ -241,9 +288,10 @@
   function finish(released){const r=G.finish(run,released);if(!r){toast('请先完成当前选择，或检查发售准备。');return;}meta=G.settle(meta,run);close();save();render();result();}
   document.addEventListener('input',e=>{if(e.target.matches('#setup-form input[name="name"]')&&!e.isComposing){$('setup-error').textContent='';updateProjectNameValidation();}});
   document.addEventListener('compositionend',e=>{if(e.target.matches('#setup-form input[name="name"]'))updateProjectNameValidation();});
-  document.addEventListener('change',e=>{const el=e.target;if(el.id==='ad-budget'&&run){G.setAdBudget(run,Number(el.value));render();return;}if(!el.matches('select[data-member]')||!run)return;const ok=G.assignMember(run,el.dataset.member,el.value);if(!ok)toast('这个岗位暂时不能分配。');render();});
+  document.addEventListener('change',e=>{const el=e.target;if(el.id==='ad-budget'&&run){G.setAdBudget(run,Number(el.value));render();return;}if(!el.matches('select[data-member]')||!run)return;const ok=G.assignMember(run,el.dataset.member,el.value);if(ok)observeTutorial('assigned');if(!ok)toast('这个岗位暂时不能分配。');render();});
   document.addEventListener('submit',e=>{if(e.target.id==='profile-form'){e.preventDefault();const name=new FormData(e.target).get('heroName');if(!G.renameHero(meta,name))toast('请先暂停或结算项目再修改称呼。');render();return;}if(e.target.id!=='setup-form')return;e.preventDefault();if(!updateProjectNameValidation())return;const fd=new FormData(e.target);try{run=G.newRun({scale:setupScale,name:fd.get('name'),hard:fd.get('difficulty')==='hard',seed:fd.get('seed'),objective:fd.get('objective')},meta);}catch(err){$('setup-error').textContent=err.message;return;}view='game';tab='work';workModule='content';hiddenPrompt=false;close();render();window.scrollTo(0,0);});
   document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;e.preventDefault();const a=b.dataset.action;
+    if(tutorialAction(a,b))return;
     if(a==='close'){const result=dialogKind==='event-result';if(result)G.acknowledgeEvent(run);hiddenPrompt=true;close();if(result)render();return;}
     if(a==='audio'){const st=audio.getState();audio.setSettings({muted:!(st.settings?.muted??st.muted)});audio.unlock();return;}
     if(a==='startup-aid'){
@@ -268,7 +316,7 @@
     if(a==='result'){result();return;}
     if(a==='tab'){tab=b.dataset.tab;render();return;}
     if(a==='open-ad-budget'){close();tab='work';workModule='promotion';render();$('ad-budget')?.focus();return;}
-    if(a==='work-module'){selectWorkModule(b.dataset.module);return;}
+    if(a==='work-module'){observeTutorial('module');selectWorkModule(b.dataset.module);return;}
     if(a==='train'){if(!G.train(meta,b.dataset.skill))toast('当前无法训练，请检查经验或先暂停项目。');render();return;}
     if(a==='recruit-filter'){if(['all',...G.PERSON_RANKS.map(r=>r.id)].includes(b.dataset.rank))recruitFilter=b.dataset.rank;render();return;}
     if(a==='career-hire'){if(!G.hirePartner(meta,b.dataset.id))toast('当前无法邀请，请检查资金或先结算项目。');render();return;}
@@ -288,6 +336,7 @@
     if(a==='auto-assign'){
       const plan=G.autoAssign(run);
       if(!plan.ok){toast(plan.reason);return;}
+      observeTutorial('assigned');
       if(!plan.improved){showDialog(dialogHeader('TEAM ASSIGNMENTS','无法优化任务分配了')+`<p class="dialog-desc">${plan.exact?'当前分工已达到本周预估的最大总进展。':'本次搜索岗位调换与人员交换，未找到比当前更好的分配；大团队搜索不保证全局最优。'}开发总完成度预计 +${plan.beforeProgress.toFixed(3)}%，无需调整人物岗位。</p><p class="quality-note">已计入转岗磨合、同岗协作、上下游依赖、完成度上限与现有预算。真实模式按满效率预估。你仍可根据偿债或长期目标手动安排。</p><div class="dialog-actions"><button class="btn-primary" data-action="close">保持当前分工</button></div>`,'auto-assignment');return;}
       render();toast('已自动调整 '+plan.changes.length+' 人的工作，计入转岗与上限折损。'+(plan.beforeCost!==plan.afterCost?'本周支出 '+yen(plan.beforeCost)+' → '+yen(plan.afterCost)+'。':''));return;
     }
@@ -306,9 +355,11 @@
     if(!ok&&a!=='advance')toast('当前条件不满足，操作未执行。');render();
   });
   dialog.addEventListener('cancel',()=>{const result=dialogKind==='event-result';if(result)G.acknowledgeEvent(run);hiddenPrompt=true;dialogKind='';if(result)render();});
-  document.addEventListener('keydown',e=>{const b=e.target.closest('[data-action="work-module"]');if(!b||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const i=G.GROUPS.findIndex(g=>g.id===b.dataset.module),n=G.GROUPS.length,next=e.key==='Home'?0:e.key==='End'?n-1:(i+(e.key==='ArrowRight'?1:-1)+n)%n;selectWorkModule(G.GROUPS[next].id);$('work-tab-'+G.GROUPS[next].id)?.scrollIntoView({block:'nearest',inline:'nearest'});});
+  dialog.addEventListener('close',renderTutorial);
+  document.addEventListener('keydown',e=>{const b=e.target.closest('[data-action="work-module"]');if(!b||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const i=G.GROUPS.findIndex(g=>g.id===b.dataset.module),n=G.GROUPS.length,next=e.key==='Home'?0:e.key==='End'?n-1:(i+(e.key==='ArrowRight'?1:-1)+n)%n;observeTutorial('module');selectWorkModule(G.GROUPS[next].id);$('work-tab-'+G.GROUPS[next].id)?.scrollIntoView({block:'nearest',inline:'nearest'});});
   document.addEventListener('keydown',e=>{if(e.key===' '&&view==='game'&&!dialog.open&&!['INPUT','SELECT','TEXTAREA','BUTTON'].includes(document.activeElement.tagName)){e.preventDefault();document.querySelector('.next-week')?.click();}});
   // Terminating a project is always visible from its history tab, including an exhausted budget.
   const originalLogs=logs;logs=function(){return originalLogs()+(!run.over?'<div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="btn-ghost btn-small" data-action="abort">结束当前项目并回收资金</button></div>':'');};
   if(run&&run.over){meta=G.settle(meta,run);}render();
+  if(T.shouldOffer(tutorial,tutorialContext()))tutorialWelcome();
 })();
