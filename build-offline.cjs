@@ -7,4 +7,4 @@ html=html.replace(/<script defer src="(?:engine|audio|characters-ui|app)\.js"><\
 const license=fs.readFileSync(path.join(__dirname,'LICENSE'),'utf8');
 html=html.replace('<head>','<head>\n<!--\n'+license+'\n-->');
 html=html.replace('</body>',()=>scripts.map(s=>'<script>\n'+s+'\n</script>').join('\n')+'\n</body>');
-const output=path.join(__dirname,'index.html');fs.writeFileSync(output,html);console.log(output);
+const output=path.join(__dirname,'index.html');fs.writeFileSync(output,html.replace(/\r\n/g,'\n'));console.log(output);
