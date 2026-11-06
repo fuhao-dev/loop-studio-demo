@@ -6,14 +6,14 @@ assert.ok(window.StudioPeople.strip(s,true).includes('转岗磨合 −20%'));
 
 s.team[0].name='<x>';const card=window.StudioPeople.memberCard(s,s.team[0],true);
 assert.ok(card.includes('&lt;x&gt;')&&!card.includes('<x>'),'player names are escaped in person card and labels');
-s.knownPartners.push('lin');G.hire(s,'lin');assert.ok(window.StudioPeople.memberCard(s,s.team[2],true).includes('value="development" disabled'));
+s.reputation=40;s.knownPartners.push('lin');G.hire(s,'lin');assert.ok(window.StudioPeople.memberCard(s,s.team[2],true).includes('value="development" disabled'));
 assert.equal((window.StudioPeople.assignment(s,s.team[0],true).match(/<optgroup/g)||[]).length,5);
 assert.equal((window.StudioPeople.assignment(s,s.team[0],true).match(/<option/g)||[]).length,14,'13 work choices plus idle');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
 assert.equal(scripts.length,4,'offline package includes the people module');
 scripts.forEach((m,i)=>new vm.Script(m[1],{filename:'offline-script-'+i}));
 assert.ok(!/<script\b[^>]*\bsrc=|<link\b[^>]*rel=["']stylesheet/i.test(html),'offline scripts and styles embedded');
-assert.ok(html.includes('v'+require('../package.json').version+' DEMO')&&html.includes('loop_studio_career_v13'),'offline build current version and isolated save key');
+assert.ok(html.includes('v'+require('../package.json').version+' DEMO')&&html.includes('loop_studio_career_v14'),'offline build current version and isolated save key');
 for(const f of ['engine.js','audio.js','characters-ui.js','app.js'])new vm.Script(fs.readFileSync(path.join(root,'dist',f),'utf8'),{filename:f});
 console.log('UI checks passed: individual ramp hints, unavailable role, escaped names, four inline scripts, current offline build.');
 

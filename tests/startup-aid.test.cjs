@@ -11,7 +11,7 @@ check('empty funds recover enough money to start the next game',()=>{
   assert.equal(G.claimStartupAid(m),7600);assert.equal(G.newRun({},m).initialMoney,7600);
 });
 check('aid preserves skills team experience stage and every history record',()=>{
-  const m=G.emptyMeta();m.wallet=123;m.hero.skills.code=165;m.exp=80;m.earnedExp=120;m.knownPartners=['lin','shen'];m.partners=['lin'];
+  const m=G.emptyMeta();m.wallet=123;m.hero.skills.code=165;m.exp=80;m.earnedExp=120;m.reputation=40;m.knownPartners=['lin','shen'];m.partners=['lin'];
   m.history=[{runId:'previous',revenue:3000,profit:-100}];m.receipts.previous=40;m.stage=4;
   const before=G.copy(m);assert.equal(G.claimStartupAid(m),7477);before.wallet=7600;assert.deepEqual(m,before);
 });

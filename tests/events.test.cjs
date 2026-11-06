@@ -92,7 +92,7 @@ check('budget and active bottlenecks affect current pool eligibility and weight 
 });
 check('pool uses post-week work morale and milestone state, not pre-week snapshot',()=>{
   const {s}=start();s.morale=69;s.pace='crunch';for(const j of G.JOBS.filter(j=>['content','framework'].includes(j.group)))s.work[j.id]=s.req[j.id]*.3;
-  assert.ok(!G.eventPool(s).some(e=>e.id==='tired'));G.advance(s);assert.ok(G.eventPool(s).some(e=>e.id==='tired')||s.pendingEvent==='tired');assert.ok(s.knownPartners.includes('lin'));assert.ok(s.milestones.includes('prototype'));
+  assert.ok(!G.eventPool(s).some(e=>e.id==='tired'));G.advance(s);assert.ok(G.eventPool(s).some(e=>e.id==='tired')||s.pendingEvent==='tired');assert.ok(!s.knownPartners.includes('lin'));assert.ok(s.milestones.includes('prototype'));
 });
 check('live filtering freezes option indexes and reloads the exact pending decision',()=>{
   let chosen;
