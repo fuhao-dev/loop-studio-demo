@@ -41,7 +41,7 @@ check('ending a paused project preserves the active project work event RNG and r
   assert.equal(r.walletStart+r.sharedCashDelta+r.profit,r.walletEnd);assert.ok(G.validateSnapshot({meta,run:b}));
 });
 check('paused recovery never replaces newer global skills or team changes',()=>{
-  const {meta,s}=start(1000);G.pauseProject(meta,s);meta.exp=meta.earnedExp=200;G.train(meta,'code');meta.reputation=40;meta.knownPartners=['lin'];G.hirePartner(meta,'lin');G.renameHero(meta,'新制作人');const profile=G.copy(meta.hero),partners=G.copy(meta.partners);
+  const {meta,s}=start(1000);G.pauseProject(meta,s);meta.exp=meta.earnedExp=200;G.train(meta,'code');meta.reputation=G.RECRUIT_REPUTATION.SR;meta.knownPartners=['lin'];G.hirePartner(meta,'lin');G.renameHero(meta,'新制作人');const profile=G.copy(meta.hero),partners=G.copy(meta.partners);
   G.endProject(meta,s.id);assert.deepEqual(meta.hero,profile);assert.deepEqual(meta.partners,partners);assert.deepEqual(meta.knownPartners,['lin']);
 });
 check('invalid or stale project identities cannot change career money or any RNG',()=>{

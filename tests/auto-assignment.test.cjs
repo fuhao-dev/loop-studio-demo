@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),G=require('../dist/engine.js');
 let checks=0,oracleCases=0;function check(name,fn){try{fn();checks++;}catch(e){e.message=name+': '+e.message;throw e;}}
-function start({hard=false,scale='micro',partners=[]}={}){const meta=G.emptyMeta();meta.wallet=300000;meta.reputation=Math.max(0,...partners.map(id=>G.recruitReputation(G.RECRUITS.find(p=>p.id===id))));const capacity=G.REPUTATION_NODES.find(n=>n.type==='teamCap'&&n.value>=partners.length+2);if(partners.length>2)meta.reputation=Math.max(meta.reputation,capacity.threshold);meta.knownPartners=partners.slice();meta.partners=partners.slice();return G.newRun({seed:34521,scale,hard},meta);}
+function start({hard=false,scale='micro',partners=[]}={}){const meta=G.emptyMeta();meta.wallet=300000;meta.reputation=Math.max(0,...partners.map(id=>G.recruitReputation(G.RECRUITS.find(p=>p.id===id))));meta.knownPartners=partners.slice();meta.partners=partners.slice();return G.newRun({seed:34521,scale,hard},meta);}
 function closeAll(s){for(const j of G.JOBS)s.work[j.id]=s.req[j.id]*G.softCap(s,j.id);return s;}
 function score(s,p=G.progressEstimate(s)){return G.JOBS.reduce((sum,j)=>sum+p.gains[j.id]/s.req[j.id],0)/G.JOBS.length*100;}
 // Independent oracle enumerates whole assignments and uses the real UI preview.

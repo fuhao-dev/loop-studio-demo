@@ -12,7 +12,7 @@
     {id:'event',title:'处理开发中的小插曲',text:'阅读事件并选择一个选项。有些选项会展示效果，有些要选择后才知道结果，也可能什么都没发生。',note:'事件可能提高软上限或带来其他变化。完成选择与结果确认后，再继续开发。',label:'打开当前事件',target:'.project-aside',view:'game'},
     {id:'publisher',title:'选择自己的发行方式',text:'独立发行需要自己安排宣发和上架。也可以查看发行商报价：签约先领部分开发款，核心开发达到 30%、60% 后领取余款，把这四项工作交给发行团队，人物继续负责其他开发。',note:'合作要分成，销售名誉减半；终止项目会追回已到账开发款，余额不足扣至 0。签约完全可选。',label:'查看发行合作',target:'.publisher-panel',view:'game'},
     {id:'release',title:'把作品送到玩家手里',text:'发售只要求资料准备与审核都到 100%：先完成资料，再推进审核。其他工作可以自行取舍，但完成度会影响品质与收益。',note:'完成度触顶时调整分工。宣传用于了解评级，买量可不做；自己投放时必须安排人手并设置正预算。',label:'查看上架准备',target:'#group-release',view:'game'},
-    {id:'growth',title:'每一作都留下积累',text:'发售后资金、主角能力、伙伴和名誉带到下一作。销售带来名誉，逐步解锁 4～24 人团队、高级伙伴和更好的合约；经验用于训练主角。',note:'开发历史可以暂停、恢复或结束项目，同一时间只开发一作。所有项目结束后，资金不足可领取创业补助。',label:'完成教程，开始自由开发',target:'#nav-milestones',view:'milestones'}
+    {id:'growth',title:'每一作都留下积累',text:'发售后资金、主角能力、伙伴和名誉带到下一作。销售带来名誉，逐步结识高级伙伴、获得团队加成和更好的合约；团队人数不限；经验用于训练主角。',note:'开发历史可以暂停、恢复或结束项目，同一时间只开发一作。所有项目结束后，资金不足可领取创业补助。',label:'完成教程，开始自由开发',target:'#nav-milestones',view:'milestones'}
   ];
   function empty(){return {version:1,status:'unseen',step:'project',runId:null,weekAt:0,route:null,minimized:false};}
   function valid(s){return !!s&&s.version===1&&['unseen','active','paused','skipped','done'].includes(s.status)&&STEPS.some(x=>x.id===s.step)&&(s.runId===null||typeof s.runId==='string')&&Number.isInteger(s.weekAt)&&s.weekAt>=0&&[null,'indie','publisher'].includes(s.route)&&typeof s.minimized==='boolean';}
