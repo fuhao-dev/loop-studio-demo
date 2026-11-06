@@ -1,0 +1,64 @@
+{
+  "version": "0.15.0",
+  "browser": "Edge",
+  "method": "Visible UI interaction against the local offline build; no injected career state or automatic tutorial actions",
+  "freshCareer": {
+    "welcomeOffered": true,
+    "skipPersistsAfterReload": true,
+    "manualReentry": true,
+    "initialCashUnchangedByWelcomeOrSkip": 7600
+  },
+  "publisherRoute": {
+    "project": "教程实操作品",
+    "scale": "micro",
+    "mode": "ideal",
+    "seed": 5,
+    "manualAssignmentObserved": true,
+    "moduleSelectionObserved": true,
+    "reloadAndPauseResumePreservedStep": true,
+    "firstWeekCost": 258,
+    "contractExplicitlyConfirmed": true,
+    "eventResultRequiresAcknowledgement": true,
+    "releaseExplicitlyConfirmed": true,
+    "developmentWeeks": 5,
+    "organicGrossSales": 5358,
+    "adGrossReturns": 330,
+    "totalGrossSales": 5688,
+    "reputationGained": 28.44,
+    "finalCash": 10989,
+    "completedGuideStaysClosedOnReload": true,
+    "consoleErrors": []
+  },
+  "independentRoute": {
+    "automaticAssignmentObserved": true,
+    "earlyRealWeekRecognizedWithoutAnotherPaidWeek": true,
+    "escapeAndReopenRestoresEventResult": true,
+    "independentChoiceShowsSelfManagedRelease": true,
+    "learnGrowthBeforeRelease": true,
+    "guideCompletedWithoutReleasingOrSigning": true,
+    "cashAfterOneActualWeekAndAfterGuide": 7342,
+    "consoleErrors": []
+  },
+  "responsive": {
+    "viewportWidth": 320,
+    "viewportHeight": 800,
+    "welcomeWidth": 269,
+    "documentWidth": 305,
+    "coachWidth": 230,
+    "coachLeft": 62.667,
+    "minimizedCoachHeight": 63.323,
+    "expandedCoachMaxHeight": 304,
+    "explanatoryBodyScrolls": true,
+    "locatingInteractiveControlsMinimizesCoach": true,
+    "horizontalOverflow": false,
+    "viewportResetAfterCheck": true
+  },
+  "screenshots": [
+    "docs/tutorial-welcome-preview.png",
+    "docs/tutorial-assignment-preview.png",
+    "docs/tutorial-mobile-preview.png"
+  ],
+  "limitations": [
+    "Verified locally; GitHub Pages deployment and TapTap upload are separate actions."
+  ]
+}

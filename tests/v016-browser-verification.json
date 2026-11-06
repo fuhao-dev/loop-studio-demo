@@ -1,0 +1,53 @@
+{
+  "version": "0.16.0",
+  "date": "2026-11-06",
+  "browser": "Microsoft Edge",
+  "origin": "http://127.0.0.1:4205/",
+  "method": "UI actions only, separate test origin, no save or simulation-state injection",
+  "publisherRoute": {
+    "startingWallet": 7600,
+    "contractTotal": 2000,
+    "signingPayment": 400,
+    "walletAfterSigning": 8000,
+    "initialAutoAssignments": {"hero":"gameplay","ace":"theme"},
+    "weeks": 4,
+    "coreSixCompletion": 38.3,
+    "paidDevelopmentFunds": 1200,
+    "pendingDevelopmentFunds": 800,
+    "cost": 1032,
+    "rating": "B-",
+    "grossSales": 3606,
+    "studioReleaseReceipts": 1203,
+    "profit": 1371,
+    "experience": {"base":10,"development":20,"quality":7,"profit":5,"objective":15,"total":57},
+    "walletAfterRelease": 8971,
+    "reputation": 18.03,
+    "teamReview": {"heroWeeks":4,"heroBaseOutput":38.8,"dragonWeeks":4,"dragonBaseOutput":50.7}
+  },
+  "events": {
+    "hiddenResult": "这个分支该叫什么 → 叫做 next → 程序开发效率 +12% 持续一周，显示结果确认框",
+    "publisherAdvice": "水壶响了第三次 → 整理题材，受软上限限制实际 +6.09%，不推进发行商四项工作",
+    "ambient": "第二作 seed 2，桌上躺着一只旧U盘 → 找个盒子收好；无数值变化，显示轻提示，未弹第二次确认"
+  },
+  "secondProject": {
+    "name": "系统偏重验证",
+    "seed": 2,
+    "workProfile": "systems",
+    "personWeeks": 54.4,
+    "startingWallet": 8971,
+    "weekOneCost": 258,
+    "actualGainsPercent": {"gameplay":26.8,"development":16.7},
+    "reloadRestored": true
+  },
+  "responsive": {
+    "widths": [320,390],
+    "horizontalOverflow": false,
+    "crewSectionTop": 510.33,
+    "firstPickerTop": 767.79,
+    "pickerPreserves": ["ability","completion","soft cap","full-efficiency team estimate","upstream cap and progress","zero acquisition budget","publisher-managed status"],
+    "temporaryViewportReset": true
+  },
+  "applicationConsoleErrors": [],
+  "applicationConsoleWarnings": [],
+  "note": "Browser-extension liveness warnings were excluded by application URL; real-mode core behavior is separately verified by eight v0.15 source hashes."
+}

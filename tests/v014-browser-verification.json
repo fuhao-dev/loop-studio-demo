@@ -1,0 +1,66 @@
+{
+  "version": "0.14.0",
+  "browser": "Edge",
+  "origin": "http://127.0.0.1:4202/",
+  "uiOnlyStateChanges": true,
+  "immediateContractTermination": {
+    "walletBefore": 7600,
+    "advance": 2000,
+    "refund": 2000,
+    "walletAfter": 7600,
+    "profit": 0,
+    "reputation": 0
+  },
+  "fourWeekRelease": {
+    "seed": 5,
+    "jobs": {"hero": "theme", "ace": "payment"},
+    "eventChoices": [2, 2, 2, 1],
+    "grossOrganicSales": 11339,
+    "grossAcquisitionReceipts": 240,
+    "totalProductSales": 11579,
+    "publisherReputationFactor": 0.5,
+    "reputationGained": 57.895,
+    "milestonesUnlocked": [5, 12, 20, 30, 40, 52],
+    "teamCapacity": 8,
+    "moraleCap": 105,
+    "memberSpeedBonus": 0.05,
+    "knownCandidates": 18,
+    "walletAfter": 14237,
+    "persistedAfterReload": true
+  },
+  "recruitment": {
+    "hired": ["余苗", "池川", "墨小雨", "乔安", "乐小满", "林绘"],
+    "teamSize": 8,
+    "capacity": 8,
+    "furtherInvitationsDisabled": true,
+    "fullLabel": "团队已满 · 上限 8 人",
+    "ssrUnlockReputation": 205,
+    "urUnlockReputation": 485
+  },
+  "newContract": {
+    "advanceRatio": 0.7,
+    "advance": 2300,
+    "studioShare": 0.5,
+    "weeklyWorkPerManagedJob": 20,
+    "eightPersonWeeklyCost": 580,
+    "refund": 2300,
+    "walletAfterTermination": 13157,
+    "reputationAfterTermination": 57.895
+  },
+  "responsive": {
+    "milestoneViewportWidth": 320,
+    "milestoneDocumentWidth": 305,
+    "milestoneCount": 42,
+    "milestoneGridColumns": 1,
+    "terminationDialogClientWidth": 269,
+    "terminationDialogScrollWidth": 269,
+    "viewportRestored": true
+  },
+  "consoleErrors": [],
+  "screenshots": [
+    "docs/milestones-preview.png",
+    "docs/milestones-mobile.png",
+    "docs/advance-refund-preview.png",
+    "docs/advance-refund-mobile.png"
+  ]
+}

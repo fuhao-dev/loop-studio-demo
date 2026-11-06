@@ -1,0 +1,29 @@
+{
+  "version": "0.10.0",
+  "date": "2026-11-06",
+  "browser": "Edge",
+  "origin": "http://127.0.0.1:4196/",
+  "checks": [
+    "Feature-planning tab replaced by publisher contract; no scope-freeze controls.",
+    "Micro-project unrevealed quote is 2000; signing raises wallet from 7600 to 9600 without advancing time.",
+    "An actor assigned to publicity is returned to idle; all four managed work options are disabled.",
+    "Zero publisher budget warns before advancing; going to budget settings consumes no week or money.",
+    "With both actors idle, first week costs the studio 258 and publisher pays 300 separately.",
+    "First-week publicity is 31.3%, acquisition 50%, materials 50%, review 0%; no manual staffing required.",
+    "Four weekly turns complete listing: materials completed after week two, review starts week three and completes week four.",
+    "Publicity and acquisition stop at 70% without an event cap unlock; publisher spending continues while budget is positive.",
+    "Actual D-grade campaign: publisher spends 1200, receives 300, bears 900 loss; studio receives zero campaign income and owes no shortfall.",
+    "Organic sales 1534 split 767 to each party; studio release receipts 767; prior advance 2000 is not received again.",
+    "Studio own cost 1032; project profit 1735; wallet 9335; report and wallet unchanged after reload.",
+    "At 320px viewport, page client/scroll width both 305; report width 270.67 with scroll width 254; publisher page has no horizontal overflow.",
+    "Next project inherits 9335 but has no publisher contract or campaign spend; viewport restored after QA."
+  ],
+  "evidence": [
+    "../docs/publisher-preview.png",
+    "../docs/publisher-settlement-preview.png"
+  ],
+  "limits": [
+    "Real-mode randomness, mixed pre/post-contract campaigns, all grades and all scales are covered by rule tests.",
+    "Screenshots show a local test run; public GitHub Pages updates only after main receives the change."
+  ]
+}

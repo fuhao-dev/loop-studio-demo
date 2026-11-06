@@ -1,0 +1,67 @@
+{
+  "version": "0.9.5",
+  "date": "2026-11-05",
+  "browser": "Microsoft Edge; UI-only interaction with the built offline page served on a fresh localhost origin",
+  "incomeDisclosure": {
+    "initial": "Current-version revenue, producer profit estimate, acquisition gross/net receipts and conversion rate all display ????? at 0% publicity.",
+    "observedLevels": [
+      "Publicity 12.1%: coarse interval, level 1/5.",
+      "Publicity 27.2%: preliminary interval, level 2/5.",
+      "Publicity above 50%: refined interval, level 3/5, e.g. approximately 400 to 50400.",
+      "Publicity above 75%: clear interval, level 4/5, approximately 970 to 28470.",
+      "Publicity 100%: complete interval, level 5/5, 1761 to 12060; market outcome remains unknown."
+    ]
+  },
+  "projects": [
+    {
+      "name": "宣发与回收验证",
+      "weeks": 2,
+      "spent": 1716,
+      "statusBeforeEnding": "paused with unresolved event",
+      "recoveryRate": 0.29,
+      "recovery": 498,
+      "profit": -1218,
+      "sharedBalanceBefore": 5026,
+      "sharedBalanceAfter": 5524,
+      "otherProject": "跨项目资金验证 retained week 2, work progress, assignments and the same pending event; only shared funds changed."
+    },
+    {
+      "name": "跨项目资金验证",
+      "weeks": 7,
+      "spent": 6006,
+      "adSpend": 4200,
+      "statusBeforeEnding": "active with unresolved event and insufficient funds for the next week",
+      "balanceBefore": 376,
+      "recoveryRate": 0.32,
+      "recovery": 1922,
+      "adRevenue": 0,
+      "profit": -4084,
+      "balanceAfter": 2298
+    }
+  ],
+  "startupAid": {
+    "blockedWithActiveAndPausedProjects": true,
+    "blockedNoticeUnfinishedCount": 2,
+    "allProjectsFinishedBalance": 2298,
+    "grantAmount": 5302,
+    "balanceAfterGrant": 7600,
+    "claimEntryHiddenAfterGrant": true,
+    "reloadKeepsBalanceAndBothReports": true
+  },
+  "responsive": {
+    "requestedViewportWidth": 320,
+    "documentClientWidth": 305,
+    "documentScrollWidth": 305,
+    "endDialogWidth": 270.67,
+    "endDialogScrollWidth": 269,
+    "noHorizontalOverflow": true,
+    "viewportResetAfterTesting": true
+  },
+  "notes": [
+    "Opening and cancelling an end confirmation preserved week and funds; RNG immutability is additionally checked by automated tests.",
+    "Pending events did not prevent pausing or ending projects.",
+    "Soft-cap confirmation continued to appear when acquisition reached its cap.",
+    "Screenshots are visual evidence; automated checks cover empty investment, refunds at every integer percentage, repeat settlement, multi-project ledgers and all income reveal boundaries.",
+    "This verifies the browser runtime, not TapTap account submission or platform approval."
+  ]
+}

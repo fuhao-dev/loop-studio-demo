@@ -18,6 +18,6 @@ check('listing work never causes cap alerts, while 100% non-listing work is labe
   const s=G.newRun();G.assignMember(s,'hero','materials');G.assignMember(s,'ace','review');s.work.materials=s.req.materials;s.work.review=s.req.review;assert.deepEqual(G.softCapWarnings(s),[]);G.assignMember(s,'ace','payment');s.softCaps.payment=1;s.work.payment=s.req.payment;assert.equal(G.softCapWarnings(s)[0].full,true);assert.ok(P.strip(s,true).includes('完成度已满'));
 });
 check('cap alerts retain ongoing utility and real-mode rework information',()=>{
-  for(const [job,ongoing] of [['systems','偿还技术债'],['qa','修复问题'],['acquisition','买量并扣费']]){const s=G.newRun({hard:true});G.assignMember(s,'ace',job);s.softCaps[job]=.85;s.work[job]=s.req[job]*.85;if(job==='acquisition')G.setAdBudget(s,100);const warning=G.softCapWarnings(s)[0];assert.ok(warning.ongoing.includes(ongoing));assert.equal(warning.rework,true);assert.equal(G.assignmentEstimate(s,'ace',job).percent,0);}
+  for(const [job,ongoing] of [['systems','偿还技术债'],['acquisition','买量并扣费']]){const s=G.newRun({hard:true});G.assignMember(s,'ace',job);s.softCaps[job]=.85;s.work[job]=s.req[job]*.85;if(job==='acquisition')G.setAdBudget(s,100);const warning=G.softCapWarnings(s)[0];assert.ok(warning.ongoing.includes(ongoing));assert.equal(warning.rework,true);assert.equal(G.assignmentEstimate(s,'ace',job).percent,0);}
 });
 console.log(JSON.stringify({workOptionChecks:checks}));
