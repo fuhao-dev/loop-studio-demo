@@ -3,7 +3,7 @@ let checks=0;function check(name,fn){try{fn();checks++;}catch(error){error.messa
 function start(hard=false,seed=42){const meta=G.emptyMeta();meta.wallet=300000;return {meta,s:G.newRun({hard,seed},meta)};}
 function pending(s,id){s.pendingEvent=id;s.pendingChoices=null;s.pendingCapGroup=null;}
 function numericState(s){return G.copy({money:s.money,spent:s.spent,income:s.income,work:s.work,softCaps:s.softCaps,debt:s.debt,morale:s.morale,effects:s.effects,knownPartners:s.knownPartners,milestones:s.milestones,week:s.week,rng:s.rng,adSpend:s.adSpend,publisher:s.publisher});}
-function pick(s,index=0){assert.ok(G.resolveEvent(s,index));assert.ok(G.acknowledgeEvent(s));}
+function pick(s,index=0){assert.ok(G.resolveEvent(s,index));if(s.eventResult?.unread)assert.ok(G.acknowledgeEvent(s));}
 const originalIds=['inspiration','palette','discount','feedback','coffee','break','backup','scope','showcase','bug','forms','compat','tired','debt','monetization','pricing','ip_plan','ad_plan','store_page','scale_review','market_rival','market_watch','cash_review','team_exchange'];
 check('all original event identities remain in the 120-event pool',()=>{
   assert.deepEqual(G.EVENTS.slice(0,24).map(e=>e.id),originalIds);

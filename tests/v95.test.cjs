@@ -6,7 +6,7 @@ const source=fs.readFileSync(require.resolve('../dist/app.js'),'utf8');
 function load(from,to,context){vm.runInNewContext(source.slice(source.indexOf('  function '+from+'('),source.indexOf('  '+to)),context);}
 function ui(s,meta=G.emptyMeta()){
   const context={G,run:s,meta,esc:x=>String(x).replace(/</g,'&lt;'),yen:n=>(n<0?'−':'')+'¥'+Math.abs(Math.round(n)),showDialog:x=>context.markup=x,dialogHeader:()=>'',disabled:ok=>ok?'':' disabled'};
-  load('incomeRange','const pct=',context);return context;
+  load('incomeRange','const pct=',context);load('decisionFinancePanel','function weekSummary(',context);return context;
 }
 check('ending an active project recovers investment and settles cash experience and history',()=>{
   const {meta,s}=start(2600);s.milestones=['prototype','slice'];s.income=200;s.money+=200;const r=G.endProject(meta,s.id,s);

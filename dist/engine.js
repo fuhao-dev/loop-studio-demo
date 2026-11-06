@@ -1,7 +1,7 @@
-/* 天才程序员带我做游戏 v0.14.0 · shared career and pausable projects. */
+/* 天才程序员带我做游戏 v0.16.0 · shared career and pausable projects. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.StudioGame=factory();})(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const VERSION=14;
+  const VERSION=16;
   const STANDARD_WEEKLY_WORK=10,STANDARD_PERSON_WEEK_COST=100,INITIAL_FUNDS=7600;
   const HARD_CAP=1, INITIAL_SOFT_CAP=.7, CAP_STEP=.15;
   const SKILLS=[
@@ -81,6 +81,32 @@
     {id:'review',name:'审核进度',group:'release',skill:'ops',base:40,desc:'资料完成后推进审核，必须完成。'}
   ].map(j=>({...j,short:j.name,color:GROUPS.find(g=>g.id===j.group).color,icon:GROUPS.find(g=>g.id===j.group).icon}));
 
+  const WORK_PROFILES=[
+    {id:'balanced',name:'均衡制作',note:'各模块需求均衡，适合熟悉开发流程。',core:[32,48,40,64,40,40,32,32,32]},
+    {id:'content',name:'内容偏重',note:'内容工作更多，策划与美术伙伴更有发挥空间。',core:[40,64,52,56,32,32,28,28,28]},
+    {id:'systems',name:'系统偏重',note:'实现与验收工作更多，程序与测试伙伴更有发挥空间。',core:[28,36,32,84,56,52,24,24,24]},
+    {id:'commerce',name:'商业设计偏重',note:'商业设计工作更多，发行与综合设计伙伴更有发挥空间。',core:[28,40,32,56,32,32,48,48,44]}
+  ];
+  function workProfile(s){return WORK_PROFILES.find(p=>p.id===s.workProfile);}
+  const PUBLISHER_STAGES=[{id:'signing',name:'签约金',threshold:0,ratio:.2},{id:'prototype',name:'核心开发 30%',threshold:.3,ratio:.4},{id:'polish',name:'核心开发 60%',threshold:.6,ratio:.4}];
+  function publisherFunding(s){
+    const q=s.publisher?.quote||publisherQuote(s),paid=s.publisher?.paidStages||[];
+    const amounts=[Math.floor(q.advance*.2),Math.floor(q.advance*.4)];amounts.push(q.advance-amounts[0]-amounts[1]);
+    return {total:q.advance,received:s.publisher?.advance||0,pending:q.advance-(s.publisher?.advance||0),core:round(coreProgress(s)*100),stages:PUBLISHER_STAGES.map((stage,i)=>({...stage,amount:amounts[i],paid:paid.includes(stage.id)}))};
+  }
+  function payPublisherMilestones(s){
+    if(!s.publisher)return 0;let amount=0;
+    for(const stage of publisherFunding(s).stages)if(!stage.paid&&coreProgress(s)+1e-9>=stage.threshold){s.publisher.paidStages.push(stage.id);s.publisher.advance+=stage.amount;amount+=stage.amount;addLog(s,'发行开发款到账：'+stage.name+'，+¥'+stage.amount+'。','good');}
+    s.income+=amount;s.money+=amount;return amount;
+  }
+  function developmentCompletion(s){return JOBS.filter(j=>['content','framework','commerce'].includes(j.group)).reduce((sum,j)=>sum+progress(s,j.id),0)/9;}
+  function experienceBreakdown(s,profit,objectiveOK){
+    const completion=developmentCompletion(s),factor=Math.min(1,completion/.7);
+    const parts={base:10,development:Math.round(completion*80),quality:Math.round(overallScore(s)*.4*factor),profit:profit>0?Math.round(15*factor):0,objective:objectiveOK?Math.round(40*factor):0,mode:s.hard?25:0};
+    return {...parts,completion:round(completion*100),total:Object.values(parts).reduce((a,b)=>a+b,0)};
+  }
+  function decisionFinance(s){const weekly=cost(s).total,breakeven=Math.max(0,s.spent-s.income);return {invested:s.spent,received:s.income,weekly,breakeven,nextBreakeven:Math.max(0,s.spent+weekly-s.income),runway:weekly?Math.floor(s.money/weekly):Infinity};}
+
   const REPUTATION_NODES=[
     [5,'teamCap',6],[12,'advanceRatio',.7],[20,'moraleCap',105],[30,'speedBonus',.05],[40,'talent','SR'],[52,'teamCap',8],[65,'managedWork',22],[80,'studioShare',.55],
     [95,'teamCap',10],[110,'managedWork',24],[130,'moraleCap',110],[145,'speedBonus',.1],[165,'teamCap',12],[185,'studioShare',.6],[205,'talent','SSR'],[230,'advanceRatio',.8],[255,'teamCap',14],[280,'managedWork',26],
@@ -109,7 +135,7 @@
   function random(s){s.rng=(s.rng*1664525+1013904223)>>>0;return s.rng/4294967296;}
   const projectScale=s=>SCALES.find(g=>g.id===s.scale);
   function scalePlan(id){const work=Object.values(baseRequirements(id)).reduce((n,v)=>n+v,0),personWeeks=work/STANDARD_WEEKLY_WORK;return {work,personWeeks,minFunds:Math.ceil(work*STANDARD_PERSON_WEEK_COST/STANDARD_WEEKLY_WORK)};}
-  function baseRequirements(id){const g=SCALES.find(g=>g.id===id);if(!g)throw Error('请选择有效的项目规模');return Object.fromEntries(JOBS.map(j=>[j.id,j.base*g.multiplier]));}
+  function baseRequirements(id,profile='balanced'){const g=SCALES.find(g=>g.id===id),p=WORK_PROFILES.find(p=>p.id===profile);if(!g||!p)throw Error('请选择有效的项目规模与工作配比');return Object.fromEntries(JOBS.map((j,i)=>[j.id,(i<9?p.core[i]:j.base)*g.multiplier]));}
 
   function skillLabel(n){return n===0?'不会':n>=130?'擅长':n>=80?'胜任':'生疏';}
   function taskSkill(m,id){const j=task(id);return j?m.skills[j.skill]||0:0;}
@@ -219,8 +245,9 @@
   }
 
   function newRun(config={},meta=emptyMeta()){if(!validateMeta(meta))throw Error('生涯数据无效');if(meta.activeRunId)throw Error('请先暂停或结算当前项目，再开始新项目');const scaleId=config.scale||SCALES[0].id,g=SCALES.find(g=>g.id===scaleId);if(!g)throw Error('请选择有效的项目规模');const name=String(config.name||g.title).trim().slice(0,18)||g.title,nameStatus=projectNameStatus(name);if(!nameStatus.ok)throw Error(nameStatus.reason);const plan=scalePlan(g.id);if(meta.wallet<plan.minFunds)throw Error('资金不足：'+g.name+'需要 ¥'+plan.minFunds.toLocaleString('zh-CN')+'，当前 ¥'+meta.wallet.toLocaleString('zh-CN')+'，还差 ¥'+(plan.minFunds-meta.wallet).toLocaleString('zh-CN'));const seed=(Number(config.seed)||Date.now())>>>0;
-    const req=baseRequirements(g.id);
-    const s={version:VERSION,id:'run-'+meta.stage+'-'+seed+'-'+Date.now(),stage:meta.stage,seed,rng:seed,scale:g.id,name,hard:config.hard===true,week:1,money:meta.wallet,reputation:meta.reputation,spent:0,income:0,sharedCashDelta:0,paused:false,pace:'normal',work:Object.fromEntries(JOBS.map(j=>[j.id,0])),req,debt:0,morale:90,effects:[],logs:[],history:[],milestones:[],publisher:null,managed:false,pendingEvent:null,pendingChoices:null,eventResult:null,lastEvent:null,over:false,result:null,objective:config.objective==='acclaim'?'acclaim':'profit',departed:[],adBudget:0,adSpend:0,ratingRolls:{},revealRolls:{},softCaps:Object.fromEntries(JOBS.filter(j=>j.group!=='release').map(j=>[j.id,INITIAL_SOFT_CAP])),pendingCapGroup:null,lastScene:null};
+    const profile=config.workProfile|| (meta.stage===1?'balanced':WORK_PROFILES[((seed^(seed>>>16))>>>0)%WORK_PROFILES.length].id);
+    const req=baseRequirements(g.id,profile);
+    const s={version:VERSION,id:'run-'+meta.stage+'-'+seed+'-'+Date.now(),stage:meta.stage,seed,rng:seed,scale:g.id,workProfile:profile,name,hard:config.hard===true,week:1,money:meta.wallet,reputation:meta.reputation,spent:0,income:0,sharedCashDelta:0,paused:false,pace:'normal',work:Object.fromEntries(JOBS.map(j=>[j.id,0])),req,debt:0,morale:90,effects:[],logs:[],history:[],milestones:[],publisher:null,managed:false,pendingEvent:null,pendingChoices:null,eventResult:null,lastEvent:null,over:false,result:null,objective:config.objective==='acclaim'?'acclaim':'profit',departed:[],adBudget:0,adSpend:0,ratingRolls:{},revealRolls:{},softCaps:Object.fromEntries(JOBS.filter(j=>j.group!=='release').map(j=>[j.id,INITIAL_SOFT_CAP])),pendingCapGroup:null,lastScene:null};
     s.initialMoney=s.money;s.knownPartners=meta.knownPartners.slice();s.team=createTeam(meta.hero,meta.partners);syncPeople(s);if(s.money<cost(s).total)throw Error('生涯资金不足以支付首周团队成本；可在局外重新开始生涯');GROUPS.filter(g=>g.id!=='release').forEach(g=>{s.ratingRolls[g.id]=round(random(s)*56-28);s.revealRolls[g.id]=round(random(s)*2-1);});meta.activeRunId=s.id;meta.stage++;
     addLog(s,'第 '+s.stage+' 关「'+s.name+'」立项：继承资金 ¥'+s.money+' 与主角能力；'+g.name+'，需要 '+plan.personWeeks+' 人周工作量'+'；上架两项完成即可发售。','good');return s;
   }
@@ -233,10 +260,10 @@
   }
   function signPublisher(s){
     if(blocked(s)||s.publisher)return false;
-    const quote=publisherQuote(s);s.publisher={quote:copy(quote),advance:quote.advance,signWeek:s.week,adSpend:0};
-    s.money+=quote.advance;s.income+=quote.advance;s.adBudget=publisherAdBudget(s);
+    const quote=publisherQuote(s);s.publisher={quote:copy(quote),advance:0,paidStages:[],signWeek:s.week,adSpend:0};
+    payPublisherMilestones(s);s.adBudget=publisherAdBudget(s);
     for(const m of s.team)if(PUBLISHER_JOBS.includes(m.job))m.job='idle';syncPeople(s);
-    addLog(s,'签约发行商：收到预付款 ¥'+quote.advance+'；宣发与上架由发行团队接管，签约后买量由发行商垫付并承担亏损。工作室自然销售及买量正净利润分成 '+Math.round(quote.studioShare*100)+'%，终止项目时退还预付款（余额不足扣至 0）。','good');return true;
+    addLog(s,'签约发行商：合约总开发款 ¥'+quote.advance+'，已到账 ¥'+s.publisher.advance+'；宣发与上架由发行团队接管，签约后买量由发行商垫付并承担亏损。工作室自然销售及买量正净利润分成 '+Math.round(quote.studioShare*100)+'%，终止项目时退还预付款（余额不足扣至 0）。','good');return true;
   }
   function adSettlement(s,rate,released=true){
     const publisherSpend=s.publisher?.adSpend||0,studioSpend=s.adSpend-publisherSpend;
@@ -349,7 +376,7 @@
     {"id":"shared_parcel","scene":"scene_parcel","tag":"工作室日常","title":"前台送来一个纸箱","text":"纸箱上的标签有些模糊，里面传来轻微的碰撞声。","choices":[{"label":"现在拆开","hint":"资金 +¥120","cash":120},{"label":"等大家一起拆","hint":"IP衍生软上限 +10%","caps":{"ip":0.1}}]},
     {"id":"daily_keyboard","kind":"ambient","scene":"scene_keyboard","tag":"工作室日常","title":"键盘换了一种声音","text":"敲击声和平时有点不同，有人抬头看了看。","choices":[{"label":"听一会儿"},{"label":"换个角度摆放"}]},
     {"id":"hidden_keyboard","kind":"hidden","scene":"scene_keyboard","tag":"工作室日常","title":"键盘换了一种声音","text":"敲击声和平时有点不同，有人抬头看了看。","choices":[{"label":"听一会儿","effect":{"job":"test","mult":1.15,"weeks":1,"name":"键盘旁的笔记"},"resultText":"看键盘时注意到一份验收记录，测试步骤顺了起来。"},{"label":"换个角度摆放","morale":-4,"resultText":"桌面的线绕在一起，整理得有些烦躁。"}]},
-    {"id":"shared_keyboard","scene":"scene_keyboard","tag":"工作室日常","title":"键盘换了一种声音","text":"敲击声和平时有点不同，有人抬头看了看。","choices":[{"label":"听一会儿","hint":"未来 1 周测试打磨效率 +15%","effect":{"job":"test","mult":1.15,"weeks":1,"name":"键盘旁的笔记"}},{"label":"换个角度摆放","hint":"士气 -4","morale":-4}]},
+    {"id":"shared_keyboard","scene":"scene_keyboard","tag":"工作室日常","title":"键盘换了一种声音","text":"敲击声和平时有点不同，有人抬头看了看。","choices":[{"label":"听一会儿","hint":"未来 1 周测试打磨效率 +15%","effect":{"job":"test","mult":1.15,"weeks":1,"name":"键盘旁的笔记"}},{"label":"换个角度摆放","hint":"士气 +5，支付 ¥40 调整工位","morale":5,"cash":-40}]},
     {"id":"daily_invitation","kind":"ambient","scene":"scene_invitation","tag":"工作室日常","title":"日历上多了一条邀请","text":"邀请只有一个简短标题，地点写着楼下的小会议室。","choices":[{"label":"带上笔记本"},{"label":"先问问时间"}]},
     {"id":"hidden_invitation","kind":"hidden","scene":"scene_invitation","tag":"工作室日常","title":"日历上多了一条邀请","text":"邀请只有一个简短标题，地点写着楼下的小会议室。","choices":[{"label":"带上笔记本","caps":{"payment":0.15},"resultText":"交流带来了新的付费体验方向。"},{"label":"先问问时间","effect":{"all":1.1,"weeks":1,"name":"对齐交流时间"},"resultText":"确认时间时顺手把下周的协作安排对齐了。"}]},
     {"id":"shared_invitation","scene":"scene_invitation","tag":"工作室日常","title":"日历上多了一条邀请","text":"邀请只有一个简短标题，地点写着楼下的小会议室。","choices":[{"label":"带上笔记本","hint":"用户付费软上限 +15%","caps":{"payment":0.15}},{"label":"先问问时间","hint":"未来 1 周全体效率 +10%","effect":{"all":1.1,"weeks":1,"name":"对齐交流时间"}}]},
@@ -448,8 +475,9 @@
     for(const j of JOBS){const gain=round((s.work[j.id]-before.work[j.id])/s.req[j.id]*100);if(gain)details.push(j.name+'完成度 '+signed(gain)+'%（现为 '+round(progress(s,j.id)*100)+'%）');if(j.group!=='release'&&s.softCaps[j.id]!==before.caps[j.id])details.push(j.name+'软上限 '+round(before.caps[j.id]*100)+'% → '+round(s.softCaps[j.id]*100)+'%');}
     for(const [id,name] of [['debt','技术债'],['morale','士气']])if(s[id]!==before[id])details.push(name+' '+signed(s[id]-before[id]));
     if(c.effect){const effect=c.effect,label=effect.all?'全体效率':effect.job==='overhead'?'维护费':(SKILLS.find(k=>k.id===effect.job)?.name||'工作')+'效率';details.push(label+' '+signed(((effect.all||effect.mult||1)-1)*100)+'% · 持续 '+effect.weeks+' 周');}
+    const eventGrant=payPublisherMilestones(s);if(eventGrant)details.push('发行开发款 +¥'+eventGrant);
     if(!details.length)details.push('没有发生任何数值变化。');
-    s.eventResult={id:e.id,kind:e.kind||'standard',week:s.week-1,title:e.title,label:c.label,text:c.resultText||(e.kind==='ambient'?'大家聊了几句，这段小插曲就这样过去了。':e.kind==='publisher'?'发行团队已落实这项建议。':'本周的决定已经记录。'),details,unread:!!e.kind};
+    s.eventResult={id:e.id,kind:e.kind||'standard',week:s.week-1,title:e.title,label:c.label,text:c.resultText||(e.kind==='ambient'?'大家聊了几句，这段小插曲就这样过去了。':e.kind==='publisher'?'发行团队已落实这项建议。':'本周的决定已经记录。'),details,unread:!!e.kind&& (s.hard||details[0]!=='没有发生任何数值变化。')};
     addLog(s,e.title+'：'+c.label+'。'+details.join('；'),c.cash<0?'info':'good');
     s.pendingEvent=null;s.pendingCapGroup=null;s.pendingChoices=null;if(e.kind==='publisher')checkMilestones(s);return true;
   }
@@ -465,7 +493,7 @@
     if(!chosen.kind){const groups=GROUPS.filter(g=>g.id!=='release'&&capRoom(s,g.id));if(groups.length){const g=groups[Math.floor(random(s)*groups.length)];s.pendingCapGroup=g.id;s.pendingChoices.choices.push({label:'复盘并拓展'+g.name,hint:g.name+'各项完成度软上限 +15%，最高 100%；仍需安排工作',caps:{[g.id]:CAP_STEP}});}}
     s.lastEvent=chosen.id;s.lastScene=chosen.scene||null;return chosen;
   }
-  function advance(s){if(blocked(s))return {ok:false,reason:'请先完成当前选择'};const c=cost(s);if(s.money<c.total)return {ok:false,reason:'资金不足以支付本周工资、维护和投放；可降低买量预算、签约发行商或发售。'};const contributions=s.team.map(m=>({id:m.id,name:m.name,job:m.job,output:memberOutput(s,m.id)}));s.money-=c.total;s.spent+=c.total;const {production,gains,ranges,impacts}=workWeek(s);s.effects=s.effects.map(e=>({...e,weeks:e.weeks-1})).filter(e=>e.weeks>0);s.history.push({week:s.week,cost:c.total,ads:c.ads,publisherAds:c.publisherAds,production,gains,ranges,impacts,team:contributions,money:s.money,ratings:quality(s)});addLog(s,'完成第 '+s.week+' 周：支出 ¥'+c.total+(c.ads?'（含买量 ¥'+c.ads+'）':'')+(c.publisherAds?'，发行商另垫付买量 ¥'+c.publisherAds:'')+(s.publisher?'，发行团队自动推进宣发与上架':'')+'。'+contributions.filter(m=>m.output>0).map(m=>m.name+'负责'+task(m.job).name).join('、')+'。');
+  function advance(s){if(blocked(s))return {ok:false,reason:'请先完成当前选择'};const c=cost(s);if(s.money<c.total)return {ok:false,reason:'资金不足以支付本周工资、维护和投放；可降低买量预算、签约发行商或发售。'};const contributions=s.team.map(m=>({id:m.id,name:m.name,job:m.job,output:memberOutput(s,m.id)}));s.money-=c.total;s.spent+=c.total;const {production,gains,ranges,impacts}=workWeek(s),publisherGrant=payPublisherMilestones(s);s.effects=s.effects.map(e=>({...e,weeks:e.weeks-1})).filter(e=>e.weeks>0);s.history.push({week:s.week,cost:c.total,ads:c.ads,publisherAds:c.publisherAds,publisherGrant,production,gains,ranges,impacts,team:contributions,money:s.money,ratings:quality(s)});addLog(s,'完成第 '+s.week+' 周：支出 ¥'+c.total+(c.ads?'（含买量 ¥'+c.ads+'）':'')+(c.publisherAds?'，发行商另垫付买量 ¥'+c.publisherAds:'')+(s.publisher?'，发行团队自动推进宣发与上架':'')+'。'+contributions.filter(m=>m.output>0).map(m=>m.name+'负责'+task(m.job).name).join('、')+'。');
     for(const impact of impacts)addLog(s,task(impact.from).name+'的调整牵连了'+task(impact.to).name+'，后者完成度 −'+impact.points+'%。');
     for(const j of JOBS)if(gains[j.id]<0)addLog(s,task(j.id).name+'本周净变化：'+round(gains[j.id]/s.req[j.id]*100)+'%。');
     checkMilestones(s);const e=drawEvent(s);s.week++;s.managed=false;return {ok:true,event:e.id};}
@@ -480,6 +508,14 @@
     if(!plan||job==='idle')return null;
     return {gain:plan.gains[job],percent:round(plan.gains[job]/projected.req[job]*100),production:plan.production[job],teamSize:projected.people[job]};
   }
+  function assignmentPriorities(s){
+    const runway=s.money/Math.max(1,cost(s).total-cost(s).ads),core=coreProgress(s),urgent=runway<8&&!complete(s),feedback=!s.publisher&&core>=.25&&revealLevel(s)<3;
+    const weights={theme:2.2,gameplay:3,subtheme:2.2,development:2.4,systems:1.7,qa:1.7,ads:1,payment:1.2,ip:1,publicity:feedback?3:.65,acquisition:.5,materials:urgent?6:core>=.3?2.8:.8,review:urgent?7:core>=.3?3.2:1};
+    if(s.objective==='acclaim')for(const id of ['theme','gameplay','subtheme','development','systems','qa'])weights[id]*=1.25;
+    if(s.objective==='profit'&&core>=.45)for(const id of ['ads','payment','ip'])weights[id]*=1.6;
+    return {weights,reason:urgent?'资金偏紧，优先补齐上架':feedback?'先获得玩家反馈，再决定打磨':core<.3?'先搭建可玩原型':s.objective==='acclaim'?'围绕口碑目标打磨核心':'平衡发售准备与商业回报'};
+  }
+  function assignmentUtility(s,plan){const {weights}=assignmentPriorities(s);return JOBS.reduce((n,j)=>n+plan.gains[j.id]/s.req[j.id]*weights[j.id],0);}
   // Exact subset DP: each job's gain depends only on the members assigned to it.
   // Full-efficiency estimates make job gains additive; publisher work is constant.
   function automaticAssignmentPlan(s){
@@ -488,7 +524,7 @@
     const n=s.team.length,size=1<<n,epsilon=1e-10;
     const weekly=cost(s),baseCost=weekly.total-weekly.ads;
     const canBuy=!!s.publisher||baseCost+s.adBudget<=s.money;
-    const m=mods(s),jobs=JOBS.filter(j=>!publisherManaged(s,j.id)&&(j.id!=='acquisition'||canBuy));
+    const m=mods(s),priority=assignmentPriorities(s),jobs=JOBS.filter(j=>!publisherManaged(s,j.id)&&(j.id!=='acquisition'||canBuy));
     const tables=jobs.map(j=>{
       let allowed=0,current=0;const values=new Float64Array(size),changes=new Uint8Array(size);
       s.team.forEach((p,i)=>{if(taskSkill(p,j.id)>0)allowed|=1<<i;if(p.job===j.id)current|=1<<i;});
@@ -498,7 +534,7 @@
         const members=s.team.filter((p,i)=>bits&(1<<i));
         const amount=round(jobContributions(s,j.id,members,m).reduce((sum,p)=>sum+p.output,0));
         const after=round(clamp(s.work[j.id]+Math.min(room,amount),0,s.req[j.id]));
-        values[bits]=round(after-s.work[j.id])/s.req[j.id];
+        values[bits]=round(after-s.work[j.id])/s.req[j.id]*priority.weights[j.id];
         for(let i=0;i<n;i++)if(bits&(1<<i)&&!(current&(1<<i)))changes[bits]++;
       }
       return {job:j.id,allowed,values,changes};
@@ -531,17 +567,17 @@
   function assignmentPlanResult(s,assignments,canBuy,exact){
     const proposed=copy(s);for(const member of proposed.team)member.job=assignments[member.id];syncPeople(proposed);
     const before=progressEstimate(s),after=progressEstimate(proposed),total=plan=>JOBS.reduce((sum,j)=>sum+plan.gains[j.id]/s.req[j.id],0)/JOBS.length*100;
-    const beforeProgress=total(before),afterProgress=total(after),improved=afterProgress>beforeProgress+1e-10||before.cost.total>s.money&&after.cost.total<=s.money;
-    return {ok:true,improved,exact,beforeProgress,afterProgress:improved?afterProgress:beforeProgress,beforeCost:before.cost.total,afterCost:improved?after.cost.total:before.cost.total,budgetLimited:!canBuy,assignments:improved?assignments:Object.fromEntries(s.team.map(p=>[p.id,p.job])),changes:improved?s.team.filter(p=>assignments[p.id]!==p.job).map(p=>({id:p.id,name:p.name,from:p.job,to:assignments[p.id]})):[]};
+    const beforeProgress=total(before),afterProgress=total(after),beforeUtility=assignmentUtility(s,before),afterUtility=assignmentUtility(s,after),improved=afterUtility>beforeUtility+1e-10||before.cost.total>s.money&&after.cost.total<=s.money;
+    return {ok:true,improved,exact,beforeUtility,afterUtility:improved?afterUtility:beforeUtility,reason:assignmentPriorities(s).reason,beforeProgress,afterProgress:improved?afterProgress:beforeProgress,beforeCost:before.cost.total,afterCost:improved?after.cost.total:before.cost.total,budgetLimited:!canBuy,assignments:improved?assignments:Object.fromEntries(s.team.map(p=>[p.id,p.job])),changes:improved?s.team.filter(p=>assignments[p.id]!==p.job).map(p=>({id:p.id,name:p.name,from:p.job,to:assignments[p.id]})):[]};
   }
   // Large rosters use deterministic marginal placement, then best moves and swaps.
   // This avoids exponential subset tables and reports that it is a search, not a proof.
   function largeAssignmentPlan(s){
-    const n=s.team.length,m=mods(s),weekly=cost(s),base=weekly.total-weekly.ads,canBuy=!!s.publisher||base+s.adBudget<=s.money;
+    const n=s.team.length,m=mods(s),priority=assignmentPriorities(s),weekly=cost(s),base=weekly.total-weekly.ads,canBuy=!!s.publisher||base+s.adBudget<=s.money;
     const jobs=JOBS.filter(j=>!publisherManaged(s,j.id)&&(j.id!=='acquisition'||canBuy&&s.adBudget>0)),ids=jobs.map(j=>j.id),room=jobs.map(j=>Math.max(0,workLimit(s,j.id)-s.work[j.id]));
     const weights=jobs.map(j=>s.team.map(p=>taskSkill(p,j.id)/100*(j.id!==p.lastJob?1-.2*m.ramp:1)));
-    const outputs=jobs.map((j,k)=>weights[k].map(w=>{const raw=w*STANDARD_WEEKLY_WORK*m.all*m[j.skill]*(s.pace==='crunch'?1.35:s.pace==='rest'?.7:1)*(.65+s.morale/285)*(j.skill==='code'?Math.max(.6,1-s.debt*.01):1);return {solo:round(raw),coop:round(raw*m.crowd)};}));
-    function value(job,members){if(job<0||!members.length||room[job]<=0)return 0;let lead=members[0],amount=0;for(const i of members){amount+=outputs[job][i].coop;if(weights[job][i]>weights[job][lead]||weights[job][i]===weights[job][lead]&&s.team[i].id.localeCompare(s.team[lead].id)<0)lead=i;}amount=round(amount+outputs[job][lead].solo-outputs[job][lead].coop);const id=ids[job],after=round(clamp(s.work[id]+Math.min(room[job],amount),0,s.req[id]));return round(after-s.work[id])/s.req[id];}
+    const outputs=jobs.map((j,k)=>weights[k].map(w=>{const raw=w*STANDARD_WEEKLY_WORK*(1+reputationProfile(s).speedBonus)*m.all*m[j.skill]*(s.pace==='crunch'?1.35:s.pace==='rest'?.7:1)*(.65+s.morale/285)*(j.skill==='code'?Math.max(.6,1-s.debt*.01):1);return {solo:round(raw),coop:round(raw*m.crowd)};}));
+    function value(job,members){if(job<0||!members.length||room[job]<=0)return 0;let lead=members[0],amount=0;for(const i of members){amount+=outputs[job][i].coop;if(weights[job][i]>weights[job][lead]||weights[job][i]===weights[job][lead]&&s.team[i].id.localeCompare(s.team[lead].id)<0)lead=i;}amount=round(amount+outputs[job][lead].solo-outputs[job][lead].coop);const id=ids[job],after=round(clamp(s.work[id]+Math.min(room[job],amount),0,s.req[id]));return round(after-s.work[id])/s.req[id]*priority.weights[id];}
     function improve(initial){
       const a=initial.slice(),groups=jobs.map((_,j)=>a.map((v,i)=>v===j?i:-1).filter(i=>i>=0));let values=groups.map((g,j)=>value(j,g));
       for(let pass=0;pass<200;pass++){
@@ -586,9 +622,9 @@
     const advanceDue=!released?(s.publisher?.advance||0):0,advanceRepaid=Math.min(s.money+revenue+recovery,advanceDue),advanceWrittenOff=advanceDue-advanceRepaid;
     const grossProductSales=released?organicGrossRevenue+ad.gross:0,earnedReputation=released?reputationGain(s,grossProductSales):0,reputationBefore=s.reputation,reputationAfter=repRound(reputationBefore+earnedReputation),unlockedMilestones=REPUTATION_NODES.filter(n=>n.threshold>reputationBefore&&n.threshold<=reputationAfter).map(copy);
     const profit=revenue+recovery+s.income-s.spent-advanceRepaid,objectiveOK=!!released&&(s.objective==='acclaim'?gradeIndex(trueValue)>=9:profit>=1200);
-    const exp=released?Math.round(35+trueValue*.9+(profit>0?20:0)+(s.hard?25:0)+(objectiveOK?40:0)):Math.min(30,s.milestones.length*8);
+    const experience=released?experienceBreakdown(s,profit,objectiveOK):null,exp=released?experience.total:Math.min(30,s.milestones.length*8);
     s.money+=revenue+recovery-advanceRepaid;s.over=true;s.pendingEvent=null;s.pendingCapGroup=null;s.pendingChoices=null;if(s.eventResult)s.eventResult.unread=false;
-    s.result={grossProductSales,earnedReputation,reputationBefore,reputationAfter,unlockedMilestones,advanceDue,advanceRepaid,advanceWrittenOff,runId:s.id,stage:s.stage,walletStart:s.initialMoney,walletEnd:s.money,sharedCashDelta:s.sharedCashDelta,name:s.name,hard:s.hard,totalCompletion:round(JOBS.reduce((n,j)=>n+progress(s,j.id),0)/JOBS.length*100),progress:Object.fromEntries(GROUPS.map(g=>[g.id,round(groupProgress(s,g.id)*100)])),scale:s.scale,released,weeks:s.week-1,score:Math.round(trueValue),rating:released?rating:'—',ratings:released?Object.fromEntries(GROUPS.filter(g=>g.id!=='release').map(g=>[g.id,{grade:grade(trueScore(s,g.id)),score:trueScore(s,g.id)}])):null,organicRevenue,organicGrossRevenue,publisherOrganicRevenue,organicBaseRevenue,marketMultiplier:marketFactor,marketFloor:released?marketFloor(trueValue):null,scaleRevenueMultiplier,adRevenue,adGrossRevenue:ad.gross,adNetRevenue:ad.studioNet,adCampaignNetRevenue:ad.campaignNet,adSpend:s.adSpend,studioAdSpend:ad.studioSpend,publisherAdSpend:ad.publisherSpend,publisherAdRevenue:ad.publisherRevenue,publisherAdRecovered:ad.publisherRecovered,publisherAdProfit:ad.publisherProfit,publisherAdLoss:ad.publisherLoss,adRate:released?adRate(s):null,publisher:copy(s.publisher),otherIncome:s.income,revenue,recovery,recoveryRate,cost:s.spent,profit,exp,objective:s.objective,objectiveOK,team:copy(s.team),seed:s.seed};
+    s.result={grossProductSales,earnedReputation,reputationBefore,reputationAfter,unlockedMilestones,advanceDue,advanceRepaid,advanceWrittenOff,runId:s.id,stage:s.stage,walletStart:s.initialMoney,walletEnd:s.money,sharedCashDelta:s.sharedCashDelta,name:s.name,workProfile:s.workProfile,hard:s.hard,totalCompletion:round(JOBS.reduce((n,j)=>n+progress(s,j.id),0)/JOBS.length*100),progress:Object.fromEntries(GROUPS.map(g=>[g.id,round(groupProgress(s,g.id)*100)])),scale:s.scale,released,weeks:s.week-1,score:Math.round(trueValue),rating:released?rating:'—',ratings:released?Object.fromEntries(GROUPS.filter(g=>g.id!=='release').map(g=>[g.id,{grade:grade(trueScore(s,g.id)),score:trueScore(s,g.id)}])):null,organicRevenue,organicGrossRevenue,publisherOrganicRevenue,organicBaseRevenue,marketMultiplier:marketFactor,marketFloor:released?marketFloor(trueValue):null,scaleRevenueMultiplier,adRevenue,adGrossRevenue:ad.gross,adNetRevenue:ad.studioNet,adCampaignNetRevenue:ad.campaignNet,adSpend:s.adSpend,studioAdSpend:ad.studioSpend,publisherAdSpend:ad.publisherSpend,publisherAdRevenue:ad.publisherRevenue,publisherAdRecovered:ad.publisherRecovered,publisherAdProfit:ad.publisherProfit,publisherAdLoss:ad.publisherLoss,adRate:released?adRate(s):null,publisher:copy(s.publisher),otherIncome:s.income,revenue,recovery,recoveryRate,cost:s.spent,profit,exp,experience,teamReview:s.team.map(m=>{const weeks=s.history.map(h=>h.team.find(p=>p.id===m.id)).filter(p=>p?.output>0);return {id:m.id,name:m.name,weeks:weeks.length,output:round(weeks.reduce((n,p)=>n+p.output,0)),quote:m.quote};}),objective:s.objective,objectiveOK,team:copy(s.team),seed:s.seed};
     addLog(s,released?'「'+s.name+'」正式发售，真实评级与发行账目已揭晓。':'项目已结束，回收工作室投入 '+recovery.toLocaleString('zh-CN')+' 元，退还发行预付款 '+advanceRepaid+' 元，保留里程碑经验。',released?'good':'info');return s.result;
   }
   function emptyMeta(){return {version:4,reputation:0,wallet:INITIAL_FUNDS,hero:{name:HERO.name,skills:copy(HERO.skills)},partners:[],knownPartners:RECRUITS.filter(r=>r.stage==='opening').map(r=>r.id),exp:0,earnedExp:0,stage:1,activeRunId:null,pausedProjects:[],receipts:{},history:[]};}
@@ -627,15 +663,23 @@
     return result;
   }
   function validateSnapshot(snapshot){try{if(!snapshot||!validateMeta(snapshot.meta))return false;const {meta,run}=snapshot;if(meta.activeRunId)return validateRun(run)&&!run.over&&!run.paused&&run.id===meta.activeRunId&&run.money===meta.wallet&&run.reputation===meta.reputation&&run.stage<meta.stage;return !run||validateRun(run)&&run.over&&!run.paused;}catch{return false;}}
-  function teamVoice(s,e){const skill={palette:'art',backup:'code',bug:'test',forms:'ops',showcase:'ops',inspiration:'design',scope:'design',feedback:'test'}[e?.id],m=s.team.find(m=>task(m.job)?.skill===skill)||s.team.find(m=>m.id==='ace');return {id:m.id,name:m.name,text:e?.id==='feedback'?'反馈让我们更接近真实评价，但不一定是我们原先想的那样。':m.quote};}
+  function memberAdvice(s,m){
+    if(m.job==='idle')return m.id==='ace'?'把最棘手的一块交给我，别让我只看着。':m.name+'：我还在待命，可以接一项工作。';
+    const j=task(m.job),lead=m.id==='ace'?'这部分我能接住。':m.id==='hero'?'我来盯住这一块。':m.name+'：';
+    if(progress(s,m.job)>=softCap(s,m.job)-1e-9&&j.group!=='release')return lead+' '+j.name+'已到上限，先换一岗或等新思路。';
+    if(workLimit(s,m.job)<=s.work[m.job]+.01)return lead+' '+j.name+'在等上游，先补前置工作。';
+    const lines={design:'先把规则和玩家体验讲清楚。',code:'把接口理顺，下游才接得上。',art:'让画面和内容有自己的气质。',test:'把验证步骤写清楚，验收更稳。',ops:j.group==='release'?'资料和审核按顺序收尾。':'先理解作品，再找到它的玩家。'};
+    return lead+' '+lines[j.skill];
+  }
+  function teamVoice(s,e){const skill={palette:'art',backup:'code',bug:'test',forms:'ops',showcase:'ops',inspiration:'design',scope:'design',feedback:'test'}[e?.id],m=s.team.find(m=>task(m.job)?.skill===skill)||s.team[(Array.from(e?.title||'').reduce((n,c)=>n+c.charCodeAt(0),s.week))%s.team.length];return {id:m.id,name:m.name,text:e?.id==='feedback'?'反馈让我们更接近真实评价，但不一定是我们原先想的那样。':m.job==='idle'?m.quote:memberAdvice(s,m)};}
   function validEventState(s){
     const p=s.pendingChoices,r=s.eventResult;
     if(p&&(!s.pendingEvent||p.id!==s.pendingEvent||!Array.isArray(p.choices)||!p.choices.length||p.choices.some(c=>!c||typeof c.label!=='string')))return false;
     if(r&&(!EVENTS.some(e=>e.id===r.id)||!['standard','ambient','hidden','publisher'].includes(r.kind)||typeof r.unread!=='boolean'||!Number.isInteger(r.week)||r.week<0||!['title','label','text'].every(k=>typeof r[k]==='string')||!Array.isArray(r.details)||!r.details.length||r.details.some(d=>typeof d!=='string')||r.unread&&(s.pendingEvent||s.over)))return false;
     return true;
   }
-  function validateRun(s){try{if(!s||s.version!==VERSION||typeof s.paused!=='boolean'||!Number.isInteger(s.stage)||s.stage<1||!SCALES.some(g=>g.id===s.scale)||!Number.isInteger(s.week)||s.week<1||!Array.isArray(s.team)||s.team.length<2||!Number.isFinite(s.reputation)||s.reputation<0||s.team.length>reputationProfile(s).teamCap)return false;for(const a of ['departed','history','logs','effects','milestones','knownPartners'])if(!Array.isArray(s[a]))return false;if(new Set(s.knownPartners).size!==s.knownPartners.length||s.knownPartners.some(id=>!RECRUITS.some(r=>r.id===id&&recruitReputation(r)<=s.reputation))||s.team.some(m=>m.kind==='partner'&&!s.knownPartners.includes(m.id)))return false;if(!s.work||!s.req||!s.softCaps||typeof s.hard!=='boolean'||s.pendingCapGroup&&!GROUPS.some(g=>g.id===s.pendingCapGroup&&g.id!=='release')||!s.people||!['normal','rest','crunch'].includes(s.pace)||!['profit','acclaim'].includes(s.objective)||!adBudgetOptions(s).includes(s.adBudget))return false;const ids=s.team.map(m=>m.id);if(new Set(ids).size!==ids.length||!s.team.some(m=>m.id==='hero'&&m.kind==='hero')||!s.team.some(m=>m.id==='ace'&&m.kind==='companion'))return false;if(!s.team.every(m=>typeof m.name==='string'&&m.name.length>0&&Number.isFinite(m.salary)&&m.salary>=0&&['idle',...JOBS.map(j=>j.id)].includes(m.lastJob)&&SKILLS.every(j=>Number.isFinite(m.skills[j.id])&&m.skills[j.id]>=0&&m.skills[j.id]<=200)&&(m.job==='idle'||taskSkill(m,m.job)>0&&!publisherManaged(s,m.job))))return false;
-    return validEventState(s)&&JOBS.every(j=>(j.group==='release'||Number.isFinite(s.softCaps[j.id])&&s.softCaps[j.id]>=INITIAL_SOFT_CAP&&s.softCaps[j.id]<=HARD_CAP&&s.work[j.id]<=s.req[j.id]*s.softCaps[j.id]+.01)&&Number.isFinite(s.work[j.id])&&s.work[j.id]>=0&&Number.isFinite(s.req[j.id])&&s.req[j.id]>0&&s.work[j.id]<=s.req[j.id]+.01&&s.people[j.id]===s.team.filter(m=>m.job===j.id).length)&&s.reserve===s.team.filter(m=>m.job==='idle').length&&GROUPS.filter(g=>g.id!=='release').every(g=>Number.isFinite(s.ratingRolls[g.id])&&Math.abs(s.ratingRolls[g.id])<=28&&Number.isFinite(s.revealRolls[g.id])&&Math.abs(s.revealRolls[g.id])<=1)&&[s.money,s.spent,s.income,s.adSpend,s.debt,s.morale,s.rng,s.seed,s.initialMoney,s.sharedCashDelta].every(Number.isFinite)&&s.money>=0&&s.spent>=0&&s.adSpend>=0&&s.adSpend<=(s.spent+(s.publisher?.adSpend||0))&&(s.publisher===null||s.publisher&&Number.isFinite(s.publisher.advance)&&s.publisher.advance>0&&Number.isInteger(s.publisher.signWeek)&&s.publisher.signWeek>=1&&s.publisher.signWeek<=s.week&&Number.isFinite(s.publisher.adSpend)&&s.publisher.adSpend>=0&&s.publisher.adSpend<=s.adSpend&&s.publisher.quote&&s.publisher.quote.advance===s.publisher.advance&&[.6,.7,.8,.9,1].includes(s.publisher.quote.advanceRatio)&&[.5,.55,.6,.65,.7,.75].includes(s.publisher.quote.studioShare)&&[20,22,24,26,28,30,32,34,36].includes(s.publisher.quote.weeklyWork))&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.over||!!s.result);
+  function validateRun(s){try{if(!s||s.version!==VERSION||typeof s.paused!=='boolean'||!Number.isInteger(s.stage)||s.stage<1||!SCALES.some(g=>g.id===s.scale)||!WORK_PROFILES.some(p=>p.id===s.workProfile)||!Number.isInteger(s.week)||s.week<1||!Array.isArray(s.team)||s.team.length<2||!Number.isFinite(s.reputation)||s.reputation<0||s.team.length>reputationProfile(s).teamCap)return false;for(const a of ['departed','history','logs','effects','milestones','knownPartners'])if(!Array.isArray(s[a]))return false;if(new Set(s.knownPartners).size!==s.knownPartners.length||s.knownPartners.some(id=>!RECRUITS.some(r=>r.id===id&&recruitReputation(r)<=s.reputation))||s.team.some(m=>m.kind==='partner'&&!s.knownPartners.includes(m.id)))return false;if(!s.work||!s.req||!s.softCaps||typeof s.hard!=='boolean'||s.pendingCapGroup&&!GROUPS.some(g=>g.id===s.pendingCapGroup&&g.id!=='release')||!s.people||!['normal','rest','crunch'].includes(s.pace)||!['profit','acclaim'].includes(s.objective)||!adBudgetOptions(s).includes(s.adBudget))return false;const ids=s.team.map(m=>m.id);if(new Set(ids).size!==ids.length||!s.team.some(m=>m.id==='hero'&&m.kind==='hero')||!s.team.some(m=>m.id==='ace'&&m.kind==='companion'))return false;if(!s.team.every(m=>typeof m.name==='string'&&m.name.length>0&&Number.isFinite(m.salary)&&m.salary>=0&&['idle',...JOBS.map(j=>j.id)].includes(m.lastJob)&&SKILLS.every(j=>Number.isFinite(m.skills[j.id])&&m.skills[j.id]>=0&&m.skills[j.id]<=200)&&(m.job==='idle'||taskSkill(m,m.job)>0&&!publisherManaged(s,m.job))))return false;
+    return validEventState(s)&&JOBS.every(j=>(j.group==='release'||Number.isFinite(s.softCaps[j.id])&&s.softCaps[j.id]>=INITIAL_SOFT_CAP&&s.softCaps[j.id]<=HARD_CAP&&s.work[j.id]<=s.req[j.id]*s.softCaps[j.id]+.01)&&Number.isFinite(s.work[j.id])&&s.work[j.id]>=0&&Number.isFinite(s.req[j.id])&&s.req[j.id]>0&&s.work[j.id]<=s.req[j.id]+.01&&s.people[j.id]===s.team.filter(m=>m.job===j.id).length)&&s.reserve===s.team.filter(m=>m.job==='idle').length&&GROUPS.filter(g=>g.id!=='release').every(g=>Number.isFinite(s.ratingRolls[g.id])&&Math.abs(s.ratingRolls[g.id])<=28&&Number.isFinite(s.revealRolls[g.id])&&Math.abs(s.revealRolls[g.id])<=1)&&[s.money,s.spent,s.income,s.adSpend,s.debt,s.morale,s.rng,s.seed,s.initialMoney,s.sharedCashDelta].every(Number.isFinite)&&s.money>=0&&s.spent>=0&&s.adSpend>=0&&s.adSpend<=(s.spent+(s.publisher?.adSpend||0))&&(s.publisher===null||s.publisher&&Number.isFinite(s.publisher.advance)&&s.publisher.advance>0&&Number.isInteger(s.publisher.signWeek)&&s.publisher.signWeek>=1&&s.publisher.signWeek<=s.week&&Number.isFinite(s.publisher.adSpend)&&s.publisher.adSpend>=0&&s.publisher.adSpend<=s.adSpend&&s.publisher.quote&&s.publisher.quote.advance>=s.publisher.advance&&Array.isArray(s.publisher.paidStages)&&new Set(s.publisher.paidStages).size===s.publisher.paidStages.length&&s.publisher.paidStages.includes('signing')&&s.publisher.paidStages.every(id=>PUBLISHER_STAGES.some(p=>p.id===id))&&publisherFunding(s).stages.filter(p=>p.paid).reduce((n,p)=>n+p.amount,0)===s.publisher.advance&&[.6,.7,.8,.9,1].includes(s.publisher.quote.advanceRatio)&&[.5,.55,.6,.65,.7,.75].includes(s.publisher.quote.studioShare)&&[20,22,24,26,28,30,32,34,36].includes(s.publisher.quote.weeklyWork))&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.over||!!s.result);
     }catch{return false;}}
-  return {VERSION,REPUTATION_NODES,RECRUIT_REPUTATION,reputationProfile,reputationStatus,recruitReputation,reputationPartners,reputationGain,publisherWork,publisherShare,terminationQuote,PERSON_RANKS,abilityScore,personRank,recruitUnlockText,MARKET_MIN,MARKET_MAX,marketFloor,marketMultiplier,revenueRules,INITIAL_FUNDS,startupAidStatus,claimStartupAid,STANDARD_WEEKLY_WORK,STANDARD_PERSON_WEEK_COST,scalePlan,projectNameStatus,HARD_CAP,INITIAL_SOFT_CAP,CAP_STEP,softCap,workPhase,SKILLS,GROUPS,JOBS,GRADES,AD_RATES,AD_BUDGETS,adBudgetOptions,publisherAdBudget,currentAdBudget,HERO,COMPANION,RECRUITS,SCALES,baseRequirements,PUBLISHER_JOBS,PUBLISHER_WEEKLY_WORK,publisherManaged,publisherQuote,signPublisher,adSettlement,OBJECTIVES,EVENTS,skillLabel,taskSkill,assignMember,availableRecruits,memberOutput,teamVoice,newRun,pauseProject,resumeProject,endProject,validateSnapshot,mods,cost,teamSize,progress,groupProgress,coreProgress,coreReady,complete,goals,canRelease,quality,trueScore,overallScore,grade,gradeIndex,revealLevel,ratingView,overallView,adRate,adProjection,buyingStatus,setAdBudget,forecast,incomeView,objectiveStatus,throughput,workDependency,workLimit,hire,downsize,advance,event,eventPool,eventChoiceStatus,resolveEvent,acknowledgeEvent,preview,progressEstimate,assignmentEstimate,automaticAssignmentPlan,autoAssign,softCapWarnings,finish,emptyMeta,settle,validateMeta,syncCareer,trainingCost,train,renameHero,hirePartner,dismissPartner,validateRun,copy};
+  return {VERSION,WORK_PROFILES,workProfile,PUBLISHER_STAGES,publisherFunding,developmentCompletion,experienceBreakdown,decisionFinance,assignmentPriorities,assignmentUtility,memberAdvice,REPUTATION_NODES,RECRUIT_REPUTATION,reputationProfile,reputationStatus,recruitReputation,reputationPartners,reputationGain,publisherWork,publisherShare,terminationQuote,PERSON_RANKS,abilityScore,personRank,recruitUnlockText,MARKET_MIN,MARKET_MAX,marketFloor,marketMultiplier,revenueRules,INITIAL_FUNDS,startupAidStatus,claimStartupAid,STANDARD_WEEKLY_WORK,STANDARD_PERSON_WEEK_COST,scalePlan,projectNameStatus,HARD_CAP,INITIAL_SOFT_CAP,CAP_STEP,softCap,workPhase,SKILLS,GROUPS,JOBS,GRADES,AD_RATES,AD_BUDGETS,adBudgetOptions,publisherAdBudget,currentAdBudget,HERO,COMPANION,RECRUITS,SCALES,baseRequirements,PUBLISHER_JOBS,PUBLISHER_WEEKLY_WORK,publisherManaged,publisherQuote,signPublisher,adSettlement,OBJECTIVES,EVENTS,skillLabel,taskSkill,assignMember,availableRecruits,memberOutput,teamVoice,newRun,pauseProject,resumeProject,endProject,validateSnapshot,mods,cost,teamSize,progress,groupProgress,coreProgress,coreReady,complete,goals,canRelease,quality,trueScore,overallScore,grade,gradeIndex,revealLevel,ratingView,overallView,adRate,adProjection,buyingStatus,setAdBudget,forecast,incomeView,objectiveStatus,throughput,workDependency,workLimit,hire,downsize,advance,event,eventPool,eventChoiceStatus,resolveEvent,acknowledgeEvent,preview,progressEstimate,assignmentEstimate,automaticAssignmentPlan,autoAssign,softCapWarnings,finish,emptyMeta,settle,validateMeta,syncCareer,trainingCost,train,renameHero,hirePartner,dismissPartner,validateRun,copy};
 });

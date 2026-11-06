@@ -1,5 +1,5 @@
 {
-  "version": "0.15.0",
+  "version": "0.16.0",
   "date": "2026-11-06",
   "checks": 39,
   "simulatedRuns": 23,
@@ -29,7 +29,7 @@
       "weeks": 9,
       "rating": "B-",
       "cost": 3099,
-      "walletEnd": 7249,
+      "walletEnd": 6449,
       "crew": [
         "hero",
         "ace",
@@ -61,7 +61,7 @@
       "weeks": 9,
       "rating": "B-",
       "cost": 3099,
-      "walletEnd": 7773,
+      "walletEnd": 6973,
       "crew": [
         "hero",
         "ace",
@@ -93,7 +93,7 @@
       "weeks": 8,
       "rating": "C+",
       "cost": 2774,
-      "walletEnd": 13737,
+      "walletEnd": 12937,
       "crew": [
         "hero",
         "ace",
@@ -120,7 +120,7 @@
       "weeks": 9,
       "rating": "B-",
       "cost": 3099,
-      "walletEnd": 29649
+      "walletEnd": 28849
     },
     {
       "seed": 44001,
@@ -142,7 +142,7 @@
       "weeks": 23,
       "rating": "B-",
       "cost": 7642,
-      "walletEnd": 90539
+      "walletEnd": 88179
     },
     {
       "seed": 44001,
@@ -153,7 +153,7 @@
       "weeks": 70,
       "rating": "A-",
       "cost": 22912,
-      "walletEnd": 354115
+      "walletEnd": 354146
     },
     {
       "seed": 44001,
@@ -161,10 +161,10 @@
       "hard": true,
       "route": "funded-scale-integration",
       "initialWallet": 270000,
-      "weeks": 67,
-      "rating": "B",
-      "cost": 23772,
-      "walletEnd": 282395
+      "weeks": 66,
+      "rating": "B-",
+      "cost": 21677,
+      "walletEnd": 267021
     },
     {
       "seed": 44001,
@@ -172,10 +172,10 @@
       "hard": false,
       "route": "funded-scale-integration",
       "initialWallet": 810000,
-      "weeks": 170,
+      "weeks": 182,
       "rating": "A-",
-      "cost": 55410,
-      "walletEnd": 1189700
+      "cost": 59302,
+      "walletEnd": 1300858
     },
     {
       "seed": 44001,
@@ -184,9 +184,9 @@
       "route": "funded-scale-integration",
       "initialWallet": 810000,
       "weeks": 194,
-      "rating": "B+",
+      "rating": "B",
       "cost": 63867,
-      "walletEnd": 965136
+      "walletEnd": 906532
     },
     {
       "seed": 44001,
