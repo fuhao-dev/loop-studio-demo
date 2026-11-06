@@ -265,6 +265,12 @@
     if(a==='confirm-release'){finish(true);return;}
     if(a==='abort'){confirmEndProject(run.id);return;}
     if(busy()){toast('请先完成当前随机事件选择。');return;}
+    if(a==='auto-assign'){
+      const plan=G.autoAssign(run);
+      if(!plan.ok){toast(plan.reason);return;}
+      if(!plan.improved){showDialog(dialogHeader('TEAM ASSIGNMENTS','无法优化任务分配了')+`<p class="dialog-desc">当前分工已达到本周预估的最大总进展。开发总完成度预计 +${plan.beforeProgress.toFixed(3)}%，无需调整人物岗位。</p><p class="quality-note">已计入转岗磨合、同岗协作、上下游依赖、完成度上限与现有预算。真实模式按满效率预估。你仍可根据偿债、修复问题或长期目标手动安排。</p><div class="dialog-actions"><button class="btn-primary" data-action="close">保持当前分工</button></div>`,'auto-assignment');return;}
+      render();toast('已自动调整 '+plan.changes.length+' 人的工作，计入转岗与上限折损。'+(plan.beforeCost!==plan.afterCost?'本周支出 '+yen(plan.beforeCost)+' → '+yen(plan.afterCost)+'。':''));return;
+    }
     if(a==='advance'){const warnings=G.softCapWarnings(run),buying=G.buyingStatus(run);if(warnings.length||buying.unfunded)showWorkCapWarning(warnings,buying);else advanceWeek();return;}
     if(a==='confirm-advance'){if(b.dataset.run!==run.id||Number(b.dataset.week)!==run.week){close();toast('项目状态已变化，请重新检查分工。');return;}close();advanceWeek();return;}
     let ok=true;

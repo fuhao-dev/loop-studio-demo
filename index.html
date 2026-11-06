@@ -105,6 +105,9 @@ SOFTWARE.
 
 /* Publishing contract */
 .publisher-quote{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:24px;background:linear-gradient(120deg,#35463d,#263a37);border:1px solid #718b63;border-radius:12px;margin:18px 0}.publisher-quote small{display:block;color:var(--muted)}.publisher-quote strong{display:block;font-size:36px;color:var(--gold);margin:8px 0}.publisher-quote p{margin:0;font-size:12px;color:var(--muted)}.publisher-terms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:24px 0}.publisher-terms article{padding:18px;border:1px solid var(--line);border-radius:10px}.publisher-terms b{color:var(--teal)}.publisher-terms p,.publisher-contract{font-size:13px;line-height:1.9;color:var(--muted)}.publisher-contract{padding-left:22px}.publisher-contract li{margin:12px 0}.publisher-progress{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:20px 0}.publisher-progress b{float:right}.publisher-progress .progress{margin-top:10px}.state-chip.managed{color:var(--teal);border-color:#536f65}.publisher-managed>h3{margin-top:28px}.publisher-panel{min-width:0}@media(max-width:760px){.publisher-terms{grid-template-columns:1fr}.publisher-progress{grid-template-columns:repeat(2,minmax(0,1fr))}.publisher-quote{flex-wrap:wrap;padding:18px}.publisher-quote strong{font-size:30px}}
+
+/* Automatic team assignments */
+.crew-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.auto-assignment-help{margin:0 0 18px;color:var(--muted);font-size:12px}.auto-assignment-help summary{cursor:pointer;color:var(--teal);width:fit-content}.auto-assignment-help p{line-height:1.9;max-width:900px;margin:10px 0}@media(max-width:560px){.crew-section>.section-heading{align-items:flex-start;gap:12px;flex-wrap:wrap}.crew-actions{gap:8px}}
 </style>
   
   
@@ -119,7 +122,7 @@ SOFTWARE.
       <button data-action="nav" data-view="history" id="nav-history"><span>▤</span> 开发历史</button>
       <button data-action="nav" data-view="career" id="nav-career"><span>↗</span> 局外生涯</button>
     </nav>
-    <div class="side-bottom"><div id="meta-mini"></div><button class="help-link" data-action="help"><span>?</span> 制作人手册</button><div class="version">v0.10.0 DEMO <span>本地自动存档</span></div></div>
+    <div class="side-bottom"><div id="meta-mini"></div><button class="help-link" data-action="help"><span>?</span> 制作人手册</button><div class="version">v0.10.1 DEMO <span>本地自动存档</span></div></div>
   </aside>
   <div class="shell">
     <header class="topbar"><div><span class="top-dot"></span><span id="location">工作室大厅</span><span class="top-sep">/</span><span class="muted">把好点子，做成好游戏。</span></div><div class="top-actions"><span class="demo-tag">生涯与传承</span><button id="audio-toggle" data-action="audio" class="icon-button" aria-label="开启声音" title="开启声音">♫</button><button class="avatar" data-action="nav" data-view="career" aria-label="查看局外生涯">制</button></div></header>
@@ -130,7 +133,7 @@ SOFTWARE.
   <div id="toast" role="status" aria-live="polite"></div>
   <noscript>请启用 JavaScript 以运行天才程序员带我做游戏。</noscript>
 <script>
-/* 天才程序员带我做游戏 v0.10.0 · shared career and pausable projects. */
+/* 天才程序员带我做游戏 v0.10.1 · shared career and pausable projects. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.StudioGame=factory();})(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
   const VERSION=10;
@@ -222,8 +225,14 @@ SOFTWARE.
   function complete(s){return progress(s,'materials')>=1&&progress(s,'review')>=1;}
   function goals(s){return ['materials','review'].map(id=>({name:task(id).name,ok:progress(s,id)>=1,value:Math.floor(progress(s,id)*100)+'%'}));}
   function canRelease(s){return !s.over&&!s.paused&&!s.pendingEvent&&complete(s);}
-  function memberOutput(s,id){const member=s.team.find(p=>p.id===id);if(!member||member.job==='idle'||publisherManaged(s,member.job)||member.job==='acquisition'&&s.adBudget===0)return 0;const j=task(member.job),m=mods(s),ordered=s.team.filter(p=>p.job===j.id).map(p=>({id:p.id,n:taskSkill(p,j.id)/100*(p.job!==p.lastJob?1-.2*m.ramp:1)})).sort((a,b)=>b.n-a.n||a.id.localeCompare(b.id)),i=ordered.findIndex(p=>p.id===id),debt=j.skill==='code'?Math.max(.6,1-s.debt*.01):1;return round(ordered[i].n*(i?m.crowd:1)*STANDARD_WEEKLY_WORK*m.all*m[j.skill]*(s.pace==='crunch'?1.35:s.pace==='rest'?.7:1)*(.65+s.morale/285)*debt);}
-  function throughput(s,id){if(publisherManaged(s,id))return id==='acquisition'&&s.adBudget===0?0:PUBLISHER_WEEKLY_WORK;return round(s.team.filter(p=>p.job===id).reduce((n,p)=>n+memberOutput(s,p.id),0));}
+  function jobContributions(s,id,members,m=mods(s)){
+    const j=task(id);if(!j||publisherManaged(s,id)||id==='acquisition'&&s.adBudget===0)return [];
+    const ordered=members.map(p=>({id:p.id,n:taskSkill(p,id)/100*(id!==p.lastJob?1-.2*m.ramp:1)})).sort((a,b)=>b.n-a.n||a.id.localeCompare(b.id));
+    const debt=j.skill==='code'?Math.max(.6,1-s.debt*.01):1;
+    return ordered.map((p,i)=>({id:p.id,output:round(p.n*(i?m.crowd:1)*STANDARD_WEEKLY_WORK*m.all*m[j.skill]*(s.pace==='crunch'?1.35:s.pace==='rest'?.7:1)*(.65+s.morale/285)*debt)}));
+  }
+  function memberOutput(s,id){const member=s.team.find(p=>p.id===id);if(!member||member.job==='idle')return 0;return jobContributions(s,member.job,s.team.filter(p=>p.job===member.job)).find(p=>p.id===id)?.output||0;}
+  function throughput(s,id){if(publisherManaged(s,id))return id==='acquisition'&&s.adBudget===0?0:PUBLISHER_WEEKLY_WORK;return round(jobContributions(s,id,s.team.filter(p=>p.job===id)).reduce((sum,p)=>sum+p.output,0));}
   function softCap(s,id){return task(id)?.group==='release'?HARD_CAP:s.softCaps[id];}
   function workDependency(s,id){const content=groupProgress(s,'content'),development=progress(s,'development'),systems=progress(s,'systems'),materials=progress(s,'materials');const source=(name,value)=>({name,value});if(id==='development')return {sources:[source('游戏内容',content)],cap:Math.min(1,.2+content*.8)};if(id==='systems')return {sources:[source('开发进度',development)],cap:Math.min(1,.2+development)};if(id==='qa')return {sources:[source('开发进度',development),source('系统协作',systems)],cap:Math.min(development,.2+systems)};if(id==='review')return {sources:[source('资料准备',materials)],cap:materials>=1?1:0};return null;}
   function workLimit(s,id){return s.req[id]*Math.min(HARD_CAP,softCap(s,id),workDependency(s,id)?.cap??1);}
@@ -380,6 +389,63 @@ SOFTWARE.
     if(!plan||job==='idle')return null;
     return {gain:plan.gains[job],percent:round(plan.gains[job]/projected.req[job]*100),production:plan.production[job],teamSize:projected.people[job]};
   }
+  // Exact subset DP: each job's gain depends only on the members assigned to it.
+  // Full-efficiency estimates make job gains additive; publisher work is constant.
+  function automaticAssignmentPlan(s){
+    if(!s||blocked(s))return {ok:false,improved:false,reason:'请先恢复项目并处理当前事件。'};
+    const n=s.team.length,size=1<<n,all=size-1,epsilon=1e-10;
+    const weekly=cost(s),baseCost=weekly.total-weekly.ads;
+    const canBuy=!!s.publisher||baseCost+s.adBudget<=s.money;
+    const m=mods(s),jobs=JOBS.filter(j=>!publisherManaged(s,j.id)&&(j.id!=='acquisition'||canBuy));
+    const tables=jobs.map(j=>{
+      let allowed=0,current=0;const values=new Float64Array(size),changes=new Uint8Array(size);
+      s.team.forEach((p,i)=>{if(taskSkill(p,j.id)>0)allowed|=1<<i;if(p.job===j.id)current|=1<<i;});
+      const room=Math.max(0,workLimit(s,j.id)-s.work[j.id]);
+      for(let bits=0;bits<size;bits++){
+        if(bits&~allowed)continue;
+        const members=s.team.filter((p,i)=>bits&(1<<i));
+        const amount=round(jobContributions(s,j.id,members,m).reduce((sum,p)=>sum+p.output,0));
+        const after=round(clamp(s.work[j.id]+Math.min(room,amount),0,s.req[j.id]));
+        values[bits]=round(after-s.work[j.id])/s.req[j.id];
+        for(let i=0;i<n;i++)if(bits&(1<<i)&&!(current&(1<<i)))changes[bits]++;
+      }
+      return {job:j.id,allowed,values,changes};
+    });
+    let scores=new Float64Array(size).fill(-Infinity),counts=new Uint8Array(size).fill(255);scores[0]=0;counts[0]=0;
+    const parents=[];
+    for(const table of tables){
+      const next=new Float64Array(size).fill(-Infinity),nextCounts=new Uint8Array(size).fill(255),chosen=new Int16Array(size).fill(-1);
+      for(let used=0;used<size;used++){
+        if(scores[used]===-Infinity)continue;
+        const remaining=table.allowed&~used;
+        for(let bits=remaining;;bits=(bits-1)&remaining){
+          const mask=used|bits,value=scores[used]+table.values[bits],changed=counts[used]+table.changes[bits];
+          if(value>next[mask]+epsilon||Math.abs(value-next[mask])<=epsilon&&changed<nextCounts[mask]){next[mask]=value;nextCounts[mask]=changed;chosen[mask]=bits;}
+          if(!bits)break;
+        }
+      }
+      scores=next;counts=nextCounts;parents.push(chosen);
+    }
+    let best=-Infinity,bestChanges=255,mask=0;
+    for(let used=0;used<size;used++){
+      if(scores[used]===-Infinity)continue;
+      let changed=counts[used];for(let i=0;i<n;i++)if(!(used&(1<<i))&&s.team[i].job!=='idle')changed++;
+      if(scores[used]>best+epsilon||Math.abs(scores[used]-best)<=epsilon&&changed<bestChanges){best=scores[used];bestChanges=changed;mask=used;}
+    }
+    const assignments=Object.fromEntries(s.team.map(p=>[p.id,'idle']));
+    for(let i=tables.length-1;i>=0;i--){const bits=parents[i][mask];s.team.forEach((p,k)=>{if(bits&(1<<k))assignments[p.id]=tables[i].job;});mask^=bits;}
+    const proposed=copy(s);for(const member of proposed.team)member.job=assignments[member.id];syncPeople(proposed);
+    const before=progressEstimate(s),after=progressEstimate(proposed);
+    const total=plan=>JOBS.reduce((sum,j)=>sum+plan.gains[j.id]/s.req[j.id],0)/JOBS.length*100;
+    const beforeProgress=total(before),afterProgress=total(after);
+    const improved=afterProgress>beforeProgress+epsilon||before.cost.total>s.money&&after.cost.total<=s.money;
+    return {ok:true,improved,beforeProgress,afterProgress:improved?afterProgress:beforeProgress,beforeCost:before.cost.total,afterCost:improved?after.cost.total:before.cost.total,budgetLimited:!canBuy,assignments:improved?assignments:Object.fromEntries(s.team.map(p=>[p.id,p.job])),changes:improved?s.team.filter(p=>assignments[p.id]!==p.job).map(p=>({id:p.id,name:p.name,from:p.job,to:assignments[p.id]})):[]};
+  }
+  function autoAssign(s){
+    const plan=automaticAssignmentPlan(s);if(!plan.ok||!plan.improved)return plan;
+    for(const member of s.team)member.job=plan.assignments[member.id];syncPeople(s);return plan;
+  }
+
   function softCapWarnings(s){
     if(!s||s.over||s.paused)return [];
     return JOBS.filter(j=>j.group!=='release'&&s.people[j.id]>0&&progress(s,j.id)>=softCap(s,j.id)-1e-9).map(j=>({
@@ -445,7 +511,7 @@ SOFTWARE.
   function validateRun(s){try{if(!s||s.version!==VERSION||typeof s.paused!=='boolean'||!Number.isInteger(s.stage)||s.stage<1||!SCALES.some(g=>g.id===s.scale)||!Number.isInteger(s.week)||s.week<1||!Array.isArray(s.team)||s.team.length<2||s.team.length>8)return false;for(const a of ['departed','history','logs','effects','milestones','knownPartners'])if(!Array.isArray(s[a]))return false;if(new Set(s.knownPartners).size!==s.knownPartners.length||s.knownPartners.some(id=>!RECRUITS.some(r=>r.id===id))||s.team.some(m=>m.kind==='partner'&&!s.knownPartners.includes(m.id)))return false;if(!s.work||!s.req||!s.softCaps||typeof s.hard!=='boolean'||s.pendingCapGroup&&!GROUPS.some(g=>g.id===s.pendingCapGroup&&g.id!=='release')||!s.people||!['normal','rest','crunch'].includes(s.pace)||!['profit','acclaim'].includes(s.objective)||!AD_BUDGETS.includes(s.adBudget))return false;const ids=s.team.map(m=>m.id);if(new Set(ids).size!==ids.length||!s.team.some(m=>m.id==='hero'&&m.kind==='hero')||!s.team.some(m=>m.id==='ace'&&m.kind==='companion'))return false;if(!s.team.every(m=>typeof m.name==='string'&&m.name.length>0&&Number.isFinite(m.salary)&&m.salary>=0&&['idle',...JOBS.map(j=>j.id)].includes(m.lastJob)&&SKILLS.every(j=>Number.isFinite(m.skills[j.id])&&m.skills[j.id]>=0&&m.skills[j.id]<=200)&&(m.job==='idle'||taskSkill(m,m.job)>0&&!publisherManaged(s,m.job))))return false;
     return JOBS.every(j=>(j.group==='release'||Number.isFinite(s.softCaps[j.id])&&s.softCaps[j.id]>=INITIAL_SOFT_CAP&&s.softCaps[j.id]<=HARD_CAP&&s.work[j.id]<=s.req[j.id]*s.softCaps[j.id]+.01)&&Number.isFinite(s.work[j.id])&&s.work[j.id]>=0&&Number.isFinite(s.req[j.id])&&s.req[j.id]>0&&s.work[j.id]<=s.req[j.id]+.01&&s.people[j.id]===s.team.filter(m=>m.job===j.id).length)&&s.reserve===s.team.filter(m=>m.job==='idle').length&&GROUPS.filter(g=>g.id!=='release').every(g=>Number.isFinite(s.ratingRolls[g.id])&&Math.abs(s.ratingRolls[g.id])<=28&&Number.isFinite(s.revealRolls[g.id])&&Math.abs(s.revealRolls[g.id])<=1&&Number.isFinite(s.ratingBonus[g.id]))&&[s.money,s.spent,s.income,s.adSpend,s.bugs,s.debt,s.morale,s.rng,s.seed,s.initialMoney,s.sharedCashDelta].every(Number.isFinite)&&s.money>=0&&s.spent>=0&&s.adSpend>=0&&s.adSpend<=(s.spent+(s.publisher?.adSpend||0))&&(s.publisher===null||s.publisher&&Number.isFinite(s.publisher.advance)&&s.publisher.advance>0&&Number.isInteger(s.publisher.signWeek)&&s.publisher.signWeek>=1&&s.publisher.signWeek<=s.week&&Number.isFinite(s.publisher.adSpend)&&s.publisher.adSpend>=0&&s.publisher.adSpend<=s.adSpend&&s.publisher.quote&&s.publisher.quote.advance===s.publisher.advance)&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.over||!!s.result);
     }catch{return false;}}
-  return {VERSION,MARKET_MIN,MARKET_MAX,marketMultiplier,revenueRules,INITIAL_FUNDS,startupAidStatus,claimStartupAid,STANDARD_WEEKLY_WORK,STANDARD_PERSON_WEEK_COST,scalePlan,projectNameStatus,HARD_CAP,INITIAL_SOFT_CAP,CAP_STEP,softCap,workPhase,SKILLS,GROUPS,JOBS,GRADES,AD_RATES,AD_BUDGETS,HERO,COMPANION,RECRUITS,SCALES,baseRequirements,PUBLISHER_JOBS,PUBLISHER_WEEKLY_WORK,publisherManaged,publisherQuote,signPublisher,adSettlement,OBJECTIVES,EVENTS,skillLabel,taskSkill,assignMember,availableRecruits,memberOutput,teamVoice,newRun,pauseProject,resumeProject,endProject,validateSnapshot,mods,cost,teamSize,progress,groupProgress,coreProgress,coreReady,complete,goals,canRelease,quality,trueScore,overallScore,grade,gradeIndex,revealLevel,ratingView,overallView,adRate,adProjection,buyingStatus,setAdBudget,forecast,incomeView,objectiveStatus,throughput,workDependency,workLimit,hire,downsize,advance,event,eventChoiceStatus,resolveEvent,preview,progressEstimate,assignmentEstimate,softCapWarnings,finish,emptyMeta,settle,validateMeta,syncCareer,trainingCost,train,renameHero,hirePartner,dismissPartner,validateRun,copy};
+  return {VERSION,MARKET_MIN,MARKET_MAX,marketMultiplier,revenueRules,INITIAL_FUNDS,startupAidStatus,claimStartupAid,STANDARD_WEEKLY_WORK,STANDARD_PERSON_WEEK_COST,scalePlan,projectNameStatus,HARD_CAP,INITIAL_SOFT_CAP,CAP_STEP,softCap,workPhase,SKILLS,GROUPS,JOBS,GRADES,AD_RATES,AD_BUDGETS,HERO,COMPANION,RECRUITS,SCALES,baseRequirements,PUBLISHER_JOBS,PUBLISHER_WEEKLY_WORK,publisherManaged,publisherQuote,signPublisher,adSettlement,OBJECTIVES,EVENTS,skillLabel,taskSkill,assignMember,availableRecruits,memberOutput,teamVoice,newRun,pauseProject,resumeProject,endProject,validateSnapshot,mods,cost,teamSize,progress,groupProgress,coreProgress,coreReady,complete,goals,canRelease,quality,trueScore,overallScore,grade,gradeIndex,revealLevel,ratingView,overallView,adRate,adProjection,buyingStatus,setAdBudget,forecast,incomeView,objectiveStatus,throughput,workDependency,workLimit,hire,downsize,advance,event,eventChoiceStatus,resolveEvent,preview,progressEstimate,assignmentEstimate,automaticAssignmentPlan,autoAssign,softCapWarnings,finish,emptyMeta,settle,validateMeta,syncCareer,trainingCost,train,renameHero,hirePartner,dismissPartner,validateRun,copy};
 });
 
 </script>
@@ -729,8 +795,10 @@ SOFTWARE.
   }
 
   function memberCard(s,m,active,candidate=false,plan=G.progressEstimate(s)){const kind=candidate?'伙伴来信':m.kind==='hero'?'主角':m.kind==='companion'?'初始搭档':'团队伙伴';return `<article class="person-card ${m.id==='ace'?'person-ai':''}" data-person="${m.id}" style="--person-color:${m.color}"><div class="person-head">${portrait(m)}<div><span class="person-kind">${kind}</span><h3>${esc(m.name)}</h3><p>${esc(m.title)}</p></div></div><p class="person-bio">${esc(m.bio)}</p>${abilities(m)}<blockquote>“${esc(m.quote)}”</blockquote><div class="person-salary">基础周薪 <b>¥${m.salary}</b>${candidate?'<span>入组准备 ¥180</span>':`<div class="person-production">${productionEstimate(s,m,plan)}</div>`}</div>${candidate?`<button class="btn-teal person-join" data-action="hire" data-id="${m.id}"${disabled(active&&!s.managed&&s.money>=180&&G.teamSize(s)<8)}>邀请${esc(m.name)}入组 · ¥180</button>`:assignment(s,m,active)}${!candidate&&m.kind==='partner'?`<button class="person-dismiss" data-action="dismiss" data-id="${m.id}"${disabled(active&&!s.managed&&s.money>=100)}>与${esc(m.name)}暂别 · ¥100</button>`:''}</article>`;}
-  function strip(s,active,plan=G.progressEstimate(s)){return `<section class="crew-section"><div class="section-heading"><div><h2>一起做游戏的人</h2><small>能力决定产能 · 每人每周专注一岗</small></div><button class="btn-small btn-ghost" data-action="tab" data-tab="team">查看人物卡 ↗</button></div><p class="crew-legend">选项：当前完成度 / 软上限 · 选岗后团队合计预估 · 人物能力。预估按满效率计算，计入上游依赖、上限、转岗磨合与同岗协作。</p><div class="crew-strip">${s.team.map(m=>`<article class="crew-mini" style="--person-color:${m.color}"><div class="crew-mini-head">${portrait(m)}<div><strong>${esc(m.name)} <small>${m.kind==='hero'?'主角':m.id==='ace'?'龙娘搭档':''}</small></strong><p>${summary(m)}</p></div></div>${assignment(s,m,active)}<div class="contribution">${productionEstimate(s,m,plan)}</div></article>`).join('')}</div></section>`;}
-  function roster(s,active,plan=G.progressEstimate(s)){const candidates=G.availableRecruits(s);return `<p class="legend">100% 为标准能力；擅长 ≥130%，不会的岗位不能分配。天才程序员每项 145%，每周仍只负责一岗。同岗最有效成员发挥全产能，其余按协作效率折算；转岗磨合按每个人上周的实际岗位计算。</p><p class="crew-legend">岗位预估为选岗后的团队合计，按满效率、依赖与上限计算；详细依据可展开查看。</p><div class="people-grid">${s.team.map(m=>memberCard(s,m,active,false,plan)).join('')}</div><div class="section-heading"><div><h2>伙伴来信 <span class="pill gold">${candidates.length}</span></h2><small>随作品进展结识新伙伴，按团队缺口决定是否邀请</small></div></div>${candidates.length?`<div class="people-grid">${candidates.map(m=>memberCard(s,m,active,true,plan)).join('')}</div>`:'<section class="panel people-empty"><h3>下一个愿意与你同行的人，正在路上。</h3><p>可玩原型（核心平均 30%）：林绘 / 沈序<br>垂直切片（65%）：唐砚 / 温衡<br>内容完成：夏禾 / 陆简</p></section>'}<p class="legend" style="margin-top:18px">邀请和暂别占用本周管理行动；邀请不推进时间，新伙伴首周需要磨合。整个团队会带入下一关；主角与天才程序员始终留队。伙伴暂别后本项目不能再次邀请，但结识关系跨关保留。</p>`;}
+  function autoAssignmentControls(active){return '<div class="crew-actions"><button type="button" class="btn-small btn-teal" data-action="auto-assign"'+disabled(active)+'>自动分配</button></div>';}
+  function autoAssignmentHelp(){return '<details class="auto-assignment-help"><summary>自动分配怎么算？</summary><p>以本周 13 项工作平均完成度的预估增量最大为目标，计入人物能力、转岗磨合、同岗协作、软上限、刚性上限和上游依赖。遵守现有买量预算与可支付资金，排除不会的工作和发行商托管岗位；同收益优先保留现有分工。真实模式同样使用满效率预估。完成度之外的偿债、修复问题与未来周收益可结合策略手动安排。</p></details>';}
+  function strip(s,active,plan=G.progressEstimate(s)){return `<section class="crew-section"><div class="section-heading"><div><h2>一起做游戏的人</h2><small>能力决定产能 · 每人每周专注一岗</small></div><div class="crew-actions">${autoAssignmentControls(active)}<button class="btn-small btn-ghost" data-action="tab" data-tab="team">查看人物卡 ↗</button></div></div><p class="crew-legend">选项：当前完成度 / 软上限 · 选岗后团队合计预估 · 人物能力。预估按满效率计算，计入上游依赖、上限、转岗磨合与同岗协作。</p>${autoAssignmentHelp()}<div class="crew-strip">${s.team.map(m=>`<article class="crew-mini" style="--person-color:${m.color}"><div class="crew-mini-head">${portrait(m)}<div><strong>${esc(m.name)} <small>${m.kind==='hero'?'主角':m.id==='ace'?'龙娘搭档':''}</small></strong><p>${summary(m)}</p></div></div>${assignment(s,m,active)}<div class="contribution">${productionEstimate(s,m,plan)}</div></article>`).join('')}</div></section>`;}
+  function roster(s,active,plan=G.progressEstimate(s)){const candidates=G.availableRecruits(s);return `<div class="section-heading"><h2>本周团队分工</h2>${autoAssignmentControls(active)}</div>${autoAssignmentHelp()}<p class="legend">100% 为标准能力；擅长 ≥130%，不会的岗位不能分配。天才程序员每项 145%，每周仍只负责一岗。同岗最有效成员发挥全产能，其余按协作效率折算；转岗磨合按每个人上周的实际岗位计算。</p><p class="crew-legend">岗位预估为选岗后的团队合计，按满效率、依赖与上限计算；详细依据可展开查看。</p><div class="people-grid">${s.team.map(m=>memberCard(s,m,active,false,plan)).join('')}</div><div class="section-heading"><div><h2>伙伴来信 <span class="pill gold">${candidates.length}</span></h2><small>随作品进展结识新伙伴，按团队缺口决定是否邀请</small></div></div>${candidates.length?`<div class="people-grid">${candidates.map(m=>memberCard(s,m,active,true,plan)).join('')}</div>`:'<section class="panel people-empty"><h3>下一个愿意与你同行的人，正在路上。</h3><p>可玩原型（核心平均 30%）：林绘 / 沈序<br>垂直切片（65%）：唐砚 / 温衡<br>内容完成：夏禾 / 陆简</p></section>'}<p class="legend" style="margin-top:18px">邀请和暂别占用本周管理行动；邀请不推进时间，新伙伴首周需要磨合。整个团队会带入下一关；主角与天才程序员始终留队。伙伴暂别后本项目不能再次邀请，但结识关系跨关保留。</p>`;}
   function voice(s,event){const v=G.teamVoice(s,event),m=s.team.find(m=>m.id===v.id);return `<div class="team-voice">${portrait(m)}<div><strong>${esc(v.name)}</strong><p>${esc(v.text)}</p></div></div>`;}
   window.StudioPeople={portrait,abilities,summary,assignment,productionEstimate,memberCard,strip,roster,voice};
 })();
@@ -1004,6 +1072,12 @@ SOFTWARE.
     if(a==='confirm-release'){finish(true);return;}
     if(a==='abort'){confirmEndProject(run.id);return;}
     if(busy()){toast('请先完成当前随机事件选择。');return;}
+    if(a==='auto-assign'){
+      const plan=G.autoAssign(run);
+      if(!plan.ok){toast(plan.reason);return;}
+      if(!plan.improved){showDialog(dialogHeader('TEAM ASSIGNMENTS','无法优化任务分配了')+`<p class="dialog-desc">当前分工已达到本周预估的最大总进展。开发总完成度预计 +${plan.beforeProgress.toFixed(3)}%，无需调整人物岗位。</p><p class="quality-note">已计入转岗磨合、同岗协作、上下游依赖、完成度上限与现有预算。真实模式按满效率预估。你仍可根据偿债、修复问题或长期目标手动安排。</p><div class="dialog-actions"><button class="btn-primary" data-action="close">保持当前分工</button></div>`,'auto-assignment');return;}
+      render();toast('已自动调整 '+plan.changes.length+' 人的工作，计入转岗与上限折损。'+(plan.beforeCost!==plan.afterCost?'本周支出 '+yen(plan.beforeCost)+' → '+yen(plan.afterCost)+'。':''));return;
+    }
     if(a==='advance'){const warnings=G.softCapWarnings(run),buying=G.buyingStatus(run);if(warnings.length||buying.unfunded)showWorkCapWarning(warnings,buying);else advanceWeek();return;}
     if(a==='confirm-advance'){if(b.dataset.run!==run.id||Number(b.dataset.week)!==run.week){close();toast('项目状态已变化，请重新检查分工。');return;}close();advanceWeek();return;}
     let ok=true;

@@ -1,0 +1,22 @@
+{
+  "version": "0.10.1",
+  "date": "2026-11-06",
+  "browser": "Edge",
+  "origin": "http://127.0.0.1:4197/",
+  "checks": [
+    "Development work selection and team-character page each contain one Automatic Assignment button.",
+    "With both founders assigned to gameplay, clicking once assigns hero to payment and companion to IP; projected completion is 24.2% and 35.0% respectively.",
+    "Automatic assignment consumes no time, money, management action or random event: week remains 1, funds 7600, own cost 0.",
+    "Second click opens the requested unable-to-optimize dialog and keeps the selected jobs; expected average completion gain is 4.550%.",
+    "Reload retains payment/IP assignments and funds; the character-page button also recognizes the same optimum.",
+    "At a 320px viewport, document client and scroll widths are both 305; the dialog is 270.67px wide with equal client and scroll widths of 269.",
+    "After advancing normally and closing the pending-event dialog, automatic assignment is disabled until the event is handled.",
+    "Temporary viewport override was reset."
+  ],
+  "evidence": "../docs/auto-assignment-preview.png",
+  "limits": [
+    "Maximum means this week's full-efficiency estimated average gain across all thirteen jobs, within existing budget and affordable acquisition constraints.",
+    "Maintenance effects and future weeks are separate strategic decisions; real-mode slowdown, rework and spillover remain excluded from this estimate.",
+    "Caps, turnover, upstream gates, unsupported abilities, publisher management and global optimum are tested independently against exhaustive small-team assignments."
+  ]
+}
