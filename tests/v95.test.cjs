@@ -6,7 +6,7 @@ const source=fs.readFileSync(require.resolve('../dist/app.js'),'utf8');
 function load(from,to,context){vm.runInNewContext(source.slice(source.indexOf('  function '+from+'('),source.indexOf('  '+to)),context);}
 function ui(s,meta=G.emptyMeta()){
   const context={G,run:s,meta,esc:x=>String(x).replace(/</g,'&lt;'),yen:n=>(n<0?'−':'')+'¥'+Math.abs(Math.round(n)),showDialog:x=>context.markup=x,dialogHeader:()=>'',disabled:ok=>ok?'':' disabled'};
-  load('incomeRange','const pct=',context);load('decisionFinancePanel','function weekSummary(',context);return context;
+  load('incomeRange','const pct=',context);load('launchDecision','function weekSummary(',context);return context;
 }
 check('ending an active project recovers investment and settles cash experience and history',()=>{
   const {meta,s}=start(2600);s.milestones=['prototype','slice'];s.income=200;s.money+=200;const r=G.endProject(meta,s.id,s);
@@ -84,7 +84,7 @@ check('hidden income cannot leak through objectives marketing or release confirm
   load('strategyPanel','function job(',context);load('marketing','function eventPanel(',context);load('release','function help(',context);
   const objective=vm.runInNewContext('strategyPanel(run,null)',context),marketing=vm.runInNewContext('marketing(run,true)',context);vm.runInNewContext('release()',context);
   assert.match(objective,/objective-value gold">\?{5}<small>/);assert.match(marketing,/预计买量总回款<\/span><b>\?{5}/);assert.match(marketing,/预计买量净回款<\/span><b class="">\?{5}/);
-  for(const label of ['当前认知收入区间','其中工作室买量到账','工作室买量净回款区间'])assert.ok(context.markup.includes(label+'</label><strong>?????</strong>'));
+  assert.ok(context.markup.includes('当前版本收入区间</small><strong>?????</strong>'));for(const label of ['其中工作室买量到账','工作室买量净回款'])assert.ok(context.markup.includes(label+'</dt><dd>?????</dd>'));
   s.work.publicity=s.req.publicity*.25;assert.match(vm.runInNewContext('incomeRange(run)',context),/^约 ¥/);
 });
 check('confirmation and cancellation preview recovery bounds without drawing the result',()=>{
@@ -97,7 +97,7 @@ check('history exposes end actions for active and paused projects and lists reco
   const r=G.endProject(meta,a.id,b);markup=vm.runInNewContext('developmentHistory()',context);assert.ok(markup.includes('结束回收'));assert.ok(markup.includes('回收比例 '+Math.round(r.recoveryRate*100)+'%'));assert.equal((markup.match(/data-action="end-project"/g)||[]).length,1);
 });
 check('aborted reports show actual recovery with no quality or revenue forecast reveal',()=>{
-  const {meta,s}=start(1000),r=G.endProject(meta,s.id,s),context=ui(s,meta);load('result','function release(',context);vm.runInNewContext('result()',context);
+  const {meta,s}=start(1000),r=G.endProject(meta,s.id,s),context=ui(s,meta);load('settlementOverview','function showAssignmentReview(',context);load('result','function release(',context);vm.runInNewContext('result()',context);
   assert.ok(context.markup.includes('结束项目回收')&&context.markup.includes('结果已保存'));assert.equal(r.marketMultiplier,null);assert.equal(r.ratings,null);assert.equal(G.incomeView(s).visible,false);
 });
 console.log(JSON.stringify({v95Checks:checks,recoverySamples:400,incomePreviewCases:400}));

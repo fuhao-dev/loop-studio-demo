@@ -1,7 +1,7 @@
-/* 天才程序员带我做游戏 v0.17.0 · shared career and pausable projects. */
+/* 天才程序员带我做游戏 v0.18.0 · shared career and pausable projects. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.StudioGame=factory();})(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const VERSION=17;
+  const VERSION=18;
   const STANDARD_WEEKLY_WORK=10,STANDARD_PERSON_WEEK_COST=100,INITIAL_FUNDS=7600;
   const HARD_CAP=1, INITIAL_SOFT_CAP=.7, CAP_STEP=.15;
   const SKILLS=[
@@ -173,11 +173,15 @@
   function createTeam(profile,partners){const hero=makeMember({...copy(HERO),name:profile.name,skills:copy(profile.skills)},'gameplay');return [hero,makeMember(COMPANION,'development'),...partners.map(id=>{const r=RECRUITS.find(r=>r.id===id);return makeMember(r,preferredJob(r));})];}
   function addLog(s,text,kind='info'){s.logs.unshift({week:s.week,text,kind});s.logs=s.logs.slice(0,90);}
   function blocked(s){return s.over||s.paused||!!s.pendingEvent||!!s.eventResult?.unread;}
-  function assignMember(s,id,job){const m=s.team.find(m=>m.id===id);if(blocked(s)||!m||publisherManaged(s,job)||job!=='idle'&&taskSkill(m,job)<=0)return false;m.job=job;syncPeople(s);return true;}
+  function assignMember(s,id,job){const m=s.team.find(m=>m.id===id);if(blocked(s)||!m||publisherManaged(s,job)||job!=='idle'&&taskSkill(m,job)<=0)return false;if(m.job!==job)s.assignmentUndo=null;m.job=job;syncPeople(s);return true;}
+  function setAssignmentLock(s,id,locked){if(!s||blocked(s)||!s.team.some(m=>m.id===id)||typeof locked!=='boolean')return false;s.assignmentLocks=locked?[...new Set([...s.assignmentLocks,id])]:s.assignmentLocks.filter(x=>x!==id);s.assignmentUndo=null;return true;}
+  function assignmentFingerprint(s){return JSON.stringify([s.week,s.pace,s.adBudget,s.assignmentLocks,s.team.map(m=>[m.id,m.job])]);}
+  function assignmentUndoStatus(s){const u=s?.assignmentUndo;return !!u&&!blocked(s)&&u.fingerprint===assignmentFingerprint(s)&&s.team.every(m=>Object.hasOwn(u.before,m.id)&&(u.before[m.id]==='idle'||taskSkill(m,u.before[m.id])>0&&!publisherManaged(s,u.before[m.id])));}
+  function undoAutoAssign(s){if(!assignmentUndoStatus(s))return false;const before=s.assignmentUndo.before;for(const m of s.team)m.job=before[m.id];s.assignmentUndo=null;syncPeople(s);return true;}
   function availableRecruits(s){return RECRUITS.filter(r=>recruitReputation(r)<=s.reputation&&s.knownPartners.includes(r.id)&&!s.team.some(m=>m.id===r.id)&&!s.departed.includes(r.id));}
   function teamSize(s){return s.team.length;}
-  function hire(s,id){const r=availableRecruits(s).find(r=>r.id===id);if(!r||blocked(s)||s.managed||s.money<180)return false;const m=makeMember(r,publisherManaged(s,preferredJob(r))?'idle':preferredJob(r));m.lastJob='idle';s.team.push(m);syncPeople(s);s.money-=180;s.spent+=180;s.managed=true;addLog(s,r.name+'加入团队，基础周薪 ¥'+r.salary+'；准备支出 ¥180。','good');return true;}
-  function downsize(s,id){const m=s.team.find(m=>m.id===id);if(!m||m.kind!=='partner'||blocked(s)||s.managed||s.money<100)return false;s.team=s.team.filter(m=>m.id!==id);s.departed.push(id);syncPeople(s);s.money-=100;s.spent+=100;s.managed=true;addLog(s,'与'+m.name+'暂别，支付 ¥100；本项目不再重复邀请。');return true;}
+  function hire(s,id){const r=availableRecruits(s).find(r=>r.id===id);if(!r||blocked(s)||s.managed||s.money<180)return false;const m=makeMember(r,publisherManaged(s,preferredJob(r))?'idle':preferredJob(r));m.lastJob='idle';s.team.push(m);s.assignmentUndo=null;syncPeople(s);s.money-=180;s.spent+=180;s.managed=true;addLog(s,r.name+'加入团队，基础周薪 ¥'+r.salary+'；准备支出 ¥180。','good');return true;}
+  function downsize(s,id){const m=s.team.find(m=>m.id===id);if(!m||m.kind!=='partner'||blocked(s)||s.managed||s.money<100)return false;s.team=s.team.filter(m=>m.id!==id);s.assignmentLocks=s.assignmentLocks.filter(x=>x!==id);s.assignmentUndo=null;s.departed.push(id);syncPeople(s);s.money-=100;s.spent+=100;s.managed=true;addLog(s,'与'+m.name+'暂别，支付 ¥100；本项目不再重复邀请。');return true;}
   function mods(s){const m={all:1,design:1,code:1,art:1,test:1,ops:1,play:1,visual:1,debt:1,rework:1,overhead:1,wages:1,ramp:1,crowd:.45,morale:0,cleanup:0,fee:0,sales:1};s.effects.forEach(e=>{if(e.weeks>0){m.all*=e.all||1;if(e.job)m[e.job]*=e.mult||1;}});return m;}
   function adBudgetOptions(s){const scale=typeof s==='string'?SCALES.find(g=>g.id===s):projectScale(s);return scale?AD_BUDGETS.map(n=>n*scale.multiplier):[];}
   function publisherAdBudget(s){const v=overallView(s),index=v.exact?GRADES.indexOf(v.text):gradeIndex((v.low+v.high)/2),base=index>=12?2000:index>=9?1000:index>=6?300:100;return base*projectScale(s).multiplier;}
@@ -189,6 +193,14 @@
   }
   function cost(s){const m=mods(s),wages=Math.ceil(s.team.reduce((n,p)=>n+p.salary,0)*m.wages),overhead=Math.ceil((90+s.debt*2+Math.max(0,s.team.length-4)**2*4)*m.overhead),campaign=campaignCost(s),ads=s.publisher?0:campaign,publisherAds=s.publisher?campaign:0;return {wages,overhead,tools:m.fee,ads,publisherAds,total:wages+overhead+m.fee+ads};}
   function progress(s,id){return s.req[id]>0?clamp(s.work[id]/s.req[id],0,1):0;}
+  function recruitCostPreview(s,id,meta=null){
+    const recruit=RECRUITS.find(m=>m.id===id);if(!recruit||!s&&!meta)return null;
+    const before=s?copy(s):{team:createTeam(meta.hero,meta.partners),effects:[],debt:0,publisher:null,people:{acquisition:0},adBudget:0};
+    if(before.team.some(m=>m.id===id))return null;
+    const after=copy(before);after.team.push(makeMember(recruit,'idle'));
+    const a=cost(before),b=cost(after),wallet=s?s.money:meta.wallet,balance=round(wallet-180);
+    return {balance,affordable:balance>=0,wages:b.wages-a.wages,overhead:b.overhead-a.overhead,beforeWeekly:a.total,weekly:b.total,runway:Math.max(0,Math.floor(balance/Math.max(1,b.total))),basis:s?'按当前项目、节奏与投放预算估算':'按无买量、无临时效果的基础周费用估算；活动项目费用以开发现场为准'};
+  }
   function groupProgress(s,id){const list=JOBS.filter(j=>j.group===id);return list.reduce((a,j)=>a+progress(s,j.id),0)/list.length;}
   function coreProgress(s){return (groupProgress(s,'content')+groupProgress(s,'framework'))/2;}
   function coreReady(s){return JOBS.filter(j=>['content','framework'].includes(j.group)).every(j=>progress(s,j.id)>=1);}
@@ -208,7 +220,7 @@
   function workLimit(s,id){return s.req[id]*Math.min(HARD_CAP,softCap(s,id),workDependency(s,id)?.cap??1);}
   function workPhase(s,id){const p=progress(s,id);if(!s.hard||task(id)?.group==='release')return {id:'steady',name:'正常推进',min:1,max:1,spill:0};if(p<.3)return {id:'early',name:'正常推进',min:1,max:1,spill:0};if(p<.5)return {id:'slow',name:'推进放缓 · 65%',min:.65,max:.65,spill:0};if(p<=.7+1e-9)return {id:'coupled',name:'推进困难 · 35% / 牵连其他项',min:.35,max:.35,spill:.2};return {id:'uncertain',name:'随机增减 · 各 50% 概率',min:-1,max:1,spill:0};}
   function unlockCaps(s,caps){for(const [id,amount] of Object.entries(caps)){const targets=task(id)?[task(id)]:JOBS.filter(j=>j.group===id);for(const j of targets)if(j.group!=='release')s.softCaps[j.id]=round(Math.min(HARD_CAP,s.softCaps[j.id]+amount));}}
-  function setAdBudget(s,n){if(blocked(s)||s.publisher||!adBudgetOptions(s).includes(n))return false;s.adBudget=n;return true;}
+  function setAdBudget(s,n){if(blocked(s)||s.publisher||!adBudgetOptions(s).includes(n))return false;if(s.adBudget!==n)s.assignmentUndo=null;s.adBudget=n;return true;}
   function gradeIndex(value){return clamp(Math.floor(clamp(value,0,100)/100*15),0,14);}
   function grade(value){return GRADES[gradeIndex(value)];}
   function trueScore(s,id){if(id==='release')return groupProgress(s,id)*100;const p=groupProgress(s,id);let n=10+p*65+s.ratingRolls[id];if(id==='content')n+=(mods(s).play-1)*8+(mods(s).visual-1)*8;if(id==='framework')n-=s.debt*.18;return round(clamp(n,0,100));}
@@ -276,7 +288,7 @@
     const profile=config.workProfile|| (meta.stage===1?'balanced':WORK_PROFILES[((seed^(seed>>>16))>>>0)%WORK_PROFILES.length].id);
     const req=baseRequirements(g.id,profile);
     const s={version:VERSION,id:'run-'+meta.stage+'-'+seed+'-'+Date.now(),stage:meta.stage,seed,rng:seed,scale:g.id,workProfile:profile,name,hard:config.hard===true,week:1,money:meta.wallet,reputation:meta.reputation,spent:0,income:0,sharedCashDelta:0,paused:false,pace:'normal',work:Object.fromEntries(JOBS.map(j=>[j.id,0])),req,debt:0,morale:90,effects:[],logs:[],history:[],milestones:[],publisher:null,managed:false,pendingEvent:null,pendingChoices:null,eventResult:null,lastEvent:null,over:false,result:null,objective:config.objective==='acclaim'?'acclaim':'profit',departed:[],adBudget:0,adSpend:0,ratingRolls:{},revealRolls:{},softCaps:Object.fromEntries(JOBS.filter(j=>j.group!=='release').map(j=>[j.id,INITIAL_SOFT_CAP])),pendingCapGroup:null,lastScene:null};
-    s.initialMoney=s.money;s.knownPartners=meta.knownPartners.slice();s.team=createTeam(meta.hero,meta.partners);syncPeople(s);if(s.money<cost(s).total)throw Error('生涯资金不足以支付首周团队成本；可在局外重新开始生涯');GROUPS.filter(g=>g.id!=='release').forEach(g=>{s.ratingRolls[g.id]=round(random(s)*56-28);s.revealRolls[g.id]=round(random(s)*2-1);});meta.activeRunId=s.id;meta.stage++;
+    s.assignmentLocks=[];s.assignmentUndo=null;s.initialMoney=s.money;s.knownPartners=meta.knownPartners.slice();s.team=createTeam(meta.hero,meta.partners);syncPeople(s);if(s.money<cost(s).total)throw Error('生涯资金不足以支付首周团队成本；可在局外重新开始生涯');GROUPS.filter(g=>g.id!=='release').forEach(g=>{s.ratingRolls[g.id]=round(random(s)*56-28);s.revealRolls[g.id]=round(random(s)*2-1);});meta.activeRunId=s.id;meta.stage++;
     addLog(s,'第 '+s.stage+' 关「'+s.name+'」立项：继承资金 ¥'+s.money+' 与主角能力；'+g.name+'，需要 '+plan.personWeeks+' 人周工作量'+'；上架两项完成即可发售。','good');return s;
   }
   function publisherManaged(s,id){return !!s.publisher&&PUBLISHER_JOBS.includes(id);}
@@ -290,6 +302,7 @@
     if(blocked(s)||s.publisher)return false;
     const quote=publisherQuote(s);s.publisher={quote:copy(quote),advance:0,paidStages:[],signWeek:s.week,adSpend:0};
     payPublisherMilestones(s);s.adBudget=publisherAdBudget(s);
+    const managedMembers=s.team.filter(m=>PUBLISHER_JOBS.includes(m.job)).map(m=>m.id);s.assignmentLocks=s.assignmentLocks.filter(id=>!managedMembers.includes(id));s.assignmentUndo=null;
     for(const m of s.team)if(PUBLISHER_JOBS.includes(m.job))m.job='idle';syncPeople(s);
     addLog(s,'签约发行商：合约总开发款 ¥'+quote.advance+'，已到账 ¥'+s.publisher.advance+'；宣发与上架由发行团队接管，签约后买量由发行商垫付并承担亏损。工作室自然销售及买量正净利润分成 '+Math.round(quote.studioShare*100)+'%，终止项目时退还预付款（余额不足扣至 0）。','good');return true;
   }
@@ -521,7 +534,7 @@
     if(!chosen.kind){const groups=GROUPS.filter(g=>g.id!=='release'&&capRoom(s,g.id));if(groups.length){const g=groups[Math.floor(random(s)*groups.length)];s.pendingCapGroup=g.id;s.pendingChoices.choices.push({label:'复盘并拓展'+g.name,hint:g.name+'各项完成度软上限 +15%，最高 100%；仍需安排工作',caps:{[g.id]:CAP_STEP}});}}
     s.lastEvent=chosen.id;s.lastScene=chosen.scene||null;return chosen;
   }
-  function advance(s){if(blocked(s))return {ok:false,reason:'请先完成当前选择'};const c=cost(s);if(s.money<c.total)return {ok:false,reason:'资金不足以支付本周工资、维护和投放；可降低买量预算、签约发行商或发售。'};const contributions=s.team.map(m=>({id:m.id,name:m.name,job:m.job,output:memberOutput(s,m.id)}));s.money-=c.total;s.spent+=c.total;const {production,gains,ranges,impacts}=workWeek(s),publisherGrant=payPublisherMilestones(s);s.effects=s.effects.map(e=>({...e,weeks:e.weeks-1})).filter(e=>e.weeks>0);s.history.push({week:s.week,cost:c.total,ads:c.ads,publisherAds:c.publisherAds,publisherGrant,production,gains,ranges,impacts,team:contributions,money:s.money,ratings:quality(s)});addLog(s,'完成第 '+s.week+' 周：支出 ¥'+c.total+(c.ads?'（含买量 ¥'+c.ads+'）':'')+(c.publisherAds?'，发行商另垫付买量 ¥'+c.publisherAds:'')+(s.publisher?'，发行团队自动推进宣发与上架':'')+'。'+contributions.filter(m=>m.output>0).map(m=>m.name+'负责'+task(m.job).name).join('、')+'。');
+  function advance(s){if(blocked(s))return {ok:false,reason:'请先完成当前选择'};const c=cost(s);if(s.money<c.total)return {ok:false,reason:'资金不足以支付本周工资、维护和投放；可降低买量预算、签约发行商或发售。'};const contributions=s.team.map(m=>({id:m.id,name:m.name,job:m.job,output:memberOutput(s,m.id)}));s.assignmentUndo=null;s.money-=c.total;s.spent+=c.total;const {production,gains,ranges,impacts}=workWeek(s),publisherGrant=payPublisherMilestones(s);s.effects=s.effects.map(e=>({...e,weeks:e.weeks-1})).filter(e=>e.weeks>0);s.history.push({week:s.week,cost:c.total,ads:c.ads,publisherAds:c.publisherAds,publisherGrant,production,gains,ranges,impacts,team:contributions,money:s.money,ratings:quality(s)});addLog(s,'完成第 '+s.week+' 周：支出 ¥'+c.total+(c.ads?'（含买量 ¥'+c.ads+'）':'')+(c.publisherAds?'，发行商另垫付买量 ¥'+c.publisherAds:'')+(s.publisher?'，发行团队自动推进宣发与上架':'')+'。'+contributions.filter(m=>m.output>0).map(m=>m.name+'负责'+task(m.job).name).join('、')+'。');
     for(const impact of impacts)addLog(s,task(impact.from).name+'的调整牵连了'+task(impact.to).name+'，后者完成度 −'+impact.points+'%。');
     for(const j of JOBS)if(gains[j.id]<0)addLog(s,task(j.id).name+'本周净变化：'+round(gains[j.id]/s.req[j.id]*100)+'%。');
     checkMilestones(s);const e=drawEvent(s);s.week++;s.managed=false;return {ok:true,event:e.id};}
@@ -548,14 +561,15 @@
   // Full-efficiency estimates make job gains additive; publisher work is constant.
   function automaticAssignmentPlan(s){
     if(!s||blocked(s))return {ok:false,improved:false,reason:'请先恢复项目并处理当前事件。'};
+    if(s.assignmentLocks.length===s.team.length)return {...assignmentPlanResult(s,Object.fromEntries(s.team.map(m=>[m.id,m.job])),true,s.team.length<=10),allLocked:true};
     if(s.team.length>10)return largeAssignmentPlan(s);
     const n=s.team.length,size=1<<n,epsilon=1e-10;
     const weekly=cost(s),baseCost=weekly.total-weekly.ads;
     const canBuy=!!s.publisher||baseCost+s.adBudget<=s.money;
-    const m=mods(s),priority=assignmentPriorities(s),jobs=JOBS.filter(j=>!publisherManaged(s,j.id)&&(j.id!=='acquisition'||canBuy));
+    const locked=new Set(s.assignmentLocks),m=mods(s),priority=assignmentPriorities(s),jobs=JOBS.filter(j=>!publisherManaged(s,j.id)&&(j.id!=='acquisition'||canBuy||s.team.some(p=>locked.has(p.id)&&p.job===j.id)));
     const tables=jobs.map(j=>{
-      let allowed=0,current=0;const values=new Float64Array(size),changes=new Uint8Array(size);
-      s.team.forEach((p,i)=>{if(taskSkill(p,j.id)>0)allowed|=1<<i;if(p.job===j.id)current|=1<<i;});
+      let allowed=0,current=0,required=0;const values=new Float64Array(size),changes=new Uint8Array(size);
+      s.team.forEach((p,i)=>{if(taskSkill(p,j.id)>0&&(!locked.has(p.id)||p.job===j.id))allowed|=1<<i;if(p.job===j.id){current|=1<<i;if(locked.has(p.id))required|=1<<i;}});
       const room=Math.max(0,workLimit(s,j.id)-s.work[j.id]);
       for(let bits=0;bits<size;bits++){
         if(bits&~allowed)continue;
@@ -565,7 +579,7 @@
         values[bits]=round(after-s.work[j.id])/s.req[j.id]*priority.weights[j.id];
         for(let i=0;i<n;i++)if(bits&(1<<i)&&!(current&(1<<i)))changes[bits]++;
       }
-      return {job:j.id,allowed,values,changes};
+      return {job:j.id,allowed,required,values,changes};
     });
     let scores=new Float64Array(size).fill(-Infinity),counts=new Uint8Array(size).fill(255);scores[0]=0;counts[0]=0;
     const parents=[];
@@ -575,6 +589,7 @@
         if(scores[used]===-Infinity)continue;
         const remaining=table.allowed&~used;
         for(let bits=remaining;;bits=(bits-1)&remaining){
+          if((bits&table.required)!==table.required){if(!bits)break;continue;}
           const mask=used|bits,value=scores[used]+table.values[bits],changed=counts[used]+table.changes[bits];
           if(value>next[mask]+epsilon||Math.abs(value-next[mask])<=epsilon&&changed<nextCounts[mask]){next[mask]=value;nextCounts[mask]=changed;chosen[mask]=bits;}
           if(!bits)break;
@@ -596,13 +611,27 @@
     const proposed=copy(s);for(const member of proposed.team)member.job=assignments[member.id];syncPeople(proposed);
     const before=progressEstimate(s),after=progressEstimate(proposed),total=plan=>JOBS.reduce((sum,j)=>sum+plan.gains[j.id]/s.req[j.id],0)/JOBS.length*100;
     const beforeProgress=total(before),afterProgress=total(after),beforeUtility=assignmentUtility(s,before),afterUtility=assignmentUtility(s,after),improved=afterUtility>beforeUtility+1e-10||before.cost.total>s.money&&after.cost.total<=s.money;
-    return {ok:true,improved,exact,beforeUtility,afterUtility:improved?afterUtility:beforeUtility,reason:assignmentPriorities(s).reason,beforeProgress,afterProgress:improved?afterProgress:beforeProgress,beforeCost:before.cost.total,afterCost:improved?after.cost.total:before.cost.total,budgetLimited:!canBuy,assignments:improved?assignments:Object.fromEntries(s.team.map(p=>[p.id,p.job])),changes:improved?s.team.filter(p=>assignments[p.id]!==p.job).map(p=>({id:p.id,name:p.name,from:p.job,to:assignments[p.id]})):[]};
+    const jobs=JOBS.filter(j=>Math.abs(after.gains[j.id]-before.gains[j.id])>.001).map(j=>({id:j.id,name:j.name,before:round(before.gains[j.id]/s.req[j.id]*100),after:round(after.gains[j.id]/s.req[j.id]*100)}));
+    const changes=improved?s.team.filter(p=>assignments[p.id]!==p.job).map(p=>{
+      const to=assignments[p.id],notes=[];
+      if(p.job!=='idle'){
+        const room=Math.max(0,workLimit(s,p.job)-s.work[p.job]);
+        if(room<.01)notes.push(workDependency(s,p.job)?.cap<softCap(s,p.job)?'避开上游等待':'原岗位已到完成度上限');
+        else if(before.production[p.job]>room+.01)notes.push('减少上限折损');
+        else if(s.people[p.job]>proposed.people[p.job])notes.push('减少同岗协作折损');
+      }
+      if(to===p.lastJob&&to!=='idle')notes.push('回到熟悉岗位，减少转岗磨合');
+      if(!notes.length)notes.push(assignmentPriorities(s).reason);
+      return {id:p.id,name:p.name,from:p.job,to,reason:notes.join('；')};
+    }):[];
+    return {ok:true,improved,exact,lockedCount:s.assignmentLocks.length,beforeUtility,afterUtility:improved?afterUtility:beforeUtility,reason:assignmentPriorities(s).reason,beforeProgress,afterProgress:improved?afterProgress:beforeProgress,beforeCost:before.cost.total,afterCost:improved?after.cost.total:before.cost.total,budgetLimited:!canBuy,assignments:improved?assignments:Object.fromEntries(s.team.map(p=>[p.id,p.job])),jobChanges:improved?jobs:[],changes};
   }
   // Large rosters use deterministic marginal placement, then best moves and swaps.
   // This avoids exponential subset tables and reports that it is a search, not a proof.
   function largeAssignmentPlan(s){
     const n=s.team.length,m=mods(s),priority=assignmentPriorities(s),weekly=cost(s),base=weekly.total-weekly.ads,canBuy=!!s.publisher||base+s.adBudget<=s.money;
-    const jobs=JOBS.filter(j=>!publisherManaged(s,j.id)&&(j.id!=='acquisition'||canBuy&&s.adBudget>0)),ids=jobs.map(j=>j.id),room=jobs.map(j=>Math.max(0,workLimit(s,j.id)-s.work[j.id]));
+    const locked=new Set(s.assignmentLocks),fixed=new Set(s.team.map((p,i)=>locked.has(p.id)?i:-1).filter(i=>i>=0));
+    const jobs=JOBS.filter(j=>!publisherManaged(s,j.id)&&(j.id!=='acquisition'||canBuy&&s.adBudget>0||s.team.some(p=>locked.has(p.id)&&p.job===j.id))),ids=jobs.map(j=>j.id),room=jobs.map(j=>Math.max(0,workLimit(s,j.id)-s.work[j.id]));
     const weights=jobs.map(j=>s.team.map(p=>taskSkill(p,j.id)/100*(j.id!==p.lastJob?1-.2*m.ramp:1)));
     const outputs=jobs.map((j,k)=>weights[k].map(w=>{const raw=w*STANDARD_WEEKLY_WORK*(1+reputationProfile(s).speedBonus)*m.all*m[j.skill]*(s.pace==='crunch'?1.35:s.pace==='rest'?.7:1)*(.65+s.morale/285)*(j.skill==='code'?Math.max(.6,1-s.debt*.01):1);return {solo:round(raw),coop:round(raw*m.crowd)};}));
     function value(job,members){if(job<0||!members.length||room[job]<=0)return 0;let lead=members[0],amount=0;for(const i of members){amount+=outputs[job][i].coop;if(weights[job][i]>weights[job][lead]||weights[job][i]===weights[job][lead]&&s.team[i].id.localeCompare(s.team[lead].id)<0)lead=i;}amount=round(amount+outputs[job][lead].solo-outputs[job][lead].coop);const id=ids[job],after=round(clamp(s.work[id]+Math.min(room[job],amount),0,s.req[id]));return round(after-s.work[id])/s.req[id]*priority.weights[id];}
@@ -610,22 +639,24 @@
       const a=initial.slice(),groups=jobs.map((_,j)=>a.map((v,i)=>v===j?i:-1).filter(i=>i>=0));let values=groups.map((g,j)=>value(j,g));
       for(let pass=0;pass<200;pass++){
         let best=1e-10,move=null;
-        for(let i=0;i<n;i++){const from=a[i],without=from<0?[]:groups[from].filter(v=>v!==i),loss=from<0?0:value(from,without)-values[from];
+        for(let i=0;i<n;i++){if(fixed.has(i))continue;const from=a[i],without=from<0?[]:groups[from].filter(v=>v!==i),loss=from<0?0:value(from,without)-values[from];
           for(let to=-1;to<jobs.length;to++){if(to===from||to>=0&&weights[to][i]<=0)continue;const delta=loss+(to<0?0:value(to,[...groups[to],i])-values[to]);if(delta>best){best=delta;move={i,to};}}
-          for(let k=i+1;k<n;k++){const to=a[k];if(to===from||to>=0&&weights[to][i]<=0||from>=0&&weights[from][k]<=0)continue;const delta=(from<0?0:value(from,[...without,k])-values[from])+(to<0?0:value(to,[...groups[to].filter(v=>v!==k),i])-values[to]);if(delta>best){best=delta;move={i,to,k,from};}}
+          for(let k=i+1;k<n;k++){const to=a[k];if(fixed.has(k)||to===from||to>=0&&weights[to][i]<=0||from>=0&&weights[from][k]<=0)continue;const delta=(from<0?0:value(from,[...without,k])-values[from])+(to<0?0:value(to,[...groups[to].filter(v=>v!==k),i])-values[to]);if(delta>best){best=delta;move={i,to,k,from};}}
         }
         if(!move)break;const {i,to,k,from}=move,old=a[i];if(old>=0)groups[old]=groups[old].filter(v=>v!==i);if(k!==undefined){if(to>=0)groups[to]=groups[to].filter(v=>v!==k);a[k]=from;if(from>=0)groups[from].push(k);}a[i]=to;if(to>=0)groups[to].push(i);values=groups.map((g,j)=>value(j,g));
       }
       return {a,score:values.reduce((v,x)=>v+x,0),changes:a.filter((j,i)=>(ids[j]||'idle')!==s.team[i].job).length};
     }
     const current=s.team.map(p=>ids.indexOf(p.job)),starts=[current],order=s.team.map((_,i)=>i).sort((a,b)=>Math.max(...weights.map(w=>w[b]))-Math.max(...weights.map(w=>w[a]))||s.team[a].id.localeCompare(s.team[b].id));
-    for(const sequence of [order,order.slice().reverse()]){const a=Array(n).fill(-1),groups=jobs.map(()=>[]),values=jobs.map(()=>0);for(const i of sequence){let best=0,to=-1;for(let j=0;j<jobs.length;j++)if(weights[j][i]>0){const delta=value(j,[...groups[j],i])-values[j];if(delta>best+1e-10){best=delta;to=j;}}if(to>=0){a[i]=to;groups[to].push(i);values[to]=value(to,groups[to]);}}starts.push(a);}
+    for(const sequence of [order,order.slice().reverse()]){const a=s.team.map((_,i)=>fixed.has(i)?current[i]:-1),groups=jobs.map((_,j)=>a.map((v,i)=>v===j?i:-1).filter(i=>i>=0)),values=groups.map((g,j)=>value(j,g));for(const i of sequence){if(fixed.has(i))continue;let best=0,to=-1;for(let j=0;j<jobs.length;j++)if(weights[j][i]>0){const delta=value(j,[...groups[j],i])-values[j];if(delta>best+1e-10){best=delta;to=j;}}if(to>=0){a[i]=to;groups[to].push(i);values[to]=value(to,groups[to]);}}starts.push(a);}
     const choices=starts.map(improve).sort((a,b)=>Math.abs(b.score-a.score)>1e-10?b.score-a.score:a.changes-b.changes),best=choices[0];
     return assignmentPlanResult(s,Object.fromEntries(s.team.map((p,i)=>[p.id,ids[best.a[i]]||'idle'])),canBuy,false);
   }
   function autoAssign(s){
     const plan=automaticAssignmentPlan(s);if(!plan.ok||!plan.improved)return plan;
-    for(const member of s.team)member.job=plan.assignments[member.id];syncPeople(s);return plan;
+    const before=Object.fromEntries(s.team.map(m=>[m.id,m.job]));
+    for(const member of s.team)member.job=plan.assignments[member.id];syncPeople(s);
+    s.assignmentUndo={before,review:plan,fingerprint:assignmentFingerprint(s)};return plan;
   }
 
   function softCapWarnings(s){
@@ -676,7 +707,7 @@
   function dismissPartner(meta,id){if(meta.activeRunId||meta.wallet<100||!meta.partners.includes(id))return false;meta.partners=meta.partners.filter(member=>member!==id);meta.wallet-=100;return true;}
   function settle(meta,s){const m=copy(meta);if(!s.over||!s.result||Object.prototype.hasOwnProperty.call(m.receipts,s.id)||m.activeRunId!==s.id)return m;const r=copy(s.result),hero=s.team.find(m=>m.id==='hero');m.receipts[s.id]=r.exp;m.exp+=r.exp;m.earnedExp+=r.exp;m.wallet=r.walletEnd;m.reputation=repRound(m.reputation+r.earnedReputation);m.hero={name:hero.name,skills:copy(hero.skills)};m.partners=s.team.filter(m=>m.kind==='partner').map(m=>m.id);m.knownPartners=[...new Set([...s.knownPartners,...reputationPartners(m)])];m.stage=Math.max(m.stage,s.stage+1);m.activeRunId=null;m.history.unshift(r);return m;}
   function pauseProject(meta,s){if(!validateMeta(meta)||!validateRun(s)||s.over||s.paused||meta.activeRunId!==s.id)return false;syncCareer(meta,s);s.paused=true;meta.pausedProjects.push(copy(s));meta.activeRunId=null;return true;}
-  function resumeProject(meta,id,current=null){if(!validateMeta(meta))return null;const target=meta.pausedProjects.find(p=>p.id===id);if(!target)return null;if(meta.activeRunId&&(!current||current.id!==meta.activeRunId||!pauseProject(meta,current)))return null;meta.pausedProjects=meta.pausedProjects.filter(p=>p.id!==id);target.sharedCashDelta=round(target.sharedCashDelta+meta.wallet-target.money);target.money=meta.wallet;target.reputation=meta.reputation;target.paused=false;const previous=target.team;target.team=createTeam(meta.hero,meta.partners).map(m=>{const old=previous.find(p=>p.id===m.id);if(old){m.job=(old.job==='idle'||taskSkill(m,old.job)>0)&&!publisherManaged(target,old.job)?old.job:'idle';m.lastJob=old.lastJob;}else{m.lastJob='idle';if(publisherManaged(target,m.job))m.job='idle';}return m;});target.departed=target.departed.filter(id=>!meta.partners.includes(id));target.knownPartners=meta.knownPartners.slice();syncPeople(target);meta.activeRunId=target.id;return target;}
+  function resumeProject(meta,id,current=null){if(!validateMeta(meta))return null;const target=meta.pausedProjects.find(p=>p.id===id);if(!target)return null;if(meta.activeRunId&&(!current||current.id!==meta.activeRunId||!pauseProject(meta,current)))return null;meta.pausedProjects=meta.pausedProjects.filter(p=>p.id!==id);target.sharedCashDelta=round(target.sharedCashDelta+meta.wallet-target.money);target.money=meta.wallet;target.reputation=meta.reputation;target.paused=false;const previous=target.team;target.team=createTeam(meta.hero,meta.partners).map(m=>{const old=previous.find(p=>p.id===m.id);if(old){m.job=(old.job==='idle'||taskSkill(m,old.job)>0)&&!publisherManaged(target,old.job)?old.job:'idle';m.lastJob=old.lastJob;}else{m.lastJob='idle';if(publisherManaged(target,m.job))m.job='idle';}return m;});target.departed=target.departed.filter(id=>!meta.partners.includes(id));target.knownPartners=meta.knownPartners.slice();target.assignmentLocks=target.assignmentLocks.filter(id=>target.team.some(m=>m.id===id));target.assignmentUndo=null;syncPeople(target);meta.activeRunId=target.id;return target;}
   function endProject(meta,id,current=null){
     if(!validateMeta(meta)||Object.prototype.hasOwnProperty.call(meta.receipts,id))return false;
     if(meta.activeRunId&&(!validateRun(current)||current.over||current.paused||current.id!==meta.activeRunId))return false;
@@ -699,7 +730,37 @@
     const lines={design:'先把规则和玩家体验讲清楚。',code:'把接口理顺，下游才接得上。',art:'让画面和内容有自己的气质。',test:'把验证步骤写清楚，验收更稳。',ops:j.group==='release'?'资料和审核按顺序收尾。':'先理解作品，再找到它的玩家。'};
     return lead+' '+lines[j.skill];
   }
-  function teamVoice(s,e){const skill={palette:'art',backup:'code',bug:'test',forms:'ops',showcase:'ops',inspiration:'design',scope:'design',feedback:'test'}[e?.id],m=s.team.find(m=>task(m.job)?.skill===skill)||s.team[(Array.from(e?.title||'').reduce((n,c)=>n+c.charCodeAt(0),s.week))%s.team.length];return {id:m.id,name:m.name,text:e?.id==='feedback'?'反馈让我们更接近真实评价，但不一定是我们原先想的那样。':m.job==='idle'?m.quote:memberAdvice(s,m)};}
+  // Only public scene text selects dialogue: paired daily/hidden scenes sound identical.
+  function teamVoice(s,e){
+    const m=s.team[(Array.from(e?.title||'').reduce((n,c)=>n+c.charCodeAt(0),s.week))%s.team.length],scene=(e?.title||'')+' '+(e?.text||''),style=m.id==='ace'?0:m.id==='hero'?1:2;
+    const scenes=[
+      [/茶|咖啡|水壶|饮料/,['茶给你，难写的代码给我。','先把杯子放稳，今天的事一件件来。','我把杯子拿过来了，大家想喝什么？']],
+      [/猫|窗台/,['它的角没有我好看，不过这个位置倒是挑得不错。','它在窗外看我们，我们也看它一会儿。','小声一点，别把这位窗台访客吓跑了。']],
+      [/打印|纸|样册|笔记|便签|文具/,['纸上的字我看得清，写字的人得你来认。','先看看写了什么，再听听大家的想法。','这张纸先放中间，我们一起看看。']],
+      [/键盘|桌面|鼠标|屏幕/,['键盘响得再威风，也得看敲出来的是什么。','先看看哪里和平时不同。','我这边也听见了，刚才是谁先发现的？']],
+      [/耳机|曲|音乐/,['这段前奏不错，别让我等到下一作才听到名字。','刚才那几秒我也听到了。','是谁的播放列表？我想记一下曲名。']],
+      [/花盆|植物|石头/,['这块石头不需要写代码，倒是挺会占位置。','先看看它摆在哪里比较合适。','花盆边的位置不大，大家一起想想怎么摆。']],
+      [/月历|日历|时间|钟/,['钟可以慢两分钟，别把我的茶也放凉两分钟。','我看看日历，大家也回忆一下。','我来核对一下时间，先听听大家怎么说。']],
+      [/箱|快递|包裹/,['这个声音我听见了，拆的时候给我留个位置。','先看看标签，等大家过来一起决定。','纸箱放这里吧，我给桌面腾点地方。']],
+      [/通知|聊天|邀请|消息|窗口/,['先看看对方说了什么，我还没准备替三个点写完后半句。','消息先读完，我们再决定怎么回应。','我也在等这条消息，先别急着猜。']],
+      [/贴纸|杯子/,['歪一点也有歪一点的气势，你觉得呢？','这个图案我记住了，看看大家怎么摆。','是有人刚贴上的吗？这个角度挺特别。']],
+      [/路|散步|楼下/,['新路我也想看看，回来还认得工作室就行。','走哪边都可以，听听大家的想法。','我走在旁边，大家慢慢聊。']],
+      [/测试|验收|复现/,['把看到的情况摊开说，我来听。','先把实际体验记录清楚。','这份记录我也想看，我们一起核对。']],
+      [/资料|审核|商店页|授权/,['目录拿来一起看，别让一张纸把我们绕晕。','我们先核对看到的资料。','我把清单放在这里，大家一起看。']],
+      [/玩家|试玩|榜单|反馈/,['玩家的话先听完。好不好玩，我也想知道他们怎么说。','先把反馈摆出来，别急着下结论。','这段反馈我记下了，也想听听大家的理解。']],
+      [/付费|商业|授权|收益|预算/,['账本可以一起看，先别急着替结果鼓掌。','把条件读清楚，我们再做选择。','这部分我想和大家一起算算。']]
+    ];
+    const match=scenes.find(([pattern])=>pattern.test(scene));
+    const skill=SKILLS.reduce((a,j)=>m.skills[j.id]>m.skills[a]?j.id:a,'design'),fallback={design:'我想听听大家怎么看这个小插曲。',code:'先看看实际发生了什么，别忙着找解释。',art:'这个细节挺特别，我也想凑近看看。',test:'我先把看到的记下来，大家慢慢说。',ops:'我在听，先把大家的想法放在一起。'};
+    return {id:m.id,name:m.name,text:match?match[1][style]:style===0?'我也在这里，先听听这个故事。':style===1?'先看看眼前发生的事，我们一起决定。':fallback[skill]};
+  }
+  function eventResponse(s,r){const v=teamVoice(s,{title:r.title,text:''}),none=r.details.every(x=>x==='没有发生任何数值变化。');return {...v,text:none?(v.id==='ace'?'没发生什么也很好，刚才那一会儿我记住了。':'这段小插曲先记在这里，我们继续。'):(v.id==='ace'?'结果看到了。你来决定接下来做什么，我陪你。':'结果记下了，接下来按新的情况安排吧。')};}
+  function validAssignmentState(s){
+    if(!Array.isArray(s.assignmentLocks)||new Set(s.assignmentLocks).size!==s.assignmentLocks.length||s.assignmentLocks.some(id=>!s.team.some(m=>m.id===id)))return false;
+    const u=s.assignmentUndo;if(u===null)return true;
+    const jobs=['idle',...JOBS.map(j=>j.id)],p=u?.review;
+    return !!u&&typeof u.fingerprint==='string'&&u.before&&typeof u.before==='object'&&!Array.isArray(u.before)&&Object.keys(u.before).every(id=>s.team.some(m=>m.id===id))&&s.team.every(m=>Object.hasOwn(u.before,m.id)&&jobs.includes(u.before[m.id]))&&!!p&&typeof p.reason==='string'&&Number.isInteger(p.lockedCount)&&p.lockedCount>=0&&p.lockedCount<=s.team.length&&['beforeProgress','afterProgress','beforeCost','afterCost'].every(k=>Number.isFinite(p[k])&&p[k]>=0)&&Array.isArray(p.changes)&&p.changes.every(c=>c&&s.team.some(m=>m.id===c.id)&&['name','reason'].every(k=>typeof c[k]==='string')&&jobs.includes(c.from)&&jobs.includes(c.to))&&Array.isArray(p.jobChanges)&&p.jobChanges.every(j=>j&&JOBS.some(x=>x.id===j.id)&&typeof j.name==='string'&&Number.isFinite(j.before)&&Number.isFinite(j.after));
+  }
   function validEventState(s){
     const p=s.pendingChoices,r=s.eventResult;
     if(p&&(!s.pendingEvent||p.id!==s.pendingEvent||!Array.isArray(p.choices)||!p.choices.length||p.choices.some(c=>!c||typeof c.label!=='string')))return false;
@@ -707,7 +768,7 @@
     return true;
   }
   function validateRun(s){try{if(!s||s.version!==VERSION||typeof s.paused!=='boolean'||!Number.isInteger(s.stage)||s.stage<1||!SCALES.some(g=>g.id===s.scale)||!WORK_PROFILES.some(p=>p.id===s.workProfile)||!Number.isInteger(s.week)||s.week<1||!Array.isArray(s.team)||s.team.length<2||!Number.isFinite(s.reputation)||s.reputation<0)return false;for(const a of ['departed','history','logs','effects','milestones','knownPartners'])if(!Array.isArray(s[a]))return false;if(new Set(s.knownPartners).size!==s.knownPartners.length||s.knownPartners.some(id=>!RECRUITS.some(r=>r.id===id&&recruitReputation(r)<=s.reputation))||s.team.some(m=>m.kind==='partner'&&!s.knownPartners.includes(m.id)))return false;if(!s.work||!s.req||!s.softCaps||typeof s.hard!=='boolean'||s.pendingCapGroup&&!GROUPS.some(g=>g.id===s.pendingCapGroup&&g.id!=='release')||!s.people||!['normal','rest','crunch'].includes(s.pace)||!['profit','acclaim'].includes(s.objective)||!adBudgetOptions(s).includes(s.adBudget))return false;const ids=s.team.map(m=>m.id);if(new Set(ids).size!==ids.length||!s.team.some(m=>m.id==='hero'&&m.kind==='hero')||!s.team.some(m=>m.id==='ace'&&m.kind==='companion'))return false;if(!s.team.every(m=>typeof m.name==='string'&&m.name.length>0&&Number.isFinite(m.salary)&&m.salary>=0&&['idle',...JOBS.map(j=>j.id)].includes(m.lastJob)&&SKILLS.every(j=>Number.isFinite(m.skills[j.id])&&m.skills[j.id]>=0&&m.skills[j.id]<=200)&&(m.job==='idle'||taskSkill(m,m.job)>0&&!publisherManaged(s,m.job))))return false;
-    return validEventState(s)&&JOBS.every(j=>(j.group==='release'||Number.isFinite(s.softCaps[j.id])&&s.softCaps[j.id]>=INITIAL_SOFT_CAP&&s.softCaps[j.id]<=HARD_CAP&&s.work[j.id]<=s.req[j.id]*s.softCaps[j.id]+.01)&&Number.isFinite(s.work[j.id])&&s.work[j.id]>=0&&Number.isFinite(s.req[j.id])&&s.req[j.id]>0&&s.work[j.id]<=s.req[j.id]+.01&&s.people[j.id]===s.team.filter(m=>m.job===j.id).length)&&s.reserve===s.team.filter(m=>m.job==='idle').length&&GROUPS.filter(g=>g.id!=='release').every(g=>Number.isFinite(s.ratingRolls[g.id])&&Math.abs(s.ratingRolls[g.id])<=28&&Number.isFinite(s.revealRolls[g.id])&&Math.abs(s.revealRolls[g.id])<=1)&&[s.money,s.spent,s.income,s.adSpend,s.debt,s.morale,s.rng,s.seed,s.initialMoney,s.sharedCashDelta].every(Number.isFinite)&&s.money>=0&&s.spent>=0&&s.adSpend>=0&&s.adSpend<=(s.spent+(s.publisher?.adSpend||0))&&(s.publisher===null||s.publisher&&Number.isFinite(s.publisher.advance)&&s.publisher.advance>0&&Number.isInteger(s.publisher.signWeek)&&s.publisher.signWeek>=1&&s.publisher.signWeek<=s.week&&Number.isFinite(s.publisher.adSpend)&&s.publisher.adSpend>=0&&s.publisher.adSpend<=s.adSpend&&s.publisher.quote&&s.publisher.quote.advance>=s.publisher.advance&&Array.isArray(s.publisher.paidStages)&&new Set(s.publisher.paidStages).size===s.publisher.paidStages.length&&s.publisher.paidStages.includes('signing')&&s.publisher.paidStages.every(id=>PUBLISHER_STAGES.some(p=>p.id===id))&&publisherFunding(s).stages.filter(p=>p.paid).reduce((n,p)=>n+p.amount,0)===s.publisher.advance&&[.6,.7,.8,.9,1].includes(s.publisher.quote.advanceRatio)&&[.5,.55,.6,.65,.7,.75].includes(s.publisher.quote.studioShare)&&[20,22,24,26,28,30,32,34,36].includes(s.publisher.quote.weeklyWork))&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.over||!!s.result);
+    return validAssignmentState(s)&&validEventState(s)&&JOBS.every(j=>(j.group==='release'||Number.isFinite(s.softCaps[j.id])&&s.softCaps[j.id]>=INITIAL_SOFT_CAP&&s.softCaps[j.id]<=HARD_CAP&&s.work[j.id]<=s.req[j.id]*s.softCaps[j.id]+.01)&&Number.isFinite(s.work[j.id])&&s.work[j.id]>=0&&Number.isFinite(s.req[j.id])&&s.req[j.id]>0&&s.work[j.id]<=s.req[j.id]+.01&&s.people[j.id]===s.team.filter(m=>m.job===j.id).length)&&s.reserve===s.team.filter(m=>m.job==='idle').length&&GROUPS.filter(g=>g.id!=='release').every(g=>Number.isFinite(s.ratingRolls[g.id])&&Math.abs(s.ratingRolls[g.id])<=28&&Number.isFinite(s.revealRolls[g.id])&&Math.abs(s.revealRolls[g.id])<=1)&&[s.money,s.spent,s.income,s.adSpend,s.debt,s.morale,s.rng,s.seed,s.initialMoney,s.sharedCashDelta].every(Number.isFinite)&&s.money>=0&&s.spent>=0&&s.adSpend>=0&&s.adSpend<=(s.spent+(s.publisher?.adSpend||0))&&(s.publisher===null||s.publisher&&Number.isFinite(s.publisher.advance)&&s.publisher.advance>0&&Number.isInteger(s.publisher.signWeek)&&s.publisher.signWeek>=1&&s.publisher.signWeek<=s.week&&Number.isFinite(s.publisher.adSpend)&&s.publisher.adSpend>=0&&s.publisher.adSpend<=s.adSpend&&s.publisher.quote&&s.publisher.quote.advance>=s.publisher.advance&&Array.isArray(s.publisher.paidStages)&&new Set(s.publisher.paidStages).size===s.publisher.paidStages.length&&s.publisher.paidStages.includes('signing')&&s.publisher.paidStages.every(id=>PUBLISHER_STAGES.some(p=>p.id===id))&&publisherFunding(s).stages.filter(p=>p.paid).reduce((n,p)=>n+p.amount,0)===s.publisher.advance&&[.6,.7,.8,.9,1].includes(s.publisher.quote.advanceRatio)&&[.5,.55,.6,.65,.7,.75].includes(s.publisher.quote.studioShare)&&[20,22,24,26,28,30,32,34,36].includes(s.publisher.quote.weeklyWork))&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.over||!!s.result);
     }catch{return false;}}
-  return {VERSION,WORK_PROFILES,workProfile,PUBLISHER_STAGES,publisherFunding,developmentCompletion,experienceBreakdown,decisionFinance,assignmentPriorities,assignmentUtility,memberAdvice,REPUTATION_NODES,RECRUIT_REPUTATION,reputationProfile,reputationStatus,recruitReputation,reputationPartners,reputationGain,publisherWork,publisherShare,terminationQuote,PERSON_RANKS,abilityScore,personRank,recruitUnlockText,MARKET_MIN,MARKET_MAX,marketFloor,marketMultiplier,revenueRules,INITIAL_FUNDS,startupAidStatus,claimStartupAid,STANDARD_WEEKLY_WORK,STANDARD_PERSON_WEEK_COST,scalePlan,projectNameStatus,HARD_CAP,INITIAL_SOFT_CAP,CAP_STEP,softCap,workPhase,SKILLS,GROUPS,JOBS,GRADES,AD_RATES,AD_BUDGETS,adBudgetOptions,publisherAdBudget,currentAdBudget,HERO,COMPANION,RECRUITS,SCALES,baseRequirements,PUBLISHER_JOBS,PUBLISHER_WEEKLY_WORK,publisherManaged,publisherQuote,signPublisher,adSettlement,OBJECTIVES,EVENTS,skillLabel,taskSkill,assignMember,availableRecruits,memberOutput,teamVoice,newRun,pauseProject,resumeProject,endProject,validateSnapshot,mods,cost,teamSize,progress,groupProgress,coreProgress,coreReady,complete,goals,canRelease,quality,trueScore,overallScore,grade,gradeIndex,revealLevel,ratingView,overallView,adRate,adProjection,buyingStatus,setAdBudget,forecast,incomeView,objectiveStatus,throughput,workDependency,workLimit,hire,downsize,advance,event,eventPool,eventChoiceStatus,resolveEvent,acknowledgeEvent,preview,progressEstimate,assignmentEstimate,automaticAssignmentPlan,autoAssign,softCapWarnings,finish,emptyMeta,settle,validateMeta,syncCareer,trainingCost,train,renameHero,hirePartner,dismissPartner,validateRun,copy};
+  return {setAssignmentLock,assignmentUndoStatus,undoAutoAssign,recruitCostPreview,eventResponse,VERSION,WORK_PROFILES,workProfile,PUBLISHER_STAGES,publisherFunding,developmentCompletion,experienceBreakdown,decisionFinance,assignmentPriorities,assignmentUtility,memberAdvice,REPUTATION_NODES,RECRUIT_REPUTATION,reputationProfile,reputationStatus,recruitReputation,reputationPartners,reputationGain,publisherWork,publisherShare,terminationQuote,PERSON_RANKS,abilityScore,personRank,recruitUnlockText,MARKET_MIN,MARKET_MAX,marketFloor,marketMultiplier,revenueRules,INITIAL_FUNDS,startupAidStatus,claimStartupAid,STANDARD_WEEKLY_WORK,STANDARD_PERSON_WEEK_COST,scalePlan,projectNameStatus,HARD_CAP,INITIAL_SOFT_CAP,CAP_STEP,softCap,workPhase,SKILLS,GROUPS,JOBS,GRADES,AD_RATES,AD_BUDGETS,adBudgetOptions,publisherAdBudget,currentAdBudget,HERO,COMPANION,RECRUITS,SCALES,baseRequirements,PUBLISHER_JOBS,PUBLISHER_WEEKLY_WORK,publisherManaged,publisherQuote,signPublisher,adSettlement,OBJECTIVES,EVENTS,skillLabel,taskSkill,assignMember,availableRecruits,memberOutput,teamVoice,newRun,pauseProject,resumeProject,endProject,validateSnapshot,mods,cost,teamSize,progress,groupProgress,coreProgress,coreReady,complete,goals,canRelease,quality,trueScore,overallScore,grade,gradeIndex,revealLevel,ratingView,overallView,adRate,adProjection,buyingStatus,setAdBudget,forecast,incomeView,objectiveStatus,throughput,workDependency,workLimit,hire,downsize,advance,event,eventPool,eventChoiceStatus,resolveEvent,acknowledgeEvent,preview,progressEstimate,assignmentEstimate,automaticAssignmentPlan,autoAssign,softCapWarnings,finish,emptyMeta,settle,validateMeta,syncCareer,trainingCost,train,renameHero,hirePartner,dismissPartner,validateRun,copy};
 });
