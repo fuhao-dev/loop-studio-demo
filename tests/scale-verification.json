@@ -1,5 +1,5 @@
 {
-  "version": "0.10.2",
+  "version": "0.11.0",
   "date": "2026-11-06",
   "checks": 15,
   "firstWeek": [
@@ -58,8 +58,8 @@
     },
     {
       "scale": "large",
-      "weeks": 113,
-      "cost": 29154
+      "weeks": 114,
+      "cost": 29412
     }
   ],
   "limits": [

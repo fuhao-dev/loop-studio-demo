@@ -3,7 +3,7 @@ let checks=0;function check(name,fn){fn();checks++;}
 function ready(scale='micro',score=50){
   const meta=G.emptyMeta();meta.wallet=300000;const s=G.newRun({scale,seed:55401},meta);
   for(const j of G.JOBS){if(j.group!=='release')s.softCaps[j.id]=1;s.work[j.id]=s.req[j.id];}
-  for(const g of G.GROUPS.filter(g=>g.id!=='release')){s.ratingRolls[g.id]=0;s.ratingBonus[g.id]=score-75;}
+  for(const g of G.GROUPS.filter(g=>g.id!=='release')){s.ratingRolls[g.id]=score-75;}
   return {meta,s};
 }
 function nextRoll(s,roll){const next=BigInt(Math.floor(roll*4294967296));s.rng=Number(((next-1013904223n)*4276115653n)&0xffffffffn);}

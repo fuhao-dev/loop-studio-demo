@@ -2,17 +2,17 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 let checks=0;function check(name,fn){try{fn();checks++;}catch(error){error.message=name+': '+error.message;throw error;}}
 function start(hard=false,seed=42){const meta=G.emptyMeta();meta.wallet=300000;return {meta,s:G.newRun({hard,seed},meta)};}
 function pending(s,id){s.pendingEvent=id;s.pendingChoices=null;s.pendingCapGroup=null;}
-function numericState(s){return G.copy({money:s.money,spent:s.spent,income:s.income,work:s.work,softCaps:s.softCaps,ratingBonus:s.ratingBonus,bugs:s.bugs,debt:s.debt,morale:s.morale,effects:s.effects,knownPartners:s.knownPartners,milestones:s.milestones,week:s.week,rng:s.rng,adSpend:s.adSpend,publisher:s.publisher});}
+function numericState(s){return G.copy({money:s.money,spent:s.spent,income:s.income,work:s.work,softCaps:s.softCaps,debt:s.debt,morale:s.morale,effects:s.effects,knownPartners:s.knownPartners,milestones:s.milestones,week:s.week,rng:s.rng,adSpend:s.adSpend,publisher:s.publisher});}
 function pick(s,index=0){assert.ok(G.resolveEvent(s,index));assert.ok(G.acknowledgeEvent(s));}
 const originalIds=['inspiration','palette','discount','feedback','coffee','break','backup','scope','showcase','bug','forms','compat','tired','debt','monetization','pricing','ip_plan','ad_plan','store_page','scale_review','market_rival','market_watch','cash_review','team_exchange'];
-check('all 24 original events remain alongside eight of each new category',()=>{
-  assert.deepEqual(G.EVENTS.filter(e=>!e.kind).map(e=>e.id),originalIds);
-  assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,48);
-  for(const kind of ['ambient','hidden','publisher'])assert.equal(G.EVENTS.filter(e=>e.kind===kind).length,8);
+check('all original event identities remain in the 120-event pool',()=>{
+  assert.deepEqual(G.EVENTS.slice(0,24).map(e=>e.id),originalIds);
+  assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,120);
+  for(const [kind,count] of [['ambient',36],['hidden',36],['publisher',12]])assert.equal(G.EVENTS.filter(e=>e.kind===kind).length,count);assert.equal(G.EVENTS.filter(e=>!e.kind).length,36);
 });
 check('all ambient options leave every numerical value and RNG unchanged in both modes',()=>{
   for(const hard of [false,true])for(const e of G.EVENTS.filter(e=>e.kind==='ambient'))for(let i=0;i<e.choices.length;i++){
-    const {s}=start(hard);s.bugs=5;s.debt=4;s.morale=60;pending(s,e.id);const before=numericState(s);
+    const {s}=start(hard);s.debt=4;s.morale=60;pending(s,e.id);const before=numericState(s);
     assert.ok(G.resolveEvent(s,i));assert.deepEqual(numericState(s),before);assert.deepEqual(s.eventResult.details,['没有发生任何数值变化。']);assert.ok(G.validateRun(s));
   }
 });
@@ -37,7 +37,7 @@ check('hidden efficiency and maintenance results disclose numeric magnitude and 
   pending(s,'hidden_drawer');pick(s,1);assert.ok(s.eventResult.details.includes('维护费 −10% · 持续 2 周'));
 });
 check('hidden effects report clamped actual results instead of overstating benefits',()=>{
-  const {s}=start();s.bugs=1;pending(s,'hidden_note');pick(s);assert.equal(s.bugs,0);assert.deepEqual(s.eventResult.details,['问题 −1']);
+  const {s}=start();s.softCaps.qa=.95;pending(s,'hidden_note');pick(s);assert.equal(s.softCaps.qa,1);assert.deepEqual(s.eventResult.details,['测试软上限 95% → 100%']);
   s.morale=98;pending(s,'hidden_ticket');pick(s);assert.equal(s.morale,100);assert.deepEqual(s.eventResult.details,['士气 +2']);
 });
 check('selection and outcome survive JSON restore and duplicate choice cannot apply twice',()=>{
@@ -77,14 +77,14 @@ check('publisher ad-design advice improves commerce without touching publicity o
   const {s}=start();G.signPublisher(s);const budget=s.adBudget;assert.equal(G.revealLevel(s),0);pending(s,'publisher_ads');pick(s);assert.equal(G.progress(s,'ads'),.1);assert.equal(G.revealLevel(s),0);assert.equal(G.progress(s,'acquisition'),0);assert.equal(s.adBudget,budget);assert.equal(s.publisher.adSpend,0);
   for(const payload of [{progress:{publicity:.1}},{progress:{materials:.1}},{caps:{promotion:.15}},{caps:{review:.15}}]){pending(s,'publisher_ads');s.pendingChoices={id:s.pendingEvent,choices:[{label:'invalid',...payload}]};const before=JSON.stringify(s);assert.equal(G.resolveEvent(s,0),false);assert.equal(JSON.stringify(s),before);}
 });
-check('pool removes irrelevant bug debt fatigue and completed listing events in real time',()=>{
+check('pool removes irrelevant testing debt fatigue and completed listing events in real time',()=>{
   const {s}=start(),ids=()=>new Set(G.eventPool(s).map(e=>e.id));assert.ok(!ids().has('bug')&&!ids().has('compat')&&!ids().has('debt')&&!ids().has('tired'));
-  s.bugs=5;s.debt=10;s.morale=40;assert.ok(ids().has('bug')&&ids().has('compat')&&ids().has('debt')&&ids().has('tired'));
+  s.debt=10;s.morale=40;G.assignMember(s,'hero','qa');assert.ok(ids().has('bug')&&ids().has('compat')&&ids().has('debt')&&ids().has('tired'));
   G.signPublisher(s);assert.ok(ids().has('publisher_ip'));s.work.materials=s.req.materials;s.work.review=s.req.review;assert.ok(!ids().has('forms')&&!ids().has('store_page'));assert.ok(ids().has('publisher_ip'));
 });
 check('all capped work removes wasted cap and publisher progress choices but keeps daily fallback',()=>{
-  const {s}=start();G.signPublisher(s);for(const j of G.JOBS){if(j.group!=='release')s.softCaps[j.id]=1;s.work[j.id]=s.req[j.id];}s.morale=100;s.ratingBonus.content=12;
-  const pool=G.eventPool(s);assert.ok(pool.some(e=>e.kind==='ambient'));assert.ok(!pool.some(e=>e.kind==='publisher'));assert.ok(!pool.some(e=>['inspiration','palette','hidden_dream'].includes(e.id)));
+  const {s}=start();G.signPublisher(s);for(const j of G.JOBS){if(j.group!=='release')s.softCaps[j.id]=1;s.work[j.id]=s.req[j.id];}s.morale=100;
+  const pool=G.eventPool(s);assert.ok(pool.some(e=>e.kind==='ambient'));assert.ok(!pool.some(e=>e.kind==='publisher'));assert.ok(!pool.some(e=>['inspiration','palette'].includes(e.id)));
 });
 check('budget and active bottlenecks affect current pool eligibility and weight without RNG draws',()=>{
   const {s}=start();G.assignMember(s,'hero','acquisition');const rng=s.rng;assert.ok(G.eventPool(s).some(e=>e.id==='ad_plan'));G.setAdBudget(s,100);assert.ok(!G.eventPool(s).some(e=>e.id==='ad_plan'));
@@ -107,7 +107,7 @@ check('ending a project with an unread result clears the prompt and settles once
   const {meta,s}=start();pending(s,'hidden_mail');G.resolveEvent(s,0);const before=s.money;const result=G.endProject(meta,s.id,s);assert.ok(result);assert.equal(s.eventResult.unread,false);assert.equal(s.money,before);assert.equal(G.endProject(meta,s.id,s),false);
 });
 check('seeded weekly pools produce all categories with valid live choices and no consecutive repeat',()=>{
-  const seen=new Set();for(let seed=1;seed<=480;seed++){const {s}=start(seed%2===0,Math.imul(seed,2654435761)>>>0);if(seed%2)G.signPublisher(s);s.lastEvent='daily_cat';s.bugs=4;s.debt=9;s.morale=60;const identical=G.copy(s),out=G.advance(s);G.advance(identical);assert.ok(out.ok);assert.equal(s.pendingEvent,identical.pendingEvent);assert.deepEqual(G.event(s),G.event(identical));assert.notEqual(s.pendingEvent,'daily_cat');
+  const seen=new Set();for(let seed=1;seed<=480;seed++){const {s}=start(seed%2===0,Math.imul(seed,2654435761)>>>0);if(seed%2)G.signPublisher(s);s.lastEvent='daily_cat';s.debt=9;s.morale=60;const identical=G.copy(s),out=G.advance(s);G.advance(identical);assert.ok(out.ok);assert.equal(s.pendingEvent,identical.pendingEvent);assert.deepEqual(G.event(s),G.event(identical));assert.notEqual(s.pendingEvent,'daily_cat');
     const definition=G.EVENTS.find(e=>e.id===s.pendingEvent);seen.add(definition.kind||'standard');if(definition.kind==='publisher')assert.ok(s.publisher);for(let i=0;i<G.event(s).choices.length;i++)assert.ok(G.eventChoiceStatus(s,i).ok);assert.ok(G.validateRun(s));
   }assert.deepEqual([...seen].sort(),['ambient','hidden','publisher','standard']);
 });

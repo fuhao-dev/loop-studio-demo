@@ -4,7 +4,7 @@ const window={StudioGame:G};vm.runInNewContext(fs.readFileSync(path.join(__dirna
 const source=fs.readFileSync(path.join(__dirname,'../dist/app.js'),'utf8');
 const renderJob=vm.runInNewContext(source.slice(source.indexOf('  function job('),source.indexOf('  function ratingTile('))+';job',{G,esc:String,disabled:ok=>ok?'':' disabled'});
 function ready(hard=false,scale='micro',seed=88401){const meta=G.emptyMeta();meta.wallet=300000;return G.newRun({hard,scale,seed},meta);}
-function rateReady(score){const s=ready();for(const j of G.JOBS){if(j.group!=='release')s.softCaps[j.id]=1;s.work[j.id]=s.req[j.id];}for(const g of G.GROUPS.filter(g=>g.id!=='release')){s.ratingRolls[g.id]=0;s.ratingBonus[g.id]=score-75;}s.adSpend=1000;s.spent=1000;s.money-=1000;return s;}
+function rateReady(score){const s=ready();for(const j of G.JOBS){if(j.group!=='release')s.softCaps[j.id]=1;s.work[j.id]=s.req[j.id];}for(const g of G.GROUPS.filter(g=>g.id!=='release')){s.ratingRolls[g.id]=score-75;}s.adSpend=1000;s.spent=1000;s.money-=1000;return s;}
 check('zero budget yields no acquisition output or spend in either mode but salaries are paid',()=>{
   for(const hard of [false,true]){const s=ready(hard);G.assignMember(s,'hero','idle');G.assignMember(s,'ace','acquisition');const before=s.money,c=G.cost(s),status=G.buyingStatus(s);assert.ok(status.unfunded);assert.equal(status.assigned,1);assert.equal(status.spend,0);assert.ok(status.reason.includes('无进度'));assert.equal(G.memberOutput(s,'ace'),0);G.advance(s);assert.equal(s.history[0].gains.acquisition,0);assert.equal(s.adSpend,0);assert.equal(s.money,before-c.total);assert.ok(c.wages>0);}
 });
@@ -38,7 +38,7 @@ check('pre-week budget warning does not spend time money or randomness',()=>{
   vm.runInNewContext(code+';showWorkCapWarning([])',{G,run,showDialog:x=>markup=x,dialogHeader:()=>'',esc:String});assert.equal(JSON.stringify(run),before);assert.ok(markup.includes('预算为 ¥0，本周买量无进度')&&markup.includes('去设置买量预算')&&markup.includes('仍然推进一周'));assert.ok(source.includes('warnings.length||buying.unfunded'));
 });
 check('event pool covers the current game and has no removed systems',()=>{
-  assert.equal(G.EVENTS.length,48);assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,48);
+  assert.equal(G.EVENTS.length,120);assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,120);
   const texts=G.EVENTS.map(e=>e.title+e.text+e.choices.map(c=>c.label+c.hint).join('')).join('');assert.ok(!/阿策|蓝图|主攻|任务奖励|角色模板/.test(texts));
   for(const key of ['买量净回款','0.10～10.00','软上限','规模','生涯','伙伴','资料','审核','广告变现','用户付费','IP'])assert.ok(texts.includes(key),key);
 });
@@ -49,12 +49,12 @@ check('new contextual events require the corresponding job scale budget or team 
   assert.equal(find('team_exchange').condition(s),false);s.knownPartners=['lin'];assert.equal(find('team_exchange').condition(s),true);
 });
 check('seeded weekly events meet their state conditions without repeating the last event',()=>{
-  const seen=new Set();for(let i=1;i<=160;i++){
+  const seen=new Set();for(let i=1;i<=640;i++){
     const s=ready(i%2===0,G.SCALES[i%4].id,Math.imul(i,2654435761)>>>0);for(const j of G.JOBS)s.work[j.id]=s.req[j.id]*.5;
     s.knownPartners=['lin'];G.assignMember(s,'hero','publicity');G.assignMember(s,'ace',i%3?'acquisition':'materials');if(i%3===0)s.money=3000;
     const previous=s.lastEvent;G.advance(s);const e=G.event(s);seen.add(e.id);assert.notEqual(e.id,previous);assert.ok(!e.min||G.coreProgress(s)>=e.min);assert.ok(!e.condition||e.condition(s));assert.ok(G.validateRun(s));
   }
-  assert.ok(seen.has('ad_plan')&&seen.has('scale_review')&&seen.has('market_watch')&&seen.has('cash_review')&&seen.has('team_exchange'));assert.ok(seen.size>=20);
+  assert.ok(seen.has('ad_plan')&&seen.has('scale_review')&&seen.has('market_watch')&&seen.has('cash_review')&&seen.has('team_exchange'));assert.ok(seen.size>=50);
 });
 check('pending current-version events restore identically and never grant progress directly',()=>{
   for(const e of G.EVENTS.slice(14,24))for(let i=0;i<e.choices.length;i++){const s=ready();for(const j of G.JOBS)s.work[j.id]=s.req[j.id]*.5;s.pendingEvent=e.id;const restored=G.copy(s),before=G.copy(s.work),rng=s.rng;assert.ok(G.resolveEvent(s,i));assert.ok(G.resolveEvent(restored,i));assert.deepEqual(restored,s);assert.deepEqual(s.work,before);assert.equal(s.rng,rng);assert.ok(G.validateRun(s));}
@@ -62,4 +62,4 @@ check('pending current-version events restore identically and never grant progre
 check('cash-review relief changes maintenance only and leaves market rules intact',()=>{
   const s=ready();s.pendingEvent='cash_review';const before=G.cost(s),rules=G.revenueRules(s),work=G.copy(s.work);G.resolveEvent(s,0);const after=G.cost(s);assert.equal(after.wages,before.wages);assert.equal(after.ads,before.ads);assert.equal(after.overhead,Math.ceil(before.overhead*.75));assert.deepEqual(G.revenueRules(s),rules);assert.deepEqual(s.work,work);
 });
-console.log(JSON.stringify({v94Checks:checks,adSettlementCases:30,eventSelectionCases:160,eventCount:G.EVENTS.length}));
+console.log(JSON.stringify({v94Checks:checks,adSettlementCases:30,eventSelectionCases:640,eventCount:G.EVENTS.length}));

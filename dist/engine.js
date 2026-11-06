@@ -1,7 +1,7 @@
-/* 天才程序员带我做游戏 v0.10.2 · shared career and pausable projects. */
+/* 天才程序员带我做游戏 v0.11.0 · shared career and pausable projects. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.StudioGame=factory();})(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const VERSION=10;
+  const VERSION=11;
   const STANDARD_WEEKLY_WORK=10,STANDARD_PERSON_WEEK_COST=100,INITIAL_FUNDS=7600;
   const HARD_CAP=1, INITIAL_SOFT_CAP=.7, CAP_STEP=.15;
   const SKILLS=[
@@ -42,7 +42,7 @@
     {id:'subtheme',name:'子主题',group:'content',skill:'art',base:40,desc:'通过画面与内容塑造独特气质。'},
     {id:'development',name:'开发进度',group:'framework',skill:'code',base:64,desc:'实现内容；可实现范围受游戏内容进度限制。'},
     {id:'systems',name:'系统协作',group:'framework',skill:'code',base:40,desc:'打通系统接口，清理技术债；需要已有实现。'},
-    {id:'qa',name:'测试',group:'framework',skill:'test',base:40,desc:'验证已实现内容并修复问题。'},
+    {id:'qa',name:'测试',group:'framework',skill:'test',base:40,desc:'验证已实现内容，推进测试完成度与完善度。'},
     {id:'ads',name:'广告变现',group:'commerce',skill:'ops',base:32,desc:'设计广告接入与体验，影响商业化表现。'},
     {id:'payment',name:'用户付费',group:'commerce',skill:'design',base:32,desc:'设计付费价值和转化路径。'},
     {id:'ip',name:'IP衍生',group:'commerce',skill:'art',base:32,desc:'制作衍生内容与形象，扩展商业价值。'},
@@ -76,7 +76,7 @@
   function teamSize(s){return s.team.length;}
   function hire(s,id){const r=availableRecruits(s).find(r=>r.id===id);if(!r||blocked(s)||s.managed||s.team.length>=8||s.money<180)return false;const m=makeMember(r,publisherManaged(s,preferredJob(r))?'idle':preferredJob(r));m.lastJob='idle';s.team.push(m);syncPeople(s);s.money-=180;s.spent+=180;s.managed=true;addLog(s,r.name+'加入团队，基础周薪 ¥'+r.salary+'；准备支出 ¥180。','good');return true;}
   function downsize(s,id){const m=s.team.find(m=>m.id===id);if(!m||m.kind!=='partner'||blocked(s)||s.managed||s.money<100)return false;s.team=s.team.filter(m=>m.id!==id);s.departed.push(id);syncPeople(s);s.money-=100;s.spent+=100;s.managed=true;addLog(s,'与'+m.name+'暂别，支付 ¥100；本项目不再重复邀请。');return true;}
-  function mods(s){const m={all:1,design:1,code:1,art:1,test:1,ops:1,play:1,visual:1,debt:1,rework:1,overhead:1,wages:1,ramp:1,crowd:.45,fix:0,morale:0,cleanup:0,fee:0,sales:1};s.effects.forEach(e=>{if(e.weeks>0){m.all*=e.all||1;if(e.job)m[e.job]*=e.mult||1;}});return m;}
+  function mods(s){const m={all:1,design:1,code:1,art:1,test:1,ops:1,play:1,visual:1,debt:1,rework:1,overhead:1,wages:1,ramp:1,crowd:.45,morale:0,cleanup:0,fee:0,sales:1};s.effects.forEach(e=>{if(e.weeks>0){m.all*=e.all||1;if(e.job)m[e.job]*=e.mult||1;}});return m;}
   function campaignCost(s){return s.publisher||s.people.acquisition>0?s.adBudget:0;}
   function buyingStatus(s){
     const managed=!!s.publisher,assigned=s.team.filter(m=>m.job==='acquisition'),spend=campaignCost(s);
@@ -106,7 +106,7 @@
   function setAdBudget(s,n){if(blocked(s)||!AD_BUDGETS.includes(n))return false;s.adBudget=n;return true;}
   function gradeIndex(value){return clamp(Math.floor(clamp(value,0,100)/100*15),0,14);}
   function grade(value){return GRADES[gradeIndex(value)];}
-  function trueScore(s,id){if(id==='release')return groupProgress(s,id)*100;const p=groupProgress(s,id);let n=10+p*65+s.ratingRolls[id]+s.ratingBonus[id];if(id==='content')n+=(mods(s).play-1)*8+(mods(s).visual-1)*8;if(id==='framework')n-=s.bugs*.3+s.debt*.18;return round(clamp(n,0,100));}
+  function trueScore(s,id){if(id==='release')return groupProgress(s,id)*100;const p=groupProgress(s,id);let n=10+p*65+s.ratingRolls[id];if(id==='content')n+=(mods(s).play-1)*8+(mods(s).visual-1)*8;if(id==='framework')n-=s.debt*.18;return round(clamp(n,0,100));}
   function overallScore(s){return round(trueScore(s,'content')*.4+trueScore(s,'framework')*.3+trueScore(s,'commerce')*.2+trueScore(s,'promotion')*.1);}
   function revealLevel(s){const p=progress(s,'publicity');return p>=1?5:p>=.75?4:p>=.5?3:p>=.25?2:p>0?1:0;}
   function ratingView(s,id,force=false){const level=force||s.over&&s.result?.released?5:revealLevel(s);if(!level)return {id,level:0,text:'?????',low:0,high:100,lowGrade:'D-',highGrade:'S+',exact:false,questions:5};
@@ -168,8 +168,8 @@
 
   function newRun(config={},meta=emptyMeta()){if(!validateMeta(meta))throw Error('生涯数据无效');if(meta.activeRunId)throw Error('请先暂停或结算当前项目，再开始新项目');const scaleId=config.scale||SCALES[0].id,g=SCALES.find(g=>g.id===scaleId);if(!g)throw Error('请选择有效的项目规模');const name=String(config.name||g.title).trim().slice(0,18)||g.title,nameStatus=projectNameStatus(name);if(!nameStatus.ok)throw Error(nameStatus.reason);const plan=scalePlan(g.id);if(meta.wallet<plan.minFunds)throw Error('资金不足：'+g.name+'需要 ¥'+plan.minFunds.toLocaleString('zh-CN')+'，当前 ¥'+meta.wallet.toLocaleString('zh-CN')+'，还差 ¥'+(plan.minFunds-meta.wallet).toLocaleString('zh-CN'));const seed=(Number(config.seed)||Date.now())>>>0;
     const req=baseRequirements(g.id);
-    const s={version:VERSION,id:'run-'+meta.stage+'-'+seed+'-'+Date.now(),stage:meta.stage,seed,rng:seed,scale:g.id,name,hard:config.hard===true,week:1,money:meta.wallet,spent:0,income:0,sharedCashDelta:0,paused:false,pace:'normal',work:Object.fromEntries(JOBS.map(j=>[j.id,0])),req,bugs:0,debt:0,morale:90,effects:[],logs:[],history:[],milestones:[],publisher:null,managed:false,pendingEvent:null,pendingChoices:null,eventResult:null,lastEvent:null,over:false,result:null,objective:config.objective==='acclaim'?'acclaim':'profit',departed:[],adBudget:0,adSpend:0,ratingRolls:{},revealRolls:{},ratingBonus:{},softCaps:Object.fromEntries(JOBS.filter(j=>j.group!=='release').map(j=>[j.id,INITIAL_SOFT_CAP])),pendingCapGroup:null};
-    s.initialMoney=s.money;s.knownPartners=meta.knownPartners.slice();s.team=createTeam(meta.hero,meta.partners);syncPeople(s);if(s.money<cost(s).total)throw Error('生涯资金不足以支付首周团队成本；可在局外重新开始生涯');GROUPS.filter(g=>g.id!=='release').forEach(g=>{s.ratingRolls[g.id]=round(random(s)*56-28);s.revealRolls[g.id]=round(random(s)*2-1);s.ratingBonus[g.id]=0;});meta.activeRunId=s.id;meta.stage++;
+    const s={version:VERSION,id:'run-'+meta.stage+'-'+seed+'-'+Date.now(),stage:meta.stage,seed,rng:seed,scale:g.id,name,hard:config.hard===true,week:1,money:meta.wallet,spent:0,income:0,sharedCashDelta:0,paused:false,pace:'normal',work:Object.fromEntries(JOBS.map(j=>[j.id,0])),req,debt:0,morale:90,effects:[],logs:[],history:[],milestones:[],publisher:null,managed:false,pendingEvent:null,pendingChoices:null,eventResult:null,lastEvent:null,over:false,result:null,objective:config.objective==='acclaim'?'acclaim':'profit',departed:[],adBudget:0,adSpend:0,ratingRolls:{},revealRolls:{},softCaps:Object.fromEntries(JOBS.filter(j=>j.group!=='release').map(j=>[j.id,INITIAL_SOFT_CAP])),pendingCapGroup:null,lastScene:null};
+    s.initialMoney=s.money;s.knownPartners=meta.knownPartners.slice();s.team=createTeam(meta.hero,meta.partners);syncPeople(s);if(s.money<cost(s).total)throw Error('生涯资金不足以支付首周团队成本；可在局外重新开始生涯');GROUPS.filter(g=>g.id!=='release').forEach(g=>{s.ratingRolls[g.id]=round(random(s)*56-28);s.revealRolls[g.id]=round(random(s)*2-1);});meta.activeRunId=s.id;meta.stage++;
     addLog(s,'第 '+s.stage+' 关「'+s.name+'」立项：继承资金 ¥'+s.money+' 与主角能力；'+g.name+'，需要 '+plan.personWeeks+' 人周工作量'+'；上架两项完成即可发售。','good');return s;
   }
   function publisherManaged(s,id){return !!s.publisher&&PUBLISHER_JOBS.includes(id);}
@@ -206,99 +206,133 @@
     }
     for(const j of JOBS){gains[j.id]=round(s.work[j.id]-before[j.id]);ranges[j.id].low=round(Math.max(-before[j.id],ranges[j.id].low));}
     const implementation=Math.max(0,gains.development);
-    s.bugs=Math.max(0,s.bugs+implementation*.1*(1+s.debt/25)*(s.pace==='crunch'?1.5:1)-production.qa*.42-(s.people.qa?m.fix:0));s.debt=Math.max(0,s.debt+implementation*.025-production.systems*.22-m.cleanup+(s.pace==='crunch'?2:0));s.bugs=round(s.bugs);s.debt=round(s.debt);
+    s.debt=round(Math.max(0,s.debt+implementation*.025-production.systems*.22-m.cleanup+(s.pace==='crunch'?2:0)));
     if(campaignCost(s)>0){s.adSpend+=campaignCost(s);if(s.publisher)s.publisher.adSpend+=campaignCost(s);}
     s.morale=clamp(s.morale+(s.pace==='crunch'?-10:s.pace==='rest'?12:1)+m.morale,25,100);s.team.forEach(m=>m.lastJob=m.job);return {production,gains,ranges,impacts};
   }
+  // Shared scene text is intentional: the story alone must not disclose its outcome category.
   const EVENTS=[
-    {id:'inspiration',tag:'玩法突破',title:'天才程序员画出了新的核心循环',text:'玩法有了更高的完成空间，但好点子仍要排进工作表。',choices:[{label:'拓展玩法表达',hint:'玩法软上限 +15%，当前完成度不变',caps:{gameplay:.15}},{label:'记进下一作',hint:'士气 +4；本作进度保持',morale:4}]},
-    {id:'palette',tag:'内容表达',title:'子主题终于有了自己的气质',text:'画面、氛围与题材接上了。下一步是继续打磨，还是让团队缓口气？',choices:[{label:'拓展视觉细节',hint:'子主题软上限 +15%，仍需安排工作',caps:{subtheme:.15}},{label:'先照顾团队状态',hint:'士气 +5',morale:5}]},
-    {id:'discount',tag:'开发成本',title:'工具订阅返还了一笔差价',text:'省下的资金进入全局生涯余额，可以继续支持当前作品或下一作。',choices:[{label:'收下这份幸运',hint:'生涯资金 +¥120，记入本作其他收入',cash:120}]},
-    {id:'feedback',tag:'玩家反馈',title:'试玩长评指出了两个突破口',text:'反馈可以帮助准备更好的宣传与测试方案；评级认知仍需通过宣传工作逐步揭示。',choices:[{label:'整理玩家调研',hint:'宣传软上限 +15%；不会直接揭示评级',caps:{publicity:.15}},{label:'整理复现步骤',hint:'测试软上限 +15%，问题 −3',caps:{qa:.15},bugs:-3}]},
-    {id:'coffee',tag:'团队节奏',title:'今天的咖啡刚刚好',text:'本周工作已经结算。决定下一周的效率与状态，不改写刚完成的进度。',choices:[{label:'保持节奏',hint:'士气 +5',morale:5},{label:'集中突破',hint:'下周全体效率 +15%，士气 −6',morale:-6,effect:{all:1.15,weeks:1,name:'集中突破'}}]},
-    {id:'break',tag:'工作室日常',title:'不如今晚早点回家',text:'伙伴会陪你跨作品继续开发，当前项目的疲劳也值得照顾。',choices:[{label:'一起吃饭',hint:'生涯资金 −¥100，士气 +14',cash:-100,morale:14},{label:'散步也挺好',hint:'士气 +5',morale:5}]},
-    {id:'backup',tag:'程序维护',title:'构建机发出了奇怪的声音',text:'代码备份还在，已有完成度保留；设备选择会影响下周程序岗位的效率。',choices:[{label:'更换设备',hint:'支出 ¥180，下周程序效率 +15%',cash:-180,effect:{job:'code',mult:1.15,weeks:1,name:'新构建机'}},{label:'启用备用机',hint:'下周程序效率 −15%，当前完成度不变',effect:{job:'code',mult:.85,weeks:1,name:'备用构建机'}}]},
-    {id:'scope',tag:'内容潜力',title:'这个点子，要在本作继续探索吗？',text:'提高潜力和软上限，不等于立即做出成果；实现仍需人手与预算。',choices:[{label:'先记进下一作',hint:'士气 +3',morale:3},{label:'探索新的表达',hint:'支出 ¥100，内容潜力 +4，内容三项软上限各 +15%',cash:-100,bonus:{content:4},caps:{content:.15}}]},
-    {id:'showcase',tag:'宣发机会',title:'独立游戏展开放了试玩席位',text:'参展能拓宽宣传准备的空间；实际评级认知仍由宣传完成度决定，市场波动无法提前确定。',min:.3,choices:[{label:'带试玩版参展',hint:'支出 ¥200，宣传软上限 +30%',cash:-200,caps:{publicity:.3}},{label:'专注当前开发',hint:'下周全体效率 +10%',effect:{all:1.1,weeks:1,name:'专注开发'}}]},
-    {id:'bug',tag:'测试发现',title:'边界问题有了明确的复现步骤',text:'修复问题会改善完善度；不直接增减测试或开发完成度。',choices:[{label:'现在修复',hint:'支出 ¥120，问题 −3',cash:-120,bugs:-3},{label:'暂时隔离',hint:'问题 +2，技术债 +3',bugs:2,debt:3}]},
-    {id:'forms',tag:'上架准备',title:'渠道明确了资质与素材清单',text:'授权材料、商店资料和审核提交有了清晰安排。资料到 100% 后才能推进审核，两项都要完成。',choices:[{label:'更新发行工作清单',hint:'下周发行能力相关岗位效率 +20%；上架无软上限',effect:{job:'ops',mult:1.2,weeks:1,name:'清晰发行清单'}}]},
-    {id:'compat',tag:'系统协作',title:'工具接口的兼容方案需要确认',text:'技术债会拖慢程序岗位并增加维护成本，系统协作也能持续偿债。',choices:[{label:'现在处理',hint:'支出 ¥100，技术债 −3',cash:-100,debt:-3},{label:'锁定现有版本',hint:'技术债 +2，当前完成度不变',debt:2}]},
-    {id:'tired',tag:'团队状态',title:'大家需要喘口气',text:'士气影响全部岗位的产出。赶进度之前，先看一眼团队状态。',condition:s=>s.morale<65,choices:[{label:'充分休息',hint:'士气 +15，下周全体效率 −10%',morale:15,effect:{all:.9,weeks:1,name:'休整'}},{label:'再坚持一下',hint:'士气 −5，问题 +2',morale:-5,bugs:2}]},
-    {id:'debt',tag:'架构提醒',title:'旧代码开始牵一发动全身',text:'偿还技术债能改善程序效率、维护费与完善度，不会凭空补满开发工作。',condition:s=>s.debt>8,choices:[{label:'整理架构',hint:'支出 ¥180，技术债 −7',cash:-180,debt:-7},{label:'标记风险',hint:'问题 +3',bugs:3}]},
-    {id:'monetization',tag:'广告变现',title:'激励广告应该放在哪里？',text:'广告变现属于商业化，和花钱吸引新用户的买量是两项不同的工作。',condition:s=>s.people.ads>0||progress(s,'ads')>0,choices:[{label:'细化广告体验',hint:'广告变现软上限 +15%',caps:{ads:.15}},{label:'打磨展示方案',hint:'支出 ¥100，商业化潜力 +3',cash:-100,bonus:{commerce:3}}]},
-    {id:'pricing',tag:'用户付费',title:'试玩者问：这份内容值得付费吗？',text:'团队看到了优化付费体验的空间，具体成果仍需推进用户付费工作。',condition:s=>s.people.payment>0||progress(s,'payment')>0,choices:[{label:'完善付费方案',hint:'用户付费软上限 +15%',caps:{payment:.15}},{label:'做一次付费体验研究',hint:'支出 ¥120，商业化潜力 +4',cash:-120,bonus:{commerce:4}}]},
-    {id:'ip_plan',tag:'IP衍生',title:'角色表情包收到了合作询问',text:'衍生合作可以成为商业化的一部分，也可以先换取一笔实际预算。',min:.15,choices:[{label:'准备长期衍生方案',hint:'IP衍生软上限 +15%',caps:{ip:.15}},{label:'承接一次小型授权',hint:'生涯资金 +¥180，记入本作其他收入',cash:180}]},
-    {id:'ad_plan',tag:'买量准备',title:'投放计划里还缺一笔预算',text:'买量已有人负责或由发行商托管，但预算为 ¥0：本周没有投放支出，也没有买量产出。解锁上限后，下周仍需设置预算。',condition:s=>(s.publisher||s.people.acquisition>0)&&s.adBudget===0,choices:[{label:'完善下一轮投放方案',hint:'买量软上限 +15%；不补发进度、不自动扣费',caps:{acquisition:.15}},{label:'先稳住团队状态',hint:'士气 +4；买量预算保持 ¥0',morale:4}]},
-    {id:'store_page',tag:'上架资料',title:'商店页素材与授权目录对齐了',text:'上架没有软上限，资料和审核都必须真正做到 100%；此次只为后续工作提供条件。',condition:s=>s.publisher||s.people.materials>0||s.people.review>0,choices:[{label:'组织提交资料演练',hint:'支出 ¥100，下周发行能力相关岗位效率 +25%',cash:-100,effect:{job:'ops',mult:1.25,weeks:1,name:'资料演练'}},{label:'记录审核注意事项',hint:'士气 +4，当前完成度不变',morale:4}]},
-    {id:'scale_review',tag:'规模复盘',title:'大作品需要分阶段啃下来',text:'规模同时放大工作需求与自然收入倍率，不会让同能力成员每周产出更多工作点。',condition:s=>s.scale!=='micro',choices:[{label:'梳理协作节点',hint:'系统协作软上限 +15%，下周全体效率 +10%',caps:{systems:.15},effect:{all:1.1,weeks:1,name:'分阶段协作'}},{label:'守住团队节奏',hint:'士气 +6',morale:6}]},
-    {id:'market_rival',tag:'市场风向',title:'同类作品突然占据了讨论区',text:'市场自然收入会随机乘 0.10～10.00 倍。品质有用，但无法保证热销，也不能从今天的讨论预测最终系数。',min:.3,choices:[{label:'重看作品定位',hint:'支出 ¥120，题材软上限 +15%，内容潜力 +2',cash:-120,caps:{theme:.15},bonus:{content:2}},{label:'继续打磨自己的作品',hint:'士气 +6；市场结果仍在发售时确定',morale:6}]},
-    {id:'market_watch',tag:'宣传认知',title:'榜单一夜换了风向',text:'宣传可以揭示作品评级，却不能消除市场随机。团队决定把反馈用在哪里。',condition:s=>s.publisher||s.people.publicity>0||progress(s,'publicity')>0,choices:[{label:'整理传播反馈',hint:'宣传软上限 +15%',caps:{publicity:.15}},{label:'补充测试清单',hint:'测试软上限 +15%，问题 −2',caps:{qa:.15},bugs:-2}]},
-    {id:'cash_review',tag:'资金复盘',title:'先算清楚，还能开发几周',text:'所有项目共用生涯余额；结束全部未完成项目后可领取创业补助，补助不算作品盈利。买量回款扣除投放投入后，才是买量净回款。',condition:s=>s.money<5440,choices:[{label:'精简短期维护安排',hint:'未来 2 周维护费 −25%，工资与买量预算不变',effect:{job:'overhead',mult:.75,weeks:2,name:'维护节流'}},{label:'研究商业化短板',hint:'商业化三项软上限各 +15%',caps:{commerce:.15}}]},
-    {id:'team_exchange',tag:'全局团队',title:'伙伴想交流一下各自的工作方法',text:'伙伴与主角能力会带入后续项目；每个人本周仍只能负责一个岗位。',condition:s=>s.team.length>2||availableRecruits(s).length>0,choices:[{label:'组织岗位分享',hint:'下周全体效率 +12%',effect:{all:1.12,weeks:1,name:'岗位分享'}},{label:'安排团队交流',hint:'士气 +7',morale:7}]}
+    {"id":"inspiration","tag":"玩法突破","title":"天才程序员画出了新的核心循环","text":"玩法有了更高的完成空间，但好点子仍要排进工作表。","choices":[{"label":"拓展玩法表达","hint":"玩法软上限 +15%，当前完成度不变","caps":{"gameplay":0.15}},{"label":"记进下一作","hint":"士气 +4；本作进度保持","morale":4}],"scene":"inspiration"},
+    {"id":"palette","tag":"内容表达","title":"子主题终于有了自己的气质","text":"画面、氛围与题材接上了。下一步是继续打磨，还是让团队缓口气？","choices":[{"label":"拓展视觉细节","hint":"子主题软上限 +15%，仍需安排工作","caps":{"subtheme":0.15}},{"label":"先照顾团队状态","hint":"士气 +5","morale":5}],"scene":"palette"},
+    {"id":"discount","tag":"开发成本","title":"工具订阅返还了一笔差价","text":"省下的资金进入全局生涯余额，可以继续支持当前作品或下一作。","choices":[{"label":"收下这份幸运","hint":"生涯资金 +¥120，记入本作其他收入","cash":120}],"scene":"discount"},
+    {"id":"feedback","tag":"玩家反馈","title":"试玩长评指出了两个突破口","text":"反馈可以帮助准备更好的宣传与测试方案；评级认知仍需通过宣传工作逐步揭示。","choices":[{"label":"整理玩家调研","hint":"宣传软上限 +15%；不会直接揭示评级","caps":{"publicity":0.15}},{"label":"整理复现步骤","hint":"测试软上限 +15%，下周测试效率 +15%","caps":{"qa":0.15},"effect":{"job":"test","mult":1.15,"weeks":1,"name":"清晰测试步骤"}}],"scene":"feedback"},
+    {"id":"coffee","tag":"团队节奏","title":"今天的咖啡刚刚好","text":"本周工作已经结算。决定下一周的效率与状态，不改写刚完成的进度。","choices":[{"label":"保持节奏","hint":"士气 +5","morale":5},{"label":"集中突破","hint":"下周全体效率 +15%，士气 −6","morale":-6,"effect":{"all":1.15,"weeks":1,"name":"集中突破"}}],"scene":"coffee"},
+    {"id":"break","tag":"工作室日常","title":"不如今晚早点回家","text":"伙伴会陪你跨作品继续开发，当前项目的疲劳也值得照顾。","choices":[{"label":"一起吃饭","hint":"生涯资金 −¥100，士气 +14","cash":-100,"morale":14},{"label":"散步也挺好","hint":"士气 +5","morale":5}],"scene":"break"},
+    {"id":"backup","tag":"程序维护","title":"构建机发出了奇怪的声音","text":"代码备份还在，已有完成度保留；设备选择会影响下周程序岗位的效率。","choices":[{"label":"更换设备","hint":"支出 ¥180，下周程序效率 +15%","cash":-180,"effect":{"job":"code","mult":1.15,"weeks":1,"name":"新构建机"}},{"label":"启用备用机","hint":"下周程序效率 −15%，当前完成度不变","effect":{"job":"code","mult":0.85,"weeks":1,"name":"备用构建机"}}],"scene":"backup"},
+    {"id":"scope","tag":"内容打磨","title":"这个点子，要在本作继续探索吗？","text":"讨论为内容打开了更多打磨空间，实现仍需人手与预算。","choices":[{"label":"先记进下一作","hint":"士气 +3","morale":3},{"label":"探索新的表达","hint":"支出 ¥100，内容三项软上限各 +15%，下周策划效率 +15%","cash":-100,"caps":{"content":0.15},"effect":{"job":"design","mult":1.15,"weeks":1,"name":"新表达方案"}}],"scene":"scope"},
+    {"id":"showcase","tag":"宣发机会","title":"独立游戏展开放了试玩席位","text":"参展能拓宽宣传准备的空间；实际评级认知仍由宣传完成度决定，市场波动无法提前确定。","min":0.3,"choices":[{"label":"带试玩版参展","hint":"支出 ¥200，宣传软上限 +30%","cash":-200,"caps":{"publicity":0.3}},{"label":"专注当前开发","hint":"下周全体效率 +10%","effect":{"all":1.1,"weeks":1,"name":"专注开发"}}],"scene":"showcase"},
+    {"id":"bug","tag":"测试发现","title":"复现清单补全了一页","text":"测试笔记多了几条清晰的验收步骤，团队讨论下一周怎么安排。","choices":[{"label":"整理成测试脚本","hint":"支出 ¥120，下周测试效率 +25%","cash":-120,"effect":{"job":"test","mult":1.25,"weeks":1,"name":"测试脚本"}},{"label":"照现有节奏继续","hint":"士气 +3","morale":3}],"condition":s=>s.people.qa>0||progress(s,'qa')>0,"scene":"bug"},
+    {"id":"forms","tag":"上架准备","title":"渠道明确了资质与素材清单","text":"授权材料、商店资料和审核提交有了清晰安排。资料到 100% 后才能推进审核，两项都要完成。","choices":[{"label":"更新发行工作清单","hint":"下周发行能力相关岗位效率 +20%；上架无软上限","effect":{"job":"ops","mult":1.2,"weeks":1,"name":"清晰发行清单"}}],"scene":"forms"},
+    {"id":"compat","tag":"系统协作","title":"工具接口的兼容方案需要确认","text":"技术债会拖慢程序岗位并增加维护成本，系统协作也能持续偿债。","choices":[{"label":"现在处理","hint":"支出 ¥100，技术债 −3","cash":-100,"debt":-3},{"label":"锁定现有版本","hint":"技术债 +2，当前完成度不变","debt":2}],"scene":"compat"},
+    {"id":"tired","tag":"团队状态","title":"大家需要喘口气","text":"士气影响全部岗位的产出。赶进度之前，先看一眼团队状态。","choices":[{"label":"充分休息","hint":"士气 +15，下周全体效率 −10%","morale":15,"effect":{"all":0.9,"weeks":1,"name":"休整"}},{"label":"再坚持一下","hint":"士气 −5，下周全体效率 +10%","morale":-5,"effect":{"all":1.1,"weeks":1,"name":"再坚持一周"}}],"condition":s=>s.morale<65,"scene":"tired"},
+    {"id":"debt","tag":"架构提醒","title":"旧代码开始牵一发动全身","text":"偿还技术债能改善程序效率、维护费与完善度，不会凭空补满开发工作。","choices":[{"label":"整理架构","hint":"支出 ¥180，技术债 −7","cash":-180,"debt":-7},{"label":"先整理标记","hint":"技术债 −2","debt":-2}],"condition":s=>s.debt>8,"scene":"debt"},
+    {"id":"monetization","tag":"广告变现","title":"激励广告应该放在哪里？","text":"广告变现属于商业化，和花钱吸引新用户的买量是两项不同的工作。","choices":[{"label":"细化广告体验","hint":"广告变现软上限 +15%","caps":{"ads":0.15}},{"label":"打磨展示方案","hint":"支出 ¥100，下周发行能力相关岗位效率 +20%","cash":-100,"effect":{"job":"ops","mult":1.2,"weeks":1,"name":"广告展示方案"}}],"condition":s=>s.people.ads>0||progress(s,'ads')>0,"scene":"monetization"},
+    {"id":"pricing","tag":"用户付费","title":"试玩者问：这份内容值得付费吗？","text":"团队看到了优化付费体验的空间，具体成果仍需推进用户付费工作。","choices":[{"label":"完善付费方案","hint":"用户付费软上限 +15%","caps":{"payment":0.15}},{"label":"做一次付费体验研究","hint":"支出 ¥120，下周策划效率 +20%","cash":-120,"effect":{"job":"design","mult":1.2,"weeks":1,"name":"付费体验研究"}}],"condition":s=>s.people.payment>0||progress(s,'payment')>0,"scene":"pricing"},
+    {"id":"ip_plan","tag":"IP衍生","title":"角色表情包收到了合作询问","text":"衍生合作可以成为商业化的一部分，也可以先换取一笔实际预算。","min":0.15,"choices":[{"label":"准备长期衍生方案","hint":"IP衍生软上限 +15%","caps":{"ip":0.15}},{"label":"承接一次小型授权","hint":"生涯资金 +¥180，记入本作其他收入","cash":180}],"scene":"ip_plan"},
+    {"id":"ad_plan","tag":"买量准备","title":"投放计划里还缺一笔预算","text":"买量已有人负责或由发行商托管，但预算为 ¥0：本周没有投放支出，也没有买量产出。解锁上限后，下周仍需设置预算。","choices":[{"label":"完善下一轮投放方案","hint":"买量软上限 +15%；不补发进度、不自动扣费","caps":{"acquisition":0.15}},{"label":"先稳住团队状态","hint":"士气 +4；买量预算保持 ¥0","morale":4}],"condition":s=>(s.publisher||s.people.acquisition>0)&&s.adBudget===0,"scene":"ad_plan"},
+    {"id":"store_page","tag":"上架资料","title":"商店页素材与授权目录对齐了","text":"上架没有软上限，资料和审核都必须真正做到 100%；此次只为后续工作提供条件。","choices":[{"label":"组织提交资料演练","hint":"支出 ¥100，下周发行能力相关岗位效率 +25%","cash":-100,"effect":{"job":"ops","mult":1.25,"weeks":1,"name":"资料演练"}},{"label":"记录审核注意事项","hint":"士气 +4，当前完成度不变","morale":4}],"condition":s=>s.publisher||s.people.materials>0||s.people.review>0,"scene":"store_page"},
+    {"id":"scale_review","tag":"规模复盘","title":"大作品需要分阶段啃下来","text":"规模同时放大工作需求与自然收入倍率，不会让同能力成员每周产出更多工作点。","choices":[{"label":"梳理协作节点","hint":"系统协作软上限 +15%，下周全体效率 +10%","caps":{"systems":0.15},"effect":{"all":1.1,"weeks":1,"name":"分阶段协作"}},{"label":"守住团队节奏","hint":"士气 +6","morale":6}],"condition":s=>s.scale!=='micro',"scene":"scale_review"},
+    {"id":"market_rival","tag":"市场风向","title":"同类作品突然占据了讨论区","text":"市场自然收入会随机乘 0.10～10.00 倍。品质有用，但无法保证热销，也不能从今天的讨论预测最终系数。","min":0.3,"choices":[{"label":"重看作品定位","hint":"支出 ¥120，题材软上限 +15%，下周策划效率 +10%","cash":-120,"caps":{"theme":0.15},"effect":{"job":"design","mult":1.1,"weeks":1,"name":"定位复盘"}},{"label":"继续打磨自己的作品","hint":"士气 +6；市场结果仍在发售时确定","morale":6}],"scene":"market_rival"},
+    {"id":"market_watch","tag":"宣传认知","title":"榜单一夜换了风向","text":"宣传可以揭示作品评级，却不能消除市场随机。团队决定把反馈用在哪里。","choices":[{"label":"整理传播反馈","hint":"宣传软上限 +15%","caps":{"publicity":0.15}},{"label":"补充测试清单","hint":"测试软上限 +15%，下周测试效率 +10%","caps":{"qa":0.15},"effect":{"job":"test","mult":1.1,"weeks":1,"name":"补充测试清单"}}],"condition":s=>s.publisher||s.people.publicity>0||progress(s,'publicity')>0,"scene":"market_watch"},
+    {"id":"cash_review","tag":"资金复盘","title":"先算清楚，还能开发几周","text":"所有项目共用生涯余额；结束全部未完成项目后可领取创业补助，补助不算作品盈利。买量回款扣除投放投入后，才是买量净回款。","choices":[{"label":"精简短期维护安排","hint":"未来 2 周维护费 −25%，工资与买量预算不变","effect":{"job":"overhead","mult":0.75,"weeks":2,"name":"维护节流"}},{"label":"研究商业化短板","hint":"商业化三项软上限各 +15%","caps":{"commerce":0.15}}],"condition":s=>s.money<5440,"scene":"cash_review"},
+    {"id":"team_exchange","tag":"全局团队","title":"伙伴想交流一下各自的工作方法","text":"伙伴与主角能力会带入后续项目；每个人本周仍只能负责一个岗位。","choices":[{"label":"组织岗位分享","hint":"下周全体效率 +12%","effect":{"all":1.12,"weeks":1,"name":"岗位分享"}},{"label":"安排团队交流","hint":"士气 +7","morale":7}],"condition":s=>s.team.length>2||availableRecruits(s).length>0,"scene":"team_exchange"},
+    {"id":"daily_cat","kind":"ambient","tag":"工作室日常","title":"窗外有一只猫","text":"一只猫坐在窗台上，似乎在监督这个工作室。","choices":[{"label":"隔着玻璃挥挥手"},{"label":"给它起个名字"},{"label":"继续看屏幕"}],"scene":"daily_cat"},
+    {"id":"daily_lunch","kind":"ambient","tag":"工作室日常","title":"午饭投票又平局了","text":"菜单在群里传了三轮，大家依旧没有达成共识。","choices":[{"label":"投面条一票"},{"label":"投米饭一票"},{"label":"让硬币决定"}],"scene":"daily_lunch"},
+    {"id":"daily_branch","kind":"ambient","tag":"工作室日常","title":"这个分支该叫什么","text":"天才程序员说，这次取一个平平无奇的名字就好。","choices":[{"label":"叫做 next"},{"label":"叫做 next_final"},{"label":"叫做 next_final_really"}],"scene":"daily_branch"},
+    {"id":"daily_plant","kind":"ambient","tag":"工作室日常","title":"桌上的绿植朝左歪了","text":"大家围着花盆研究了片刻，谁也没说出个所以然。","choices":[{"label":"把花盆转半圈"},{"label":"给它画个小箭头"},{"label":"赞同它的选择"}],"scene":"daily_plant"},
+    {"id":"daily_cable","kind":"ambient","tag":"工作室日常","title":"那根线到底属于谁","text":"抽屉里多出一根没有标签的线，接口看起来很有年代感。","choices":[{"label":"放回原处"},{"label":"贴上「未知」标签"},{"label":"摆进线材收藏盒"}],"scene":"daily_cable"},
+    {"id":"daily_cursor","kind":"ambient","tag":"工作室日常","title":"光标停在一个句号后面","text":"办公室很安静，只有键盘灯在缓缓变色。","choices":[{"label":"看它变成蓝色"},{"label":"看它变成紫色"},{"label":"把视线移开"}],"scene":"daily_cursor"},
+    {"id":"daily_rain","kind":"ambient","tag":"工作室日常","title":"雨滴在窗上排队","text":"有人问：如果把雨声放进片尾，会不会很合适？","choices":[{"label":"说像白噪音"},{"label":"说像篝火声"},{"label":"点头听一会儿"}],"scene":"daily_rain"},
+    {"id":"daily_elevator","kind":"ambient","tag":"工作室日常","title":"电梯里遇见邻居工作室","text":"对方抱着一箱马克杯，你们交换了一个熟悉的眼神。","choices":[{"label":"微笑点头"},{"label":"聊一句天气"},{"label":"扶住电梯门"}],"scene":"daily_elevator"},
+    {"id":"hidden_folder","kind":"hidden","tag":"工作室日常","title":"旧文件夹里有什么","text":"清理桌面时，一个名字模糊的文件夹引起了注意。","choices":[{"label":"打开看看","resultText":"里面是曾经搁置的世界观草稿，题材有了新的打磨空间。","caps":{"theme":0.15}},{"label":"先归档","resultText":"归档时翻到了工具订单的返现凭证。","cash":90}],"scene":"hidden_folder"},
+    {"id":"hidden_note","kind":"hidden","tag":"工作室日常","title":"显示器边的一张便签","text":"便签上只有一个箭头，指向屏幕角落。","choices":[{"label":"顺着箭头找找","resultText":"箭头指向一份旧验收笔记，测试有了更充分的准备。","caps":{"qa":0.15}},{"label":"把便签翻过来","resultText":"背面画着团队全员的简笔头像。","morale":4}],"scene":"hidden_note"},
+    {"id":"hidden_mail","kind":"hidden","tag":"工作室日常","title":"收到一封没有标题的邮件","text":"发件人的头像看起来有些熟悉。","choices":[{"label":"回复一句问候","resultText":"以前的合作方补结了一笔尾款。","cash":150},{"label":"转给天才程序员","resultText":"邮件附件里的旧接口被临时接入，留下了一点维护负担。","debt":2}],"scene":"hidden_mail"},
+    {"id":"hidden_build","kind":"hidden","tag":"工作室日常","title":"构建结束时响了一声","text":"屏幕上的窗口被另一张便签挡住了。","choices":[{"label":"移开便签","resultText":"发现了可以复用的编译缓存，下一周程序工作更快。","effect":{"job":"code","mult":1.18,"weeks":1,"name":"编译缓存"}},{"label":"先去倒杯水","resultText":"构建需要重跑，团队下一周要花些时间重新整理流程。","effect":{"all":0.9,"weeks":1,"name":"重新整理流程"}}],"scene":"hidden_build"},
+    {"id":"hidden_ticket","kind":"hidden","tag":"工作室日常","title":"抽屉里的一张小票","text":"纸张已经有些褪色，上面还有一个手绘的笑脸。","choices":[{"label":"拿给大家看看","resultText":"这是工作室第一次聚餐的小票，大家聊起了当时的糗事。","morale":8},{"label":"夹进笔记本","resultText":"意外翻到了还没兑现的休假计划，大家有点失落。","morale":-4}],"scene":"hidden_ticket"},
+    {"id":"hidden_message","kind":"hidden","tag":"工作室日常","title":"群聊里多了一条语音","text":"消息不长，背景里有一点风声。","choices":[{"label":"戴耳机听","resultText":"老朋友分享了一种有趣的玩法思路。","caps":{"gameplay":0.15}},{"label":"外放给大家听","resultText":"讨论绕了个大圈，下一周发行事务的衔接会慢一点。","effect":{"job":"ops","mult":0.9,"weeks":1,"name":"讨论后的整理"}}],"scene":"hidden_message"},
+    {"id":"hidden_drawer","kind":"hidden","tag":"工作室日常","title":"要整理哪个抽屉","text":"工位旁的两个抽屉都贴着同样的标签。","choices":[{"label":"上面的抽屉","resultText":"找到一张仍可兑换的小额工具券，已经折抵入账。","cash":80},{"label":"下面的抽屉","resultText":"找到尚未过期的维护套餐，未来两周可以节省一点开销。","effect":{"job":"overhead","mult":0.9,"weeks":2,"name":"旧维护套餐"}}],"scene":"hidden_drawer"},
+    {"id":"hidden_dream","kind":"hidden","tag":"工作室日常","title":"早上想起了一个梦","text":"梦里的游戏画面很清晰，但醒来后只剩两个片段。","choices":[{"label":"记下那片风景","resultText":"风景给子主题提供了新的表达空间。","caps":{"subtheme":0.15}},{"label":"记下那段对白","resultText":"对白整理成了一份参考，下一周的策划表达更顺畅。","effect":{"job":"design","mult":1.12,"weeks":1,"name":"梦中的对白"}}],"scene":"hidden_dream"},
+    {"id":"publisher_position","kind":"publisher","tag":"发行商建议","title":"发行商安排了一次定位讨论","text":"发行商代表：你们的题材表达还有值得拓展的空间，也可以先把现有方向整理到位。","choices":[{"label":"拓展内容表达","hint":"内容三项软上限各 +15%，最高 100%","caps":{"content":0.15}},{"label":"一起梳理题材","hint":"题材完成度 +8%，受当前上限限制","progress":{"theme":0.08}}],"condition":s=>!!s.publisher,"scene":"publisher_position"},
+    {"id":"publisher_playtest","kind":"publisher","tag":"发行商建议","title":"发行商带来了试玩记录","text":"发行商代表：我们整理了玩家卡住的地方，可以协助打磨，也可以探索玩法的下一步。","choices":[{"label":"协作打磨玩法","hint":"玩法完成度 +8%，受当前上限限制","progress":{"gameplay":0.08}},{"label":"研究新玩法空间","hint":"玩法软上限 +15%，最高 100%","caps":{"gameplay":0.15}}],"condition":s=>!!s.publisher,"scene":"publisher_playtest"},
+    {"id":"publisher_tech","kind":"publisher","tag":"发行商建议","title":"发行商请来了技术顾问","text":"发行商代表：顾问看过现有构架，愿意协助整理实现或系统接口。","choices":[{"label":"协助推进实现","hint":"开发进度完成度 +8%，受软上限和内容依赖限制","progress":{"development":0.08}},{"label":"梳理系统接口","hint":"系统协作完成度 +8%，受软上限和开发依赖限制","progress":{"systems":0.08}},{"label":"拓展程序打磨空间","hint":"程序三项软上限各 +15%，最高 100%","caps":{"framework":0.15}}],"condition":s=>!!s.publisher,"scene":"publisher_tech"},
+    {"id":"publisher_quality","kind":"publisher","tag":"发行商建议","title":"发行商组织了验收交流","text":"发行商代表：现有实现可以交给验收人员协助测试，也可以先完善后续测试方案。","choices":[{"label":"联合测试现有版本","hint":"测试完成度 +10%，受软上限和上游依赖限制","progress":{"qa":0.1}},{"label":"补充测试方案","hint":"测试软上限 +15%，最高 100%","caps":{"qa":0.15}}],"condition":s=>!!s.publisher,"scene":"publisher_quality"},
+    {"id":"publisher_commerce","kind":"publisher","tag":"发行商建议","title":"发行商提供了商业化建议","text":"发行商代表：我们可以协作改善付费体验，或为商业化预留更多打磨空间。","choices":[{"label":"协作打磨付费体验","hint":"用户付费完成度 +10%，受当前上限限制","progress":{"payment":0.1}},{"label":"拓展商业化方案","hint":"商业化三项软上限各 +15%，最高 100%","caps":{"commerce":0.15}}],"condition":s=>!!s.publisher,"scene":"publisher_commerce"},
+    {"id":"publisher_ads","kind":"publisher","tag":"发行商建议","title":"发行商分享了广告体验建议","text":"发行商代表：广告变现属于你们的商业化设计；我们可以协助打磨激励位置和展示节奏。","choices":[{"label":"协作改善广告体验","hint":"广告变现完成度 +10%，受当前上限限制；不影响买量预算","progress":{"ads":0.1}},{"label":"拓展广告设计空间","hint":"广告变现软上限 +15%，最高 100%","caps":{"ads":0.15}}],"condition":s=>!!s.publisher,"scene":"publisher_ads"},
+    {"id":"publisher_ip","kind":"publisher","tag":"发行商建议","title":"发行商提出了衍生内容建议","text":"发行商代表：角色与世界观很有辨识度，可以一起梳理衍生内容的制作方向。","choices":[{"label":"协作完善衍生内容","hint":"IP衍生完成度 +10%，受当前上限限制","progress":{"ip":0.1}},{"label":"拓展衍生内容空间","hint":"IP衍生软上限 +15%，最高 100%","caps":{"ip":0.15}}],"condition":s=>!!s.publisher,"scene":"publisher_ip"},
+    {"id":"publisher_art","kind":"publisher","tag":"发行商建议","title":"发行商提出了视觉建议","text":"发行商代表：我们从商店展示的角度整理了一批参考，希望能帮助作品更有辨识度。","choices":[{"label":"协作完善子主题","hint":"子主题完成度 +8%，受当前上限限制","progress":{"subtheme":0.08}},{"label":"拓展视觉表现空间","hint":"子主题软上限 +15%，最高 100%","caps":{"subtheme":0.15}}],"condition":s=>!!s.publisher,"scene":"publisher_art"},
+    {"id":"hidden_daily_cat","scene":"daily_cat","kind":"hidden","tag":"工作室日常","title":"窗外有一只猫","text":"一只猫坐在窗台上，似乎在监督这个工作室。","choices":[{"label":"隔着玻璃挥挥手","morale":4,"resultText":"猫在玻璃上留下一个爪印，大家看着笑了起来。"},{"label":"给它起个名字","caps":{"subtheme":0.1},"resultText":"随口起的名字启发了一个新的角色细节。"},{"label":"继续看屏幕","resultText":"猫坐了一会儿就走了，办公室恢复安静。"}]},
+    {"id":"hidden_daily_lunch","scene":"daily_lunch","kind":"hidden","tag":"工作室日常","title":"午饭投票又平局了","text":"菜单在群里传了三轮，大家依旧没有达成共识。","choices":[{"label":"投面条一票","morale":6,"resultText":"午饭合了大家的口味，气氛轻松了一些。"},{"label":"投米饭一票","cash":100,"resultText":"店家核对订单时退回了上次多收的餐费。"},{"label":"让硬币决定","effect":{"all":0.9,"weeks":1,"name":"午间讨论的尾巴"},"resultText":"投票讨论延伸成了一场长会，下一周需要重新衔接工作。"}]},
+    {"id":"hidden_daily_branch","scene":"daily_branch","kind":"hidden","tag":"工作室日常","title":"这个分支该叫什么","text":"天才程序员说，这次取一个平平无奇的名字就好。","choices":[{"label":"叫做 next","effect":{"job":"code","mult":1.12,"weeks":1,"name":"分支整理"},"resultText":"简短的名字顺便促成了一次分支整理。"},{"label":"叫做 next_final","effect":{"job":"code","mult":0.9,"weeks":1,"name":"分支重命名"},"resultText":"几个相近的分支混在了一起，下一周要重新核对。"},{"label":"叫做 next_final_really","morale":3,"resultText":"名字成了今天办公室的新梗。"}]},
+    {"id":"hidden_daily_plant","scene":"daily_plant","kind":"hidden","tag":"工作室日常","title":"桌上的绿植朝左歪了","text":"大家围着花盆研究了片刻，谁也没说出个所以然。","choices":[{"label":"把花盆转半圈","caps":{"theme":0.1},"resultText":"换个方向看盆栽，突然想到了新的题材表达。"},{"label":"给它画个小箭头","morale":3,"resultText":"小箭头引来了大家的一轮涂鸦。"},{"label":"赞同它的选择","resultText":"花盆依旧朝着原来的方向。"}]},
+    {"id":"hidden_daily_cable","scene":"daily_cable","kind":"hidden","tag":"工作室日常","title":"那根线到底属于谁","text":"抽屉里多出一根没有标签的线，接口看起来很有年代感。","choices":[{"label":"放回原处","cash":80,"resultText":"收纳时找到一张尚未结清的工具退款单。"},{"label":"贴上「未知」标签","effect":{"job":"overhead","mult":0.9,"weeks":2,"name":"线材整理"},"resultText":"标签促成了一次设备整理，接下来两周维护开销略低。"},{"label":"摆进线材收藏盒","effect":{"job":"code","mult":1.1,"weeks":1,"name":"备用连接线"},"resultText":"收藏盒里的转接头刚好能改善构建机的连接。"}]},
+    {"id":"hidden_daily_cursor","scene":"daily_cursor","kind":"hidden","tag":"工作室日常","title":"光标停在一个句号后面","text":"办公室很安静，只有键盘灯在缓缓变色。","choices":[{"label":"看它变成蓝色","effect":{"job":"design","mult":1.12,"weeks":1,"name":"蓝色便签"},"resultText":"发呆时理清了一份策划草稿。"},{"label":"看它变成紫色","effect":{"job":"test","mult":1.12,"weeks":1,"name":"紫色便签"},"resultText":"视线落在验收笔记上，几条步骤接了起来。"},{"label":"把视线移开","morale":-3,"resultText":"盯屏幕太久有些疲惫，大家决定少聊几句。"}]},
+    {"id":"hidden_daily_rain","scene":"daily_rain","kind":"hidden","tag":"工作室日常","title":"雨滴在窗上排队","text":"有人问：如果把雨声放进片尾，会不会很合适？","choices":[{"label":"说像白噪音","effect":{"job":"art","mult":1.12,"weeks":1,"name":"雨声参考"},"resultText":"雨声成了下一周制作画面和氛围的参考。"},{"label":"说像篝火声","caps":{"subtheme":0.1},"resultText":"联想让子主题有了新的打磨方向。"},{"label":"点头听一会儿","morale":5,"resultText":"安静听雨的片刻让大家放松了一点。"}]},
+    {"id":"hidden_daily_elevator","scene":"daily_elevator","kind":"hidden","tag":"工作室日常","title":"电梯里遇见邻居工作室","text":"对方抱着一箱马克杯，你们交换了一个熟悉的眼神。","choices":[{"label":"微笑点头","cash":120,"resultText":"邻居想起上次借用设备的费用，转来了补款。"},{"label":"聊一句天气","caps":{"payment":0.1},"resultText":"闲聊意外谈到了付费内容的新组织方式。"},{"label":"扶住电梯门","resultText":"电梯到了，各自回去继续工作。"}]},
+    {"id":"daily_hidden_folder","scene":"hidden_folder","kind":"ambient","tag":"工作室日常","title":"旧文件夹里有什么","text":"清理桌面时，一个名字模糊的文件夹引起了注意。","choices":[{"label":"打开看看"},{"label":"先归档"}]},
+    {"id":"daily_hidden_note","scene":"hidden_note","kind":"ambient","tag":"工作室日常","title":"显示器边的一张便签","text":"便签上只有一个箭头，指向屏幕角落。","choices":[{"label":"顺着箭头找找"},{"label":"把便签翻过来"}]},
+    {"id":"daily_hidden_mail","scene":"hidden_mail","kind":"ambient","tag":"工作室日常","title":"收到一封没有标题的邮件","text":"发件人的头像看起来有些熟悉。","choices":[{"label":"回复一句问候"},{"label":"转给天才程序员"}]},
+    {"id":"daily_hidden_build","scene":"hidden_build","kind":"ambient","tag":"工作室日常","title":"构建结束时响了一声","text":"屏幕上的窗口被另一张便签挡住了。","choices":[{"label":"移开便签"},{"label":"先去倒杯水"}]},
+    {"id":"daily_hidden_ticket","scene":"hidden_ticket","kind":"ambient","tag":"工作室日常","title":"抽屉里的一张小票","text":"纸张已经有些褪色，上面还有一个手绘的笑脸。","choices":[{"label":"拿给大家看看"},{"label":"夹进笔记本"}]},
+    {"id":"daily_hidden_message","scene":"hidden_message","kind":"ambient","tag":"工作室日常","title":"群聊里多了一条语音","text":"消息不长，背景里有一点风声。","choices":[{"label":"戴耳机听"},{"label":"外放给大家听"}]},
+    {"id":"daily_hidden_drawer","scene":"hidden_drawer","kind":"ambient","tag":"工作室日常","title":"要整理哪个抽屉","text":"工位旁的两个抽屉都贴着同样的标签。","choices":[{"label":"上面的抽屉"},{"label":"下面的抽屉"}]},
+    {"id":"daily_hidden_dream","scene":"hidden_dream","kind":"ambient","tag":"工作室日常","title":"早上想起了一个梦","text":"梦里的游戏画面很清晰，但醒来后只剩两个片段。","choices":[{"label":"记下那片风景"},{"label":"记下那段对白"}]},
+    {"id":"daily_kettle","kind":"ambient","scene":"scene_kettle","tag":"工作室日常","title":"水壶响了第三次","text":"茶水间里有人探出头，问这一壶要泡点什么。","choices":[{"label":"拿出茶叶"},{"label":"找找咖啡"},{"label":"先喝白水"}]},
+    {"id":"hidden_kettle","kind":"hidden","scene":"scene_kettle","tag":"工作室日常","title":"水壶响了第三次","text":"茶水间里有人探出头，问这一壶要泡点什么。","choices":[{"label":"拿出茶叶","morale":5,"resultText":"热茶让大家的聊天轻松起来。"},{"label":"找找咖啡","effect":{"all":1.1,"weeks":1,"name":"茶水间的新安排"},"resultText":"冲咖啡时顺便理清了下周的协作顺序。"},{"label":"先喝白水","resultText":"喝完水，大家各自回到工位。"}]},
+    {"id":"shared_kettle","scene":"scene_kettle","tag":"工作室日常","title":"水壶响了第三次","text":"茶水间里有人探出头，问这一壶要泡点什么。","choices":[{"label":"拿出茶叶","hint":"士气 +5","morale":5},{"label":"找找咖啡","hint":"未来 1 周全体效率 +10%","effect":{"all":1.1,"weeks":1,"name":"茶水间的新安排"}},{"label":"先喝白水","hint":"没有额外数值变化"}]},
+    {"id":"daily_whiteboard","kind":"ambient","scene":"scene_whiteboard","tag":"工作室日常","title":"白板还剩一个角落","text":"白板上密密麻麻，最后一个空角落引起了大家的注意。","choices":[{"label":"画个小方框"},{"label":"写一句话"},{"label":"留着空白"}]},
+    {"id":"hidden_whiteboard","kind":"hidden","scene":"scene_whiteboard","tag":"工作室日常","title":"白板还剩一个角落","text":"白板上密密麻麻，最后一个空角落引起了大家的注意。","choices":[{"label":"画个小方框","caps":{"systems":0.1},"resultText":"小方框变成了接口草图，系统协作有了新空间。"},{"label":"写一句话","effect":{"job":"design","mult":1.15,"weeks":1,"name":"白板上的一句话"},"resultText":"一句话帮团队理顺了设计表达。"},{"label":"留着空白","morale":3,"resultText":"大家约定给下一次讨论留一点余地。"}]},
+    {"id":"shared_whiteboard","scene":"scene_whiteboard","tag":"工作室日常","title":"白板还剩一个角落","text":"白板上密密麻麻，最后一个空角落引起了大家的注意。","choices":[{"label":"画个小方框","hint":"系统协作软上限 +10%","caps":{"systems":0.1}},{"label":"写一句话","hint":"未来 1 周策划设计效率 +15%","effect":{"job":"design","mult":1.15,"weeks":1,"name":"白板上的一句话"}},{"label":"留着空白","hint":"士气 +3","morale":3}]},
+    {"id":"daily_notification","kind":"ambient","scene":"scene_notification","tag":"工作室日常","title":"通知栏亮了一下","text":"屏幕角落出现一个提示，几秒后又安静下来。","choices":[{"label":"点开看看"},{"label":"晚点再看"}]},
+    {"id":"hidden_notification","kind":"hidden","scene":"scene_notification","tag":"工作室日常","title":"通知栏亮了一下","text":"屏幕角落出现一个提示，几秒后又安静下来。","choices":[{"label":"点开看看","cash":100,"resultText":"是一笔已到账的工具返现。"},{"label":"晚点再看","effect":{"job":"ops","mult":0.9,"weeks":1,"name":"延后整理通知"},"resultText":"几封联络信堆在一起，下周发行事务需要重新整理。"}]},
+    {"id":"shared_notification","scene":"scene_notification","tag":"工作室日常","title":"通知栏亮了一下","text":"屏幕角落出现一个提示，几秒后又安静下来。","choices":[{"label":"点开看看","hint":"资金 +¥100","cash":100},{"label":"晚点再看","hint":"未来 1 周发行事务效率 -10%","effect":{"job":"ops","mult":0.9,"weeks":1,"name":"延后整理通知"}}]},
+    {"id":"daily_album","kind":"ambient","scene":"scene_album","tag":"工作室日常","title":"相册里多了一张截图","text":"不知道是谁把一张截图传进了工作室共享相册。","choices":[{"label":"放大看看"},{"label":"顺手收藏"}]},
+    {"id":"hidden_album","kind":"hidden","scene":"scene_album","tag":"工作室日常","title":"相册里多了一张截图","text":"不知道是谁把一张截图传进了工作室共享相册。","choices":[{"label":"放大看看","caps":{"subtheme":0.15},"resultText":"截图里的构图启发了新的视觉细节。"},{"label":"顺手收藏","effect":{"job":"art","mult":1.15,"weeks":1,"name":"共享相册参考"},"resultText":"收藏夹里的参考被整理到了一起。"}]},
+    {"id":"shared_album","scene":"scene_album","tag":"工作室日常","title":"相册里多了一张截图","text":"不知道是谁把一张截图传进了工作室共享相册。","choices":[{"label":"放大看看","hint":"子主题软上限 +15%","caps":{"subtheme":0.15}},{"label":"顺手收藏","hint":"未来 1 周美术制作效率 +15%","effect":{"job":"art","mult":1.15,"weeks":1,"name":"共享相册参考"}}]},
+    {"id":"daily_seat","kind":"ambient","scene":"scene_seat","tag":"工作室日常","title":"今天坐哪个位置","text":"阳光照在另一张空椅子上，电源线也刚好够长。","choices":[{"label":"换到窗边"},{"label":"坐回原位"}]},
+    {"id":"hidden_seat","kind":"hidden","scene":"scene_seat","tag":"工作室日常","title":"今天坐哪个位置","text":"阳光照在另一张空椅子上，电源线也刚好够长。","choices":[{"label":"换到窗边","morale":5,"resultText":"换个位置让大家精神了一点。"},{"label":"坐回原位","effect":{"job":"code","mult":1.1,"weeks":1,"name":"熟悉的工位"},"resultText":"熟悉的桌面布局帮助理清了下周的实现安排。"}]},
+    {"id":"shared_seat","scene":"scene_seat","tag":"工作室日常","title":"今天坐哪个位置","text":"阳光照在另一张空椅子上，电源线也刚好够长。","choices":[{"label":"换到窗边","hint":"士气 +5","morale":5},{"label":"坐回原位","hint":"未来 1 周程序开发效率 +10%","effect":{"job":"code","mult":1.1,"weeks":1,"name":"熟悉的工位"}}]},
+    {"id":"daily_parcel","kind":"ambient","scene":"scene_parcel","tag":"工作室日常","title":"前台送来一个纸箱","text":"纸箱上的标签有些模糊，里面传来轻微的碰撞声。","choices":[{"label":"现在拆开"},{"label":"等大家一起拆"}]},
+    {"id":"hidden_parcel","kind":"hidden","scene":"scene_parcel","tag":"工作室日常","title":"前台送来一个纸箱","text":"纸箱上的标签有些模糊，里面传来轻微的碰撞声。","choices":[{"label":"现在拆开","cash":120,"resultText":"供应商附上了此前差价的退款凭证。"},{"label":"等大家一起拆","caps":{"ip":0.1},"resultText":"样品引出了几种衍生内容的制作想法。"}]},
+    {"id":"shared_parcel","scene":"scene_parcel","tag":"工作室日常","title":"前台送来一个纸箱","text":"纸箱上的标签有些模糊，里面传来轻微的碰撞声。","choices":[{"label":"现在拆开","hint":"资金 +¥120","cash":120},{"label":"等大家一起拆","hint":"IP衍生软上限 +10%","caps":{"ip":0.1}}]},
+    {"id":"daily_keyboard","kind":"ambient","scene":"scene_keyboard","tag":"工作室日常","title":"键盘换了一种声音","text":"敲击声和平时有点不同，有人抬头看了看。","choices":[{"label":"听一会儿"},{"label":"换个角度摆放"}]},
+    {"id":"hidden_keyboard","kind":"hidden","scene":"scene_keyboard","tag":"工作室日常","title":"键盘换了一种声音","text":"敲击声和平时有点不同，有人抬头看了看。","choices":[{"label":"听一会儿","effect":{"job":"test","mult":1.15,"weeks":1,"name":"键盘旁的笔记"},"resultText":"看键盘时注意到一份验收记录，测试步骤顺了起来。"},{"label":"换个角度摆放","morale":-4,"resultText":"桌面的线绕在一起，整理得有些烦躁。"}]},
+    {"id":"shared_keyboard","scene":"scene_keyboard","tag":"工作室日常","title":"键盘换了一种声音","text":"敲击声和平时有点不同，有人抬头看了看。","choices":[{"label":"听一会儿","hint":"未来 1 周测试打磨效率 +15%","effect":{"job":"test","mult":1.15,"weeks":1,"name":"键盘旁的笔记"}},{"label":"换个角度摆放","hint":"士气 -4","morale":-4}]},
+    {"id":"daily_invitation","kind":"ambient","scene":"scene_invitation","tag":"工作室日常","title":"日历上多了一条邀请","text":"邀请只有一个简短标题，地点写着楼下的小会议室。","choices":[{"label":"带上笔记本"},{"label":"先问问时间"}]},
+    {"id":"hidden_invitation","kind":"hidden","scene":"scene_invitation","tag":"工作室日常","title":"日历上多了一条邀请","text":"邀请只有一个简短标题，地点写着楼下的小会议室。","choices":[{"label":"带上笔记本","caps":{"payment":0.15},"resultText":"交流带来了新的付费体验方向。"},{"label":"先问问时间","effect":{"all":1.1,"weeks":1,"name":"对齐交流时间"},"resultText":"确认时间时顺手把下周的协作安排对齐了。"}]},
+    {"id":"shared_invitation","scene":"scene_invitation","tag":"工作室日常","title":"日历上多了一条邀请","text":"邀请只有一个简短标题，地点写着楼下的小会议室。","choices":[{"label":"带上笔记本","hint":"用户付费软上限 +15%","caps":{"payment":0.15}},{"label":"先问问时间","hint":"未来 1 周全体效率 +10%","effect":{"all":1.1,"weeks":1,"name":"对齐交流时间"}}]},
+    {"id":"daily_printer","kind":"ambient","scene":"scene_printer","tag":"工作室日常","title":"打印机吐出了一张纸","text":"没人记得刚才按过打印，纸上只有几行字。","choices":[{"label":"拿起来读"},{"label":"放到公共桌上"}]},
+    {"id":"hidden_printer","kind":"hidden","scene":"scene_printer","tag":"工作室日常","title":"打印机吐出了一张纸","text":"没人记得刚才按过打印，纸上只有几行字。","choices":[{"label":"拿起来读","caps":{"qa":0.1},"resultText":"纸上是一份旧验收思路，可以继续扩展测试准备。"},{"label":"放到公共桌上","morale":4,"resultText":"伙伴认出了自己早上写的小笑话。"}]},
+    {"id":"shared_printer","scene":"scene_printer","tag":"工作室日常","title":"打印机吐出了一张纸","text":"没人记得刚才按过打印，纸上只有几行字。","choices":[{"label":"拿起来读","hint":"测试软上限 +10%","caps":{"qa":0.1}},{"label":"放到公共桌上","hint":"士气 +4","morale":4}]},
+    {"id":"daily_usb","kind":"ambient","scene":"scene_usb","tag":"工作室日常","title":"桌上躺着一只旧U盘","text":"外壳有一道划痕，标签上的字已经掉了色。","choices":[{"label":"找个盒子收好"},{"label":"问问是谁的"}]},
+    {"id":"hidden_usb","kind":"hidden","scene":"scene_usb","tag":"工作室日常","title":"桌上躺着一只旧U盘","text":"外壳有一道划痕，标签上的字已经掉了色。","choices":[{"label":"找个盒子收好","debt":-2,"resultText":"盒子里的旧接口文档帮助理清了两处维护关系。"},{"label":"问问是谁的","effect":{"job":"code","mult":1.12,"weeks":1,"name":"旧接口文档"},"resultText":"伙伴翻出了对应的接口参考，下周实现更顺畅。"}]},
+    {"id":"shared_usb","scene":"scene_usb","tag":"工作室日常","title":"桌上躺着一只旧U盘","text":"外壳有一道划痕，标签上的字已经掉了色。","choices":[{"label":"找个盒子收好","hint":"技术债 -2","debt":-2},{"label":"问问是谁的","hint":"未来 1 周程序开发效率 +12%","effect":{"job":"code","mult":1.12,"weeks":1,"name":"旧接口文档"}}]},
+    {"id":"daily_clock","kind":"ambient","scene":"scene_clock","tag":"工作室日常","title":"墙上的钟慢了两分钟","text":"有人举起手机核对时间，另一人说这样好像也不错。","choices":[{"label":"把时间调准"},{"label":"先记在便签上"}]},
+    {"id":"hidden_clock","kind":"hidden","scene":"scene_clock","tag":"工作室日常","title":"墙上的钟慢了两分钟","text":"有人举起手机核对时间，另一人说这样好像也不错。","choices":[{"label":"把时间调准","effect":{"all":1.08,"weeks":1,"name":"对齐时间表"},"resultText":"校对时间顺便理顺了下周的工作交接。"},{"label":"先记在便签上","morale":4,"resultText":"便签成了今天最轻松的一句办公室玩笑。"}]},
+    {"id":"shared_clock","scene":"scene_clock","tag":"工作室日常","title":"墙上的钟慢了两分钟","text":"有人举起手机核对时间，另一人说这样好像也不错。","choices":[{"label":"把时间调准","hint":"未来 1 周全体效率 +8%","effect":{"all":1.08,"weeks":1,"name":"对齐时间表"}},{"label":"先记在便签上","hint":"士气 +4","morale":4}]},
+    {"id":"daily_reply","kind":"ambient","scene":"scene_reply","tag":"工作室日常","title":"聊天窗口里停着三个点","text":"对方似乎还在输入，大家等了一小会儿。","choices":[{"label":"发个表情"},{"label":"再等一会儿"}]},
+    {"id":"hidden_reply","kind":"hidden","scene":"scene_reply","tag":"工作室日常","title":"聊天窗口里停着三个点","text":"对方似乎还在输入，大家等了一小会儿。","choices":[{"label":"发个表情","caps":{"theme":0.1},"resultText":"一个表情引出了新的人物与题材联想。"},{"label":"再等一会儿","cash":160,"resultText":"对方确认了此前的合作尾款并转账。"}]},
+    {"id":"shared_reply","scene":"scene_reply","tag":"工作室日常","title":"聊天窗口里停着三个点","text":"对方似乎还在输入，大家等了一小会儿。","choices":[{"label":"发个表情","hint":"题材软上限 +10%","caps":{"theme":0.1}},{"label":"再等一会儿","hint":"资金 +¥160","cash":160}]},
+    {"id":"daily_headphones","kind":"ambient","scene":"scene_headphones","tag":"工作室日常","title":"耳机里传来一段前奏","text":"曲子刚响起就停了，似乎有人按错了播放键。","choices":[{"label":"问问曲名"},{"label":"把耳机放好"}]},
+    {"id":"hidden_headphones","kind":"hidden","scene":"scene_headphones","tag":"工作室日常","title":"耳机里传来一段前奏","text":"曲子刚响起就停了，似乎有人按错了播放键。","choices":[{"label":"问问曲名","caps":{"subtheme":0.1},"resultText":"曲子的氛围启发了新的子主题表达。"},{"label":"把耳机放好","effect":{"job":"art","mult":0.9,"weeks":1,"name":"重新整理参考"},"resultText":"参考列表混在一起，下周美术要重新分类。"}]},
+    {"id":"daily_calendar","kind":"ambient","scene":"scene_calendar","tag":"工作室日常","title":"月历上有个没署名的圈","text":"日期旁边画着一个小圈，没有其他说明。","choices":[{"label":"补一个问号"},{"label":"问问大家"}]},
+    {"id":"hidden_calendar","kind":"hidden","scene":"scene_calendar","tag":"工作室日常","title":"月历上有个没署名的圈","text":"日期旁边画着一个小圈，没有其他说明。","choices":[{"label":"补一个问号","morale":3,"resultText":"大家围着问号聊起了第一次立项。"},{"label":"问问大家","debt":-2,"resultText":"问出了那天的维护记录，几处旧衔接得以理清。"}]},
+    {"id":"daily_samplebook","kind":"ambient","scene":"scene_samplebook","tag":"工作室日常","title":"样册翻到了一页空白","text":"夹在样册中的一页白纸落在了桌面上。","choices":[{"label":"在上面涂两笔"},{"label":"夹回原处"}]},
+    {"id":"hidden_samplebook","kind":"hidden","scene":"scene_samplebook","tag":"工作室日常","title":"样册翻到了一页空白","text":"夹在样册中的一页白纸落在了桌面上。","choices":[{"label":"在上面涂两笔","caps":{"ip":0.15},"resultText":"随手画的轮廓延伸成了衍生内容的新方向。"},{"label":"夹回原处","effect":{"job":"design","mult":1.12,"weeks":1,"name":"样册整理"},"resultText":"翻页时把几份零散的设计参考接了起来。"}]},
+    {"id":"daily_planter","kind":"ambient","scene":"scene_planter","tag":"工作室日常","title":"花盆旁边多了一个小石头","text":"石头被摆得很整齐，像是特意放在那里。","choices":[{"label":"挪到另一边"},{"label":"保持原样"}]},
+    {"id":"hidden_planter","kind":"hidden","scene":"scene_planter","tag":"工作室日常","title":"花盆旁边多了一个小石头","text":"石头被摆得很整齐，像是特意放在那里。","choices":[{"label":"挪到另一边","effect":{"job":"ops","mult":1.12,"weeks":1,"name":"小石头旁的清单"},"resultText":"挪动时发现压在下面的联络清单，下一周发行事务更顺畅。"},{"label":"保持原样","resultText":"石头和花盆安静地待在一起。"}]},
+    {"id":"daily_stationery","kind":"ambient","scene":"scene_stationery","tag":"工作室日常","title":"文具盒里少了一支笔","text":"大家各自看了看桌面，好像每人都有一支差不多的。","choices":[{"label":"看看抽屉"},{"label":"借一支先用"}]},
+    {"id":"hidden_stationery","kind":"hidden","scene":"scene_stationery","tag":"工作室日常","title":"文具盒里少了一支笔","text":"大家各自看了看桌面，好像每人都有一支差不多的。","choices":[{"label":"看看抽屉","cash":80,"resultText":"找笔时翻到了一笔可以退回的文具差价。"},{"label":"借一支先用","morale":4,"resultText":"借来的笔带着一张鼓励的小纸条。"}]},
+    {"id":"daily_light","kind":"ambient","scene":"scene_light","tag":"工作室日常","title":"台灯的光落在另一页上","text":"一阵风吹动了笔记本，翻开的那页有点眼熟。","choices":[{"label":"读完这一页"},{"label":"翻回刚才那页"}]},
+    {"id":"hidden_light","kind":"hidden","scene":"scene_light","tag":"工作室日常","title":"台灯的光落在另一页上","text":"一阵风吹动了笔记本，翻开的那页有点眼熟。","choices":[{"label":"读完这一页","caps":{"gameplay":0.1},"resultText":"旧笔记里有一段尚未展开的玩法思路。"},{"label":"翻回刚才那页","effect":{"job":"test","mult":1.12,"weeks":1,"name":"台灯下的验收笔记"},"resultText":"两页笔记对在一起，让下周测试安排更清楚。"}]},
+    {"id":"daily_sticker","kind":"ambient","scene":"scene_sticker","tag":"工作室日常","title":"杯子上多了一张贴纸","text":"贴纸贴得歪歪的，图案倒是很有精神。","choices":[{"label":"把它贴正"},{"label":"保留这个角度"}]},
+    {"id":"hidden_sticker","kind":"hidden","scene":"scene_sticker","tag":"工作室日常","title":"杯子上多了一张贴纸","text":"贴纸贴得歪歪的，图案倒是很有精神。","choices":[{"label":"把它贴正","caps":{"ads":0.1},"resultText":"调整位置时想到一种更自然的广告展示设计。"},{"label":"保留这个角度","morale":5,"resultText":"歪着的贴纸成了大家今天最喜欢的小细节。"}]},
+    {"id":"daily_walk","kind":"ambient","scene":"scene_walk","tag":"工作室日常","title":"楼下新铺了一条小路","text":"回工作室的路上，有人指了指刚铺好的路面。","choices":[{"label":"绕过去看看"},{"label":"沿着老路走"}]},
+    {"id":"hidden_walk","kind":"hidden","scene":"scene_walk","tag":"工作室日常","title":"楼下新铺了一条小路","text":"回工作室的路上，有人指了指刚铺好的路面。","choices":[{"label":"绕过去看看","effect":{"all":1.1,"weeks":1,"name":"走过一条新路"},"resultText":"散步时讨论出了更顺手的下周协作顺序。"},{"label":"沿着老路走","morale":4,"resultText":"熟悉的小路让这一天结束得很平静。"}]},
+    {"id":"publisher_whiteboard","scene":"scene_whiteboard","kind":"publisher","tag":"发行商建议","title":"白板还剩一个角落","text":"白板上密密麻麻，最后一个空角落引起了大家的注意。","condition":s=>!!s.publisher,"choices":[{"label":"一起整理接口草图","hint":"系统协作完成度 +8%，受上游依赖与软上限限制","progress":{"systems":0.08}},{"label":"把草图继续展开","hint":"程序三项软上限各 +10%","caps":{"framework":0.1}}]},
+    {"id":"publisher_kettle","scene":"scene_kettle","kind":"publisher","tag":"发行商建议","title":"水壶响了第三次","text":"茶水间里有人探出头，问这一壶要泡点什么。","condition":s=>!!s.publisher,"choices":[{"label":"聊聊下一步的内容","hint":"内容三项软上限各 +10%","caps":{"content":0.1}},{"label":"整理刚才的题材想法","hint":"题材完成度 +8%，受当前上限限制","progress":{"theme":0.08}}]},
+    {"id":"publisher_parcel","scene":"scene_parcel","kind":"publisher","tag":"发行商建议","title":"前台送来一个纸箱","text":"纸箱上的标签有些模糊，里面传来轻微的碰撞声。","condition":s=>!!s.publisher,"choices":[{"label":"一起整理样品参考","hint":"IP衍生完成度 +8%，受当前上限限制","progress":{"ip":0.08}},{"label":"多准备几种衍生方向","hint":"IP衍生软上限 +15%","caps":{"ip":0.15}}]},
+    {"id":"publisher_printer","scene":"scene_printer","kind":"publisher","tag":"发行商建议","title":"打印机吐出了一张纸","text":"没人记得刚才按过打印，纸上只有几行字。","condition":s=>!!s.publisher,"choices":[{"label":"一起梳理验收步骤","hint":"测试完成度 +8%，受上游依赖与软上限限制","progress":{"qa":0.08}},{"label":"拓展测试准备","hint":"测试软上限 +15%","caps":{"qa":0.15}}]}
   ];
-  // Daily and concealed events deliberately share the same presentation before selection.
-  const daily=(id,title,text,labels)=>({id,kind:'ambient',tag:'工作室日常',title,text,choices:labels.map(label=>({label}))});
-  const concealed=(id,title,text,choices)=>({id,kind:'hidden',tag:'工作室日常',title,text,choices});
-  const publisherEvent=(id,title,text,choices)=>({id,kind:'publisher',tag:'发行商建议',title,text:'发行商代表：'+text,condition:s=>!!s.publisher,choices});
-  EVENTS.push(
-    daily('daily_cat','窗外有一只猫','一只猫坐在窗台上，似乎在监督这个工作室。',['隔着玻璃挥挥手','给它起个名字','继续看屏幕']),
-    daily('daily_lunch','午饭投票又平局了','菜单在群里传了三轮，大家依旧没有达成共识。',['投面条一票','投米饭一票','让硬币决定']),
-    daily('daily_branch','这个分支该叫什么','天才程序员说，这次取一个平平无奇的名字就好。',['叫做 next','叫做 next_final','叫做 next_final_really']),
-    daily('daily_plant','桌上的绿植朝左歪了','大家围着花盆研究了片刻，谁也没说出个所以然。',['把花盆转半圈','给它画个小箭头','赞同它的选择']),
-    daily('daily_cable','那根线到底属于谁','抽屉里多出一根没有标签的线，接口看起来很有年代感。',['放回原处','贴上「未知」标签','摆进线材收藏盒']),
-    daily('daily_cursor','光标停在一个句号后面','办公室很安静，只有键盘灯在缓缓变色。',['看它变成蓝色','看它变成紫色','把视线移开']),
-    daily('daily_rain','雨滴在窗上排队','有人问：如果把雨声放进片尾，会不会很合适？',['说像白噪音','说像篝火声','点头听一会儿']),
-    daily('daily_elevator','电梯里遇见邻居工作室','对方抱着一箱马克杯，你们交换了一个熟悉的眼神。',['微笑点头','聊一句天气','扶住电梯门']),
-    concealed('hidden_folder','旧文件夹里有什么','清理桌面时，一个名字模糊的文件夹引起了注意。',[
-      {label:'打开看看',resultText:'里面是曾经搁置的世界观草稿，题材有了新的打磨空间。',caps:{theme:.15}},
-      {label:'先归档',resultText:'归档时翻到了工具订单的返现凭证。',cash:90}]),
-    concealed('hidden_note','显示器边的一张便签','便签上只有一个箭头，指向屏幕角落。',[
-      {label:'顺着箭头找找',resultText:'原来是伙伴留下的问题复现线索。',bugs:-2},
-      {label:'把便签翻过来',resultText:'背面画着团队全员的简笔头像。',morale:4}]),
-    concealed('hidden_mail','收到一封没有标题的邮件','发件人的头像看起来有些熟悉。',[
-      {label:'回复一句问候',resultText:'以前的合作方补结了一笔尾款。',cash:150},
-      {label:'转给天才程序员',resultText:'邮件附件里的旧接口被临时接入，留下了一点维护负担。',debt:2}]),
-    concealed('hidden_build','构建结束时响了一声','屏幕上的窗口被另一张便签挡住了。',[
-      {label:'移开便签',resultText:'发现了可以复用的编译缓存，下一周程序工作更快。',effect:{job:'code',mult:1.18,weeks:1,name:'编译缓存'}},
-      {label:'先去倒杯水',resultText:'回来后发现日志里记录了几个边界问题。',bugs:3}]),
-    concealed('hidden_ticket','抽屉里的一张小票','纸张已经有些褪色，上面还有一个手绘的笑脸。',[
-      {label:'拿给大家看看',resultText:'这是工作室第一次聚餐的小票，大家聊起了当时的糗事。',morale:8},
-      {label:'夹进笔记本',resultText:'意外翻到了还没兑现的休假计划，大家有点失落。',morale:-4}]),
-    concealed('hidden_message','群聊里多了一条语音','消息不长，背景里有一点风声。',[
-      {label:'戴耳机听',resultText:'老朋友分享了一种有趣的玩法思路。',caps:{gameplay:.15}},
-      {label:'外放给大家听',resultText:'试玩者一口气描述了几个新问题。',bugs:2}]),
-    concealed('hidden_drawer','要整理哪个抽屉','工位旁的两个抽屉都贴着同样的标签。',[
-      {label:'上面的抽屉',resultText:'找到一张仍可兑换的小额工具券，已经折抵入账。',cash:80},
-      {label:'下面的抽屉',resultText:'找到尚未过期的维护套餐，未来两周可以节省一点开销。',effect:{job:'overhead',mult:.9,weeks:2,name:'旧维护套餐'}}]),
-    concealed('hidden_dream','早上想起了一个梦','梦里的游戏画面很清晰，但醒来后只剩两个片段。',[
-      {label:'记下那片风景',resultText:'风景给子主题提供了新的表达空间。',caps:{subtheme:.15}},
-      {label:'记下那段对白',resultText:'对白让作品的内容表达更有感染力。',bonus:{content:2}}]),
-    publisherEvent('publisher_position','发行商安排了一次定位讨论','你们的题材表达还有值得拓展的空间，也可以先把现有方向整理到位。',[
-      {label:'拓展内容表达',hint:'内容三项软上限各 +15%，最高 100%',caps:{content:.15}},
-      {label:'一起梳理题材',hint:'题材完成度 +8%，受当前上限限制',progress:{theme:.08}}]),
-    publisherEvent('publisher_playtest','发行商带来了试玩记录','我们整理了玩家卡住的地方，可以协助打磨，也可以探索玩法的下一步。',[
-      {label:'协作打磨玩法',hint:'玩法完成度 +8%，受当前上限限制',progress:{gameplay:.08}},
-      {label:'研究新玩法空间',hint:'玩法软上限 +15%，最高 100%',caps:{gameplay:.15}}]),
-    publisherEvent('publisher_tech','发行商请来了技术顾问','顾问看过现有构架，愿意协助整理实现或系统接口。',[
-      {label:'协助推进实现',hint:'开发进度完成度 +8%，受软上限和内容依赖限制',progress:{development:.08}},
-      {label:'梳理系统接口',hint:'系统协作完成度 +8%，受软上限和开发依赖限制',progress:{systems:.08}},
-      {label:'拓展程序打磨空间',hint:'程序三项软上限各 +15%，最高 100%',caps:{framework:.15}}]),
-    publisherEvent('publisher_quality','发行商组织了验收交流','现有实现可以交给验收人员协助测试，也可以先完善后续测试方案。',[
-      {label:'联合测试现有版本',hint:'测试完成度 +10%，受软上限和上游依赖限制；问题 −2',progress:{qa:.1},bugs:-2},
-      {label:'补充测试方案',hint:'测试软上限 +15%，最高 100%',caps:{qa:.15}}]),
-    publisherEvent('publisher_commerce','发行商提供了商业化建议','我们可以协作改善付费体验，或为商业化预留更多打磨空间。',[
-      {label:'协作打磨付费体验',hint:'用户付费完成度 +10%，受当前上限限制',progress:{payment:.1}},
-      {label:'拓展商业化方案',hint:'商业化三项软上限各 +15%，最高 100%',caps:{commerce:.15}}]),
-    publisherEvent('publisher_ads','发行商分享了广告体验建议','广告变现属于你们的商业化设计；我们可以协助打磨激励位置和展示节奏。',[
-      {label:'协作改善广告体验',hint:'广告变现完成度 +10%，受当前上限限制；不影响买量预算',progress:{ads:.1}},
-      {label:'拓展广告设计空间',hint:'广告变现软上限 +15%，最高 100%',caps:{ads:.15}}]),
-    publisherEvent('publisher_ip','发行商提出了衍生内容建议','角色与世界观很有辨识度，可以一起梳理衍生内容的制作方向。',[
-      {label:'协作完善衍生内容',hint:'IP衍生完成度 +10%，受当前上限限制',progress:{ip:.1}},
-      {label:'拓展衍生内容空间',hint:'IP衍生软上限 +15%，最高 100%',caps:{ip:.15}}]),
-    publisherEvent('publisher_art','发行商提出了视觉建议','我们从商店展示的角度整理了一批参考，希望能帮助作品更有辨识度。',[
-      {label:'协作完善子主题',hint:'子主题完成度 +8%，受当前上限限制',progress:{subtheme:.08}},
-      {label:'拓展视觉表现空间',hint:'子主题软上限 +15%，最高 100%',caps:{subtheme:.15}}])
-  );
   const eventTargets=id=>task(id)?[task(id)]:JOBS.filter(j=>j.group===id);
   function publisherAdviceAllowed(c){return ['caps','progress'].some(k=>c[k])&&['caps','progress'].every(k=>Object.keys(c[k]||{}).every(id=>eventTargets(id).length&&eventTargets(id).every(j=>['content','framework','commerce'].includes(j.group))));}
   const capRoom=(s,id)=>eventTargets(id).some(j=>j.group!=='release'&&softCap(s,j.id)<HARD_CAP);
@@ -306,7 +340,7 @@
   // Original events remain, but irrelevant contexts and exhausted choices leave the live pool.
   function eventContext(s,e){
     if(e.min&&coreProgress(s)<e.min||e.condition&&!e.condition(s))return false;
-    if(['bug','compat','debt'].includes(e.id))return e.id==='bug'?s.bugs>0:s.debt>0;
+    if(['compat','debt'].includes(e.id))return s.debt>0;
     if(['forms','store_page'].includes(e.id))return !complete(s);
     if(e.id==='backup')return JOBS.some(j=>j.skill==='code'&&s.people[j.id]>0);
     return true;
@@ -316,17 +350,18 @@
     // When the principal reward is exhausted, secondary morale or cleanup does not keep it alive.
     if(c.caps&&!Object.keys(c.caps).some(id=>capRoom(s,id)))return false;
     if(c.progress&&!Object.keys(c.progress).some(id=>progressRoom(s,id)))return false;
-    return c.cash>0||c.caps||c.progress||c.effect||c.bonus&&Object.entries(c.bonus).some(([id,n])=>n>0?s.ratingBonus[id]<12:s.ratingBonus[id]>-12)||c.bugs>0||c.bugs<0&&s.bugs>0||c.debt>0||c.debt<0&&s.debt>0||c.morale>0&&s.morale<100||c.morale<0&&s.morale>25;
+    const efficiencyUseful=c.effect&&(c.effect.job==='overhead'||JOBS.some(j=>(!c.effect.job||j.skill===c.effect.job)&&!publisherManaged(s,j.id)&&(progressRoom(s,j.id)||j.id==='systems'&&s.debt>0)));
+    return c.cash>0||c.caps||c.progress||efficiencyUseful||c.debt>0||c.debt<0&&s.debt>0||c.morale>0&&s.morale<100||c.morale<0&&s.morale>25;
   }
   function eventWeight(s,e,choices){
     let weight=1;
     if(e.id==='cash_review'&&s.money<cost(s).total*4)weight+=3;
     if(e.id==='tired'&&s.morale<50)weight+=2;
-    if(e.id==='bug'&&s.bugs>5||e.id==='debt'&&s.debt>8)weight+=2;
+    if(e.id==='debt'&&s.debt>8)weight+=2;
     if(choices.some(c=>c.caps&&Object.keys(c.caps).some(id=>eventTargets(id).some(j=>j.group!=='release'&&(s.people[j.id]>0||publisherManaged(s,j.id))&&progress(s,j.id)>=softCap(s,j.id)-.05))))weight+=2;
     return weight;
   }
-  function eligibleEvents(s){return EVENTS.filter(e=>e.id!==s.lastEvent&&eventContext(s,e)).map(e=>{
+  function eligibleEvents(s){return EVENTS.filter(e=>e.id!==s.lastEvent&&(!e.scene||e.scene!==s.lastScene)&&eventContext(s,e)).map(e=>{
     const choices=e.kind==='ambient'?e.choices:e.kind==='hidden'?(e.choices.some(c=>usefulChoice(s,c))?e.choices:[]):e.choices.filter(c=>(e.kind!=='publisher'||publisherAdviceAllowed(c))&&usefulChoice(s,c));
     // Paused projects share their wallet with other projects: never freeze a paid-only decision.
     if(!e.kind&&choices.length&&choices.every(c=>c.cash<0))choices.push({label:'暂时搁置',hint:'保留现有成果，没有数值变化'});
@@ -346,20 +381,18 @@
   function acknowledgeEvent(s){if(s.over||s.paused||!s.eventResult?.unread)return false;s.eventResult.unread=false;return true;}
   function checkMilestones(s){const n=coreProgress(s);for(const milestone of [{id:'prototype',check:n>=.3,name:'可玩原型'},{id:'vertical',check:n>=.65,name:'垂直切片'},{id:'content',check:coreReady(s),name:'内容完成'}])if(milestone.check&&!s.milestones.includes(milestone.id)){s.milestones.push(milestone.id);const newcomers=RECRUITS.filter(r=>r.stage===milestone.id&&!s.knownPartners.includes(r.id));s.knownPartners.push(...newcomers.map(r=>r.id));addLog(s,'达成「'+milestone.name+'」。'+(newcomers.length?newcomers.map(r=>r.name).join('、')+'发来伙伴来信，加入全局结识名单。':'已结识的伙伴会继续与你同行。'),'good');}}
   function resolveEvent(s,i){const e=pendingEvent(s),c=e?.choices[i];if(!eventChoiceStatus(s,i).ok)return false;
-    const before={work:copy(s.work),caps:copy(s.softCaps),money:s.money,bugs:s.bugs,debt:s.debt,morale:s.morale,bonus:copy(s.ratingBonus)},details=[];
+    const before={work:copy(s.work),caps:copy(s.softCaps),money:s.money,debt:s.debt,morale:s.morale},details=[];
     if(c.cash){s.money+=c.cash;if(c.cash<0)s.spent-=c.cash;else s.income+=c.cash;}
     if(c.caps)unlockCaps(s,c.caps);
-    if(c.bonus)Object.entries(c.bonus).forEach(([k,v])=>s.ratingBonus[k]=clamp(s.ratingBonus[k]+v,-12,12));
     // Advice is applied once, bounded by the current soft cap and a single dependency snapshot.
     const limits=Object.fromEntries(JOBS.map(j=>[j.id,workLimit(s,j.id)]));
     if(e.kind==='publisher'&&c.progress)for(const [id,n] of Object.entries(c.progress))s.work[id]=Math.max(s.work[id],round(Math.min(limits[id],s.work[id]+s.req[id]*n)));
-    s.bugs=round(Math.max(0,s.bugs+(c.bugs||0)));s.debt=round(Math.max(0,s.debt+(c.debt||0)));s.morale=clamp(s.morale+(c.morale||0),25,100);
+    s.debt=round(Math.max(0,s.debt+(c.debt||0)));s.morale=clamp(s.morale+(c.morale||0),25,100);
     if(c.effect)s.effects.push(copy(c.effect));
     const signed=n=>(n>0?'+':'−')+Math.abs(round(n));
     if(s.money!==before.money)details.push('生涯资金 '+(s.money>before.money?'+':'−')+'¥'+Math.abs(s.money-before.money));
     for(const j of JOBS){const gain=round((s.work[j.id]-before.work[j.id])/s.req[j.id]*100);if(gain)details.push(j.name+'完成度 '+signed(gain)+'%（现为 '+round(progress(s,j.id)*100)+'%）');if(j.group!=='release'&&s.softCaps[j.id]!==before.caps[j.id])details.push(j.name+'软上限 '+round(before.caps[j.id]*100)+'% → '+round(s.softCaps[j.id]*100)+'%');}
-    for(const [id,name] of [['bugs','问题'],['debt','技术债'],['morale','士气']])if(s[id]!==before[id])details.push(name+' '+signed(s[id]-before[id]));
-    for(const g of GROUPS.filter(g=>g.id!=='release'))if(s.ratingBonus[g.id]!==before.bonus[g.id])details.push(g.name+'潜力 '+signed(s.ratingBonus[g.id]-before.bonus[g.id]));
+    for(const [id,name] of [['debt','技术债'],['morale','士气']])if(s[id]!==before[id])details.push(name+' '+signed(s[id]-before[id]));
     if(c.effect){const effect=c.effect,label=effect.all?'全体效率':effect.job==='overhead'?'维护费':(SKILLS.find(k=>k.id===effect.job)?.name||'工作')+'效率';details.push(label+' '+signed(((effect.all||effect.mult||1)-1)*100)+'% · 持续 '+effect.weeks+' 周');}
     if(!details.length)details.push('没有发生任何数值变化。');
     s.eventResult={id:e.id,kind:e.kind||'standard',week:s.week-1,title:e.title,label:c.label,text:c.resultText||(e.kind==='ambient'?'大家聊了几句，这段小插曲就这样过去了。':e.kind==='publisher'?'发行团队已落实这项建议。':'本周的决定已经记录。'),details,unread:!!e.kind};
@@ -376,14 +409,14 @@
     s.pendingEvent=chosen.id;s.pendingChoices={id:chosen.id,choices:copy(chosen.choices)};s.pendingCapGroup=null;
     // Preserve the original bonus cap opportunity only for the original events.
     if(!chosen.kind){const groups=GROUPS.filter(g=>g.id!=='release'&&capRoom(s,g.id));if(groups.length){const g=groups[Math.floor(random(s)*groups.length)];s.pendingCapGroup=g.id;s.pendingChoices.choices.push({label:'复盘并拓展'+g.name,hint:g.name+'各项完成度软上限 +15%，最高 100%；仍需安排工作',caps:{[g.id]:CAP_STEP}});}}
-    s.lastEvent=chosen.id;return chosen;
+    s.lastEvent=chosen.id;s.lastScene=chosen.scene||null;return chosen;
   }
   function advance(s){if(blocked(s))return {ok:false,reason:'请先完成当前选择'};const c=cost(s);if(s.money<c.total)return {ok:false,reason:'资金不足以支付本周工资、维护和投放；可降低买量预算、签约发行商或发售。'};const contributions=s.team.map(m=>({id:m.id,name:m.name,job:m.job,output:memberOutput(s,m.id)}));s.money-=c.total;s.spent+=c.total;const {production,gains,ranges,impacts}=workWeek(s);s.effects=s.effects.map(e=>({...e,weeks:e.weeks-1})).filter(e=>e.weeks>0);s.history.push({week:s.week,cost:c.total,ads:c.ads,publisherAds:c.publisherAds,production,gains,ranges,impacts,team:contributions,money:s.money,ratings:quality(s)});addLog(s,'完成第 '+s.week+' 周：支出 ¥'+c.total+(c.ads?'（含买量 ¥'+c.ads+'）':'')+(c.publisherAds?'，发行商另垫付买量 ¥'+c.publisherAds:'')+(s.publisher?'，发行团队自动推进宣发与上架':'')+'。'+contributions.filter(m=>m.output>0).map(m=>m.name+'负责'+task(m.job).name).join('、')+'。');
     for(const impact of impacts)addLog(s,task(impact.from).name+'的调整牵连了'+task(impact.to).name+'，后者完成度 −'+impact.points+'%。');
     for(const j of JOBS)if(gains[j.id]<0)addLog(s,task(j.id).name+'本周净变化：'+round(gains[j.id]/s.req[j.id]*100)+'%。');
     checkMilestones(s);const e=drawEvent(s);s.week++;s.managed=false;return {ok:true,event:e.id};}
 
-  function preview(s,ignoreModeEffects=false){if(blocked(s))return null;const p=copy(s),c=cost(p),{production,gains,ranges}=workWeek(p,true,ignoreModeEffects);return {production,gains,ranges,cost:c,work:p.work,bugs:p.bugs,debt:p.debt,bottlenecks:p.lastBottlenecks,money:s.money-c.total};}
+  function preview(s,ignoreModeEffects=false){if(blocked(s))return null;const p=copy(s),c=cost(p),{production,gains,ranges}=workWeek(p,true,ignoreModeEffects);return {production,gains,ranges,cost:c,work:p.work,debt:p.debt,bottlenecks:p.lastBottlenecks,money:s.money-c.total};}
   // UI estimates use full efficiency; actual settlement retains real-mode slowdown, rework and spillover.
   function progressEstimate(s){return preview(s,true);}
   function assignmentEstimate(s,memberId,job){
@@ -456,7 +489,7 @@
       job:j.id,name:j.name,completion:round(progress(s,j.id)*100),cap:round(softCap(s,j.id)*100),
       members:s.team.filter(m=>m.job===j.id).map(m=>({id:m.id,name:m.name})),
       full:softCap(s,j.id)>=HARD_CAP,
-      ongoing:j.id==='systems'?'仍可偿还技术债':j.id==='qa'?'仍可修复问题':j.id==='acquisition'&&s.adBudget>0?'仍会按本周预算继续买量并扣费':'',
+      ongoing:j.id==='systems'?'仍可偿还技术债':j.id==='acquisition'&&s.adBudget>0?'仍会按本周预算继续买量并扣费':'',
       rework:workPhase(s,j.id).id==='uncertain'
     }));
   }
@@ -519,7 +552,7 @@
     return true;
   }
   function validateRun(s){try{if(!s||s.version!==VERSION||typeof s.paused!=='boolean'||!Number.isInteger(s.stage)||s.stage<1||!SCALES.some(g=>g.id===s.scale)||!Number.isInteger(s.week)||s.week<1||!Array.isArray(s.team)||s.team.length<2||s.team.length>8)return false;for(const a of ['departed','history','logs','effects','milestones','knownPartners'])if(!Array.isArray(s[a]))return false;if(new Set(s.knownPartners).size!==s.knownPartners.length||s.knownPartners.some(id=>!RECRUITS.some(r=>r.id===id))||s.team.some(m=>m.kind==='partner'&&!s.knownPartners.includes(m.id)))return false;if(!s.work||!s.req||!s.softCaps||typeof s.hard!=='boolean'||s.pendingCapGroup&&!GROUPS.some(g=>g.id===s.pendingCapGroup&&g.id!=='release')||!s.people||!['normal','rest','crunch'].includes(s.pace)||!['profit','acclaim'].includes(s.objective)||!AD_BUDGETS.includes(s.adBudget))return false;const ids=s.team.map(m=>m.id);if(new Set(ids).size!==ids.length||!s.team.some(m=>m.id==='hero'&&m.kind==='hero')||!s.team.some(m=>m.id==='ace'&&m.kind==='companion'))return false;if(!s.team.every(m=>typeof m.name==='string'&&m.name.length>0&&Number.isFinite(m.salary)&&m.salary>=0&&['idle',...JOBS.map(j=>j.id)].includes(m.lastJob)&&SKILLS.every(j=>Number.isFinite(m.skills[j.id])&&m.skills[j.id]>=0&&m.skills[j.id]<=200)&&(m.job==='idle'||taskSkill(m,m.job)>0&&!publisherManaged(s,m.job))))return false;
-    return validEventState(s)&&JOBS.every(j=>(j.group==='release'||Number.isFinite(s.softCaps[j.id])&&s.softCaps[j.id]>=INITIAL_SOFT_CAP&&s.softCaps[j.id]<=HARD_CAP&&s.work[j.id]<=s.req[j.id]*s.softCaps[j.id]+.01)&&Number.isFinite(s.work[j.id])&&s.work[j.id]>=0&&Number.isFinite(s.req[j.id])&&s.req[j.id]>0&&s.work[j.id]<=s.req[j.id]+.01&&s.people[j.id]===s.team.filter(m=>m.job===j.id).length)&&s.reserve===s.team.filter(m=>m.job==='idle').length&&GROUPS.filter(g=>g.id!=='release').every(g=>Number.isFinite(s.ratingRolls[g.id])&&Math.abs(s.ratingRolls[g.id])<=28&&Number.isFinite(s.revealRolls[g.id])&&Math.abs(s.revealRolls[g.id])<=1&&Number.isFinite(s.ratingBonus[g.id]))&&[s.money,s.spent,s.income,s.adSpend,s.bugs,s.debt,s.morale,s.rng,s.seed,s.initialMoney,s.sharedCashDelta].every(Number.isFinite)&&s.money>=0&&s.spent>=0&&s.adSpend>=0&&s.adSpend<=(s.spent+(s.publisher?.adSpend||0))&&(s.publisher===null||s.publisher&&Number.isFinite(s.publisher.advance)&&s.publisher.advance>0&&Number.isInteger(s.publisher.signWeek)&&s.publisher.signWeek>=1&&s.publisher.signWeek<=s.week&&Number.isFinite(s.publisher.adSpend)&&s.publisher.adSpend>=0&&s.publisher.adSpend<=s.adSpend&&s.publisher.quote&&s.publisher.quote.advance===s.publisher.advance)&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.over||!!s.result);
+    return validEventState(s)&&JOBS.every(j=>(j.group==='release'||Number.isFinite(s.softCaps[j.id])&&s.softCaps[j.id]>=INITIAL_SOFT_CAP&&s.softCaps[j.id]<=HARD_CAP&&s.work[j.id]<=s.req[j.id]*s.softCaps[j.id]+.01)&&Number.isFinite(s.work[j.id])&&s.work[j.id]>=0&&Number.isFinite(s.req[j.id])&&s.req[j.id]>0&&s.work[j.id]<=s.req[j.id]+.01&&s.people[j.id]===s.team.filter(m=>m.job===j.id).length)&&s.reserve===s.team.filter(m=>m.job==='idle').length&&GROUPS.filter(g=>g.id!=='release').every(g=>Number.isFinite(s.ratingRolls[g.id])&&Math.abs(s.ratingRolls[g.id])<=28&&Number.isFinite(s.revealRolls[g.id])&&Math.abs(s.revealRolls[g.id])<=1)&&[s.money,s.spent,s.income,s.adSpend,s.debt,s.morale,s.rng,s.seed,s.initialMoney,s.sharedCashDelta].every(Number.isFinite)&&s.money>=0&&s.spent>=0&&s.adSpend>=0&&s.adSpend<=(s.spent+(s.publisher?.adSpend||0))&&(s.publisher===null||s.publisher&&Number.isFinite(s.publisher.advance)&&s.publisher.advance>0&&Number.isInteger(s.publisher.signWeek)&&s.publisher.signWeek>=1&&s.publisher.signWeek<=s.week&&Number.isFinite(s.publisher.adSpend)&&s.publisher.adSpend>=0&&s.publisher.adSpend<=s.adSpend&&s.publisher.quote&&s.publisher.quote.advance===s.publisher.advance)&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.over||!!s.result);
     }catch{return false;}}
   return {VERSION,MARKET_MIN,MARKET_MAX,marketMultiplier,revenueRules,INITIAL_FUNDS,startupAidStatus,claimStartupAid,STANDARD_WEEKLY_WORK,STANDARD_PERSON_WEEK_COST,scalePlan,projectNameStatus,HARD_CAP,INITIAL_SOFT_CAP,CAP_STEP,softCap,workPhase,SKILLS,GROUPS,JOBS,GRADES,AD_RATES,AD_BUDGETS,HERO,COMPANION,RECRUITS,SCALES,baseRequirements,PUBLISHER_JOBS,PUBLISHER_WEEKLY_WORK,publisherManaged,publisherQuote,signPublisher,adSettlement,OBJECTIVES,EVENTS,skillLabel,taskSkill,assignMember,availableRecruits,memberOutput,teamVoice,newRun,pauseProject,resumeProject,endProject,validateSnapshot,mods,cost,teamSize,progress,groupProgress,coreProgress,coreReady,complete,goals,canRelease,quality,trueScore,overallScore,grade,gradeIndex,revealLevel,ratingView,overallView,adRate,adProjection,buyingStatus,setAdBudget,forecast,incomeView,objectiveStatus,throughput,workDependency,workLimit,hire,downsize,advance,event,eventPool,eventChoiceStatus,resolveEvent,acknowledgeEvent,preview,progressEstimate,assignmentEstimate,automaticAssignmentPlan,autoAssign,softCapWarnings,finish,emptyMeta,settle,validateMeta,syncCareer,trainingCost,train,renameHero,hirePartner,dismissPartner,validateRun,copy};
 });
