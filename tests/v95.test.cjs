@@ -68,7 +68,7 @@ check('publicity unlocks five stages at the exact specified boundaries',()=>{
 });
 check('revealed estimates round outward and never exclude the underlying forecast',()=>{
   for(let seed=1;seed<=80;seed++)for(const p of [.01,.25,.5,.75,1]){
-    const {s}=start(2100,seed);s.adSpend=1700;s.share=seed%2?.22:0;s.softCaps.publicity=1;s.work.publicity=s.req.publicity*p;
+    const {s}=start(2100,seed);s.adSpend=1700;if(seed%2)G.signPublisher(s);s.softCaps.publicity=1;s.work.publicity=s.req.publicity*p;
     const v=G.incomeView(s),f=G.forecast(s);for(const [k,low,high] of [['revenue',f.low,f.high],['profit',f.low+s.income-s.spent,f.high+s.income-s.spent],['adGross',f.ad.low,f.ad.high],['adNet',f.ad.netLow,f.ad.netHigh]]){assert.ok(v[k].low<=low&&v[k].high>=high,k);assert.ok(Number.isInteger(v[k].low)&&Number.isInteger(v[k].high));if(p===1)assert.deepEqual(v[k],{low,high});}
   }
 });
@@ -84,7 +84,7 @@ check('hidden income cannot leak through objectives marketing or release confirm
   load('strategyPanel','function job(',context);load('marketing','function eventPanel(',context);load('release','function help(',context);
   const objective=vm.runInNewContext('strategyPanel(run,null)',context),marketing=vm.runInNewContext('marketing(run,true)',context);vm.runInNewContext('release()',context);
   assert.match(objective,/objective-value gold">\?{5}<small>/);assert.match(marketing,/预计买量总回款<\/span><b>\?{5}/);assert.match(marketing,/预计买量净回款<\/span><b class="">\?{5}/);
-  for(const label of ['当前认知收入区间','其中买量总回款','买量净回款区间'])assert.ok(context.markup.includes(label+'</label><strong>?????</strong>'));
+  for(const label of ['当前认知收入区间','其中工作室买量到账','工作室买量净回款区间'])assert.ok(context.markup.includes(label+'</label><strong>?????</strong>'));
   s.work.publicity=s.req.publicity*.25;assert.match(vm.runInNewContext('incomeRange(run)',context),/^约 ¥/);
 });
 check('confirmation and cancellation preview recovery bounds without drawing the result',()=>{

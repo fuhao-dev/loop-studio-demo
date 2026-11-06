@@ -15,7 +15,7 @@ check('positive budget without staff does not spend or advance buying',()=>{
   const s=ready();G.setAdBudget(s,300);assert.ok(G.buyingStatus(s).reason.includes('未安排'));assert.equal(G.buyingStatus(s).spend,0);G.advance(s);assert.equal(s.adSpend,0);assert.equal(s.history[0].gains.acquisition,0);
 });
 check('net buying projections and settlement deduct spend for all grades and publishing',()=>{
-  for(let i=0;i<15;i++)for(const share of [0,.22]){const s=rateReady((i+.5)/15*100);s.share=share;const p=G.adProjection(s),r=G.finish(s,true);assert.equal(r.adNetRevenue,r.adRevenue-1000);assert.equal(p.netLow,p.low-1000);assert.equal(p.netHigh,p.high-1000);assert.equal(p.netLow,r.adNetRevenue);assert.equal(p.netHigh,r.adNetRevenue);assert.equal(r.profit,r.revenue-s.spent);assert.equal(r.revenue,r.organicRevenue+r.adRevenue);if(i<6)assert.ok(r.adNetRevenue<0);}
+  for(let i=0;i<15;i++)for(const signed of [false,true]){const s=rateReady((i+.5)/15*100);if(signed)G.signPublisher(s);const p=G.adProjection(s),r=G.finish(s,true);assert.equal(r.adNetRevenue,r.adRevenue-1000);assert.equal(p.netLow,p.low-1000);assert.equal(p.netHigh,p.high-1000);assert.equal(p.netLow,r.adNetRevenue);assert.equal(p.netHigh,r.adNetRevenue);assert.equal(r.profit,r.revenue+s.income-s.spent);assert.equal(r.revenue,r.organicRevenue+r.adRevenue);if(i<6)assert.ok(r.adNetRevenue<0);}
 });
 check('aborting a paid campaign reports the lost spend without deducting it twice',()=>{
   const s=rateReady(50),r=G.finish(s,false);assert.equal(r.adRevenue,0);assert.equal(r.adNetRevenue,-1000);assert.equal(r.profit,r.recovery-1000);assert.equal(r.walletEnd,r.walletStart-1000+r.recovery);assert.equal(r.revenue,0);

@@ -35,13 +35,13 @@ check('fully revealed grades retain market uncertainty',()=>{
   const {s}=ready(),f=G.forecast(s);assert.equal(f.exact,true);assert.equal(f.rating.text,'B');assert.equal(f.low,Math.round(organicAtBounds(s,false)*.1));assert.equal(f.high,Math.round(organicAtBounds(s,true)*10));assert.ok(f.high/f.low>100);assert.deepEqual(f.rules,{scaleMultiplier:1,marketMin:.1,marketMax:10});
 });
 function organicAtBounds(s,high){const f=G.overallView(s),c=G.ratingView(s,'commerce'),q=high?f.high:f.low,v=high?c.high:c.low;return Math.round((1000+.9*q*q)*(.65+.007*v));}
-check('forecast contains releases across scales reveal levels features and publishing',()=>{
+check('forecast contains releases across scales reveal levels and publishing',()=>{
   for(let i=0;i<80;i++){
-    const g=G.SCALES[i%4],{s}=ready(g.id,20+i%70);if(i%2===0){G.feature(s,'style');for(const j of G.JOBS)s.work[j.id]=s.req[j.id];}
-    s.work.publicity=s.req.publicity*[0,.1,.25,.5,.75,1][i%6];if(i%3===0)G.funding(s);
+    const g=G.SCALES[i%4],{s}=ready(g.id,20+i%70);
+    s.work.publicity=s.req.publicity*[0,.1,.25,.5,.75,1][i%6];if(i%3===0)G.signPublisher(s);
     s.adSpend=300;s.spent+=300;s.money-=300;nextRoll(s,(i+.5)/80);
     const f=G.forecast(s),r=G.finish(s,true);assert.ok(r.revenue>=f.low&&r.revenue<=f.high,JSON.stringify({i,f,r}));
-    assert.equal(r.organicRevenue,Math.round(r.organicBaseRevenue*r.marketMultiplier));
+    assert.equal(r.organicRevenue+r.publisherOrganicRevenue,Math.round(r.organicBaseRevenue*r.marketMultiplier));
   }
 });
 check('market and scale do not subsidize low-rated paid acquisition',()=>{
@@ -51,8 +51,8 @@ check('market and scale do not subsidize low-rated paid acquisition',()=>{
   }
 });
 check('publisher share and project ledger remain consistent with both multipliers',()=>{
-  const {meta,s}=ready('large');G.funding(s);s.adSpend=1000;s.spent=1000;s.money-=1000;nextRoll(s,.75);
-  const r=G.finish(s,true);assert.equal(r.organicBaseRevenue,Math.round(3250*27*.78));assert.equal(r.adRevenue,Math.round(1000*1.2*.78));
+  const {meta,s}=ready('large');G.signPublisher(s);s.adSpend=1000;s.spent=1000;s.money-=1000;nextRoll(s,.75);
+  const r=G.finish(s,true);assert.equal(r.organicBaseRevenue,3250*27);assert.equal(r.adRevenue,1200);
   assert.equal(r.revenue,r.organicRevenue+r.adRevenue);assert.equal(r.walletStart+r.sharedCashDelta+r.profit,r.walletEnd);assert.equal(G.settle(meta,s).wallet,r.walletEnd);
 });
 check('preview and rules do not draw or reveal the market roll',()=>{

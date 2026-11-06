@@ -7,13 +7,13 @@
   function abilities(m){return `<div class="ability-list" aria-label="${esc(m.name)}的五项能力">${G.SKILLS.map(j=>{const n=m.skills[j.id];return `<div class="ability-row ${n===0?'cannot':''}"><span>${j.short}</span><div class="ability-bar" style="--ability-color:${j.color}"><i style="width:${n/2}%"></i></div><b>${n}%</b><small>${G.skillLabel(n)}</small></div>`;}).join('')}</div>`;}
   function summary(m){const strong=G.SKILLS.filter(j=>m.skills[j.id]>=130).map(j=>j.short),cannot=G.SKILLS.filter(j=>m.skills[j.id]===0).map(j=>j.short);return `${strong.length===5?'五项全能':strong.length?'擅长 '+strong.join(' / '):'多岗协作'}${cannot.length?' · 不会 '+cannot.join(' / '):''}`;}
   function workOption(s,m,j){
-    const skill=G.taskSkill(m,j.id),cap=G.softCap(s,j.id),completion=G.progress(s,j.id),estimate=skill?G.assignmentEstimate(s,m.id,j.id):null;
+    const managed=G.publisherManaged(s,j.id),skill=G.taskSkill(m,j.id),cap=G.softCap(s,j.id),completion=G.progress(s,j.id),estimate=skill&&!managed?G.assignmentEstimate(s,m.id,j.id):null;
     const signed=n=>(Math.abs(n)<.05?'0':(n>0?'+':'−')+Math.abs(n).toFixed(1))+'%';
     const atCap=j.group!=='release'&&completion>=cap-1e-9;
-    const predicted=estimate?'预计 '+signed(estimate.percent):skill?'暂不预估':'不会';
+    const predicted=managed?'发行商托管':estimate?'预计 '+signed(estimate.percent):skill?'暂不预估':'不会';
     const ceiling=j.group==='release'?'无软上限':'软上限 '+Math.round(cap*100)+'%';
-    const text=(j.id==='acquisition'&&s.adBudget===0?'⚠ 无预算 · ':'')+(atCap?(cap<1?'⚠ 已到软上限 · ':'⚠ 已完成 · '):'')+j.name+' · 完成 '+(completion*100).toFixed(1)+'% / '+ceiling+' · '+predicted+' · 能力 '+skill+'%';
-    return `<option value="${j.id}"${m.job===j.id?' selected':''}${skill===0?' disabled':''}>${text}</option>`;
+    const text=(managed?'发行商托管 · ':'')+(j.id==='acquisition'&&s.adBudget===0?'⚠ 无预算 · ':'')+(atCap?(cap<1?'⚠ 已到软上限 · ':'⚠ 已完成 · '):'')+j.name+' · 完成 '+(completion*100).toFixed(1)+'% / '+ceiling+' · '+predicted+' · 能力 '+skill+'%';
+    return `<option value="${j.id}"${m.job===j.id?' selected':''}${skill===0||managed?' disabled':''}>${text}</option>`;
   }
   function assignment(s,m,active){return `<label class="person-assignment"><span>本周负责</span><select data-member="${m.id}" aria-label="${esc(m.name)}本周岗位"${disabled(active)}><option value="idle"${m.job==='idle'?' selected':''}>待命（仍计工资）</option>${G.GROUPS.map(g=>`<optgroup label="${g.name}">${G.JOBS.filter(j=>j.group===g.id).map(j=>workOption(s,m,j)).join('')}</optgroup>`).join('')}</select></label>`;}
 
