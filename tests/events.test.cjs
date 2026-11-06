@@ -113,7 +113,7 @@ check('seeded weekly pools produce all categories with valid live choices and no
 });
 check('actual dialog renders no hidden hints before selection and exact numeric results after it',()=>{
   const source=fs.readFileSync(require.resolve('../dist/app.js'),'utf8'),code=source.slice(source.indexOf('  function showEvent(){'),source.indexOf('  function result('));let markup='',kind='';const {s}=start();pending(s,'hidden_folder');
-  const ctx={run:s,G,hiddenPrompt:false,P:{voice:()=>''},esc:String,disabled:ok=>ok?'':' disabled',showDialog:(html,k)=>{markup=html;kind=k;},dialogHeader:(eye,title)=>eye+' '+title};vm.createContext(ctx);vm.runInContext(code+';showEvent()',ctx);
+  const ctx={run:s,G,hiddenPrompt:false,P:{voice:()=>'',portrait:()=>''},esc:String,disabled:ok=>ok?'':' disabled',showDialog:(html,k)=>{markup=html;kind=k;},dialogHeader:(eye,title)=>eye+' '+title};vm.createContext(ctx);vm.runInContext(code+';showEvent()',ctx);
   assert.equal(kind,'event');assert.ok(!/软上限|15%|世界观|隐藏|<small>/.test(markup));assert.equal((markup.match(/data-action="event"/g)||[]).length,2);
   G.resolveEvent(s,0);vm.runInContext('showEventResult()',ctx);assert.equal(kind,'event-result');assert.ok(markup.includes('题材软上限 70% → 85%')&&markup.includes('世界观')&&markup.includes('data-action="event-result-done"'));
 });

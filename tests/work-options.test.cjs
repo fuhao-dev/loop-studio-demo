@@ -3,7 +3,7 @@ const window={StudioGame:G};vm.runInNewContext(fs.readFileSync(path.join(__dirna
 let checks=0;const check=(name,test)=>{test();checks++;};
 check('all work options show current completion, ceiling, proposed progress and capability',()=>{
   const s=G.newRun(),markup=P.assignment(s,s.team[1],true);
-  assert.equal((markup.match(/<option/g)||[]).length,14);assert.equal((markup.match(/ · 完成 /g)||[]).length,13);assert.equal((markup.match(/软上限 70%/g)||[]).length,11);assert.equal((markup.match(/无软上限/g)||[]).length,2);assert.equal((markup.match(/ · 预计 /g)||[]).length,13);assert.equal((markup.match(/ · 能力 145%/g)||[]).length,13);
+  assert.equal((markup.match(/<option/g)||[]).length,14);assert.equal((markup.match(/ · 完成 /g)||[]).length,13);assert.equal((markup.match(/软上限 70%/g)||[]).length,11);assert.equal((markup.match(/无软上限/g)||[]).length,2);assert.equal((markup.match(/ · 岗位合计预计 /g)||[]).length,13);assert.equal((markup.match(/ · 能力 145%/g)||[]).length,13);
 });
 check('proposed assignment includes ramp and shared-role output without changing state or random numbers',()=>{
   const s=G.newRun();G.assignMember(s,'hero','payment');const before=JSON.stringify(s),estimate=G.assignmentEstimate(s,'ace','payment');assert.equal(JSON.stringify(s),before);const actual=G.copy(s);G.assignMember(actual,'ace','payment');assert.equal(estimate.teamSize,2);G.advance(actual);assert.equal(estimate.gain,actual.history[0].gains.payment);

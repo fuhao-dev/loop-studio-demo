@@ -71,11 +71,12 @@ check('failed release and abort do not draw a market outcome',()=>{
 });
 check('release confirmation and report show the rules and actual market factor',()=>{
   const source=fs.readFileSync(path.join(__dirname,'../dist/app.js'),'utf8');
-  let markup='';const {s}=ready('large');const context={G,run:s,meta:G.emptyMeta(),showDialog:x=>markup=x,dialogHeader:()=>'',esc:String,yen:n=>'¥'+n};
+  let markup='';const {s}=ready('large');const context={G,disabled:ok=>ok?'':' disabled',run:s,meta:G.emptyMeta(),showDialog:x=>markup=x,dialogHeader:()=>'',esc:String,yen:n=>'¥'+n};
   vm.runInNewContext(source.slice(source.indexOf('  function incomeRange('),source.indexOf('  const pct=')),context);
-  vm.runInNewContext(source.slice(source.indexOf('  function decisionFinancePanel('),source.indexOf('  function weekSummary(')),context);
+  vm.runInNewContext(source.slice(source.indexOf('  function launchDecision('),source.indexOf('  function weekSummary(')),context);
   const releaseCode=source.slice(source.indexOf('  function release('),source.indexOf('  function help('));
   vm.runInNewContext(releaseCode+';release()',context);assert.ok(markup.includes('规模倍率 ×27')&&markup.includes('×0.50～10.00')&&markup.includes('宣传无法消除市场波动'));
+  vm.runInNewContext(source.slice(source.indexOf('  function settlementOverview('),source.indexOf('  function showAssignmentReview(')),context);
   const reportCode=source.slice(source.indexOf('  function result('),source.indexOf('  function release('));nextRoll(s,.25);G.finish(s,true);
   vm.runInNewContext(reportCode+';result()',context);assert.ok(markup.includes('遇冷 · ×0.50')&&markup.includes('规模收益倍率')&&markup.includes('规模后基准自然收入'));
 });

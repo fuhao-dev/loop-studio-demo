@@ -1,0 +1,213 @@
+{
+  "version": "0.18.0",
+  "date": "2026-11-06",
+  "browser": "Microsoft Edge",
+  "testOrigin": "http://127.0.0.1:4208/",
+  "method": "Playable flows used real UI actions through computer-use, without save injection or access to hidden game state. Layout-only fixtures were generated with the actual renderers and clearly labelled as static samples, without scripts or saves.",
+  "allocation": {
+    "lockedHeroPreserved": true,
+    "reviewShown": true,
+    "undoRestoredJobs": {
+      "hero": "gameplay",
+      "ace": "development"
+    },
+    "reloadPreservedLock": true,
+    "pauseResumePreservedLock": true,
+    "teamSizesPlayed": [
+      2,
+      5,
+      12
+    ],
+    "largeTeamCollapsedRows": 6,
+    "expandedRows": 12,
+    "chineseSearch": "天才",
+    "searchResults": 1,
+    "searchKeptInputFocus": true,
+    "jobFilter": "开发进度",
+    "filteredRows": 2,
+    "filteredJobs": [
+      "development",
+      "development"
+    ]
+  },
+  "recruitment": {
+    "initialWallet": 7600,
+    "invited": [
+      "池川",
+      "乐小满",
+      "墨小雨"
+    ],
+    "walletAfterThreeInvites": 7060,
+    "weeklyAfterThreeInvites": 367,
+    "runwayWeeks": 19,
+    "comparisonSlots": 3,
+    "fourthCandidateDisabled": true,
+    "comparisonColumnsIndependent": true,
+    "comparisonScrollContained": true
+  },
+  "release": {
+    "name": "新版体验验证",
+    "weeks": 4,
+    "team": 5,
+    "publisher": true,
+    "developmentCost": 1470,
+    "publisherFundingReceived": 1200,
+    "rating": "B",
+    "marketMultiplier": 0.73,
+    "organicBase": 2860,
+    "organicGross": 2088,
+    "studioShare": 0.5,
+    "organicCash": 1044,
+    "publisherAdSpend": 1000,
+    "adGross": 1200,
+    "studioAdCash": 100,
+    "salesCash": 1144,
+    "profit": 874,
+    "wallet": 7934,
+    "reputationGained": 16.44,
+    "experienceGained": 73,
+    "ledgerExpandedAndChecked": true,
+    "forecastBeforeRelease": {
+      "currentBreakeven": 270,
+      "nextWeekCost": 367,
+      "nextBreakeven": 637
+    },
+    "contextualDialogueSeen": "样册翻到了一页空白：池川说「这张纸先放中间，我们一起看看。」",
+    "hiddenResultSeen": "午饭投票又平局了：选择前不显示效果，选择后士气 +6"
+  },
+  "ended": {
+    "releasedWorkbenchHasForecasts": false,
+    "releasedWorkbenchHasDevelopmentControls": false,
+    "abortedSecondProjectHasDevelopmentControls": false,
+    "abortedSecondProjectCost": 0,
+    "abortedSecondProjectRecovery": 0,
+    "abortedSecondProjectProfit": 0,
+    "actualRecordsShown": true
+  },
+  "layoutSamples": [
+    {
+      "requestedWidth": 1440,
+      "clientWidth": 1425,
+      "scrollWidth": 1425,
+      "team": 27,
+      "renderedRows": 27,
+      "modules": 5,
+      "rowOverflow": false
+    },
+    {
+      "requestedWidth": 1440,
+      "clientWidth": 1425,
+      "scrollWidth": 1425,
+      "team": 12,
+      "renderedRows": 12,
+      "modules": 5,
+      "rowOverflow": false
+    },
+    {
+      "requestedWidth": 1440,
+      "clientWidth": 1425,
+      "scrollWidth": 1425,
+      "team": 5,
+      "renderedRows": 5,
+      "modules": 5,
+      "rowOverflow": false
+    },
+    {
+      "requestedWidth": 1440,
+      "clientWidth": 1425,
+      "scrollWidth": 1425,
+      "team": 2,
+      "renderedRows": 2,
+      "modules": 5,
+      "rowOverflow": false
+    },
+    {
+      "requestedWidth": 390,
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "team": 27,
+      "renderedRows": 27,
+      "modules": 5,
+      "rowOverflow": false
+    },
+    {
+      "requestedWidth": 390,
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "team": 12,
+      "renderedRows": 12,
+      "modules": 5,
+      "rowOverflow": false
+    },
+    {
+      "requestedWidth": 390,
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "team": 5,
+      "renderedRows": 5,
+      "modules": 5,
+      "rowOverflow": false
+    },
+    {
+      "requestedWidth": 390,
+      "clientWidth": 375,
+      "scrollWidth": 375,
+      "team": 2,
+      "renderedRows": 2,
+      "modules": 5,
+      "rowOverflow": false
+    },
+    {
+      "requestedWidth": 320,
+      "clientWidth": 305,
+      "scrollWidth": 305,
+      "team": 27,
+      "renderedRows": 27,
+      "modules": 5,
+      "rowOverflow": false
+    },
+    {
+      "requestedWidth": 320,
+      "clientWidth": 305,
+      "scrollWidth": 305,
+      "team": 12,
+      "renderedRows": 12,
+      "modules": 5,
+      "rowOverflow": false
+    },
+    {
+      "requestedWidth": 320,
+      "clientWidth": 305,
+      "scrollWidth": 305,
+      "team": 5,
+      "renderedRows": 5,
+      "modules": 5,
+      "rowOverflow": false
+    },
+    {
+      "requestedWidth": 320,
+      "clientWidth": 305,
+      "scrollWidth": 305,
+      "team": 2,
+      "renderedRows": 2,
+      "modules": 5,
+      "rowOverflow": false
+    }
+  ],
+  "console": {
+    "applicationErrors": 0,
+    "applicationWarnings": 0,
+    "otherNotes": "Browser-extension listener/multiplex warnings were present, all sourced from chrome-extension://; no app warning/error was reported."
+  },
+  "viewportRestored": true,
+  "screenshots": [
+    "docs/v018-workbench-desktop.png",
+    "docs/v018-workbench-mobile.png",
+    "docs/v018-assignment-review.png",
+    "docs/v018-recruit-compare-mobile.png",
+    "docs/v018-release-decision.png",
+    "docs/v018-settlement.png",
+    "docs/v018-settlement-mobile.png",
+    "docs/v018-ended-workbench.png"
+  ]
+}
