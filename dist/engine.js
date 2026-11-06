@@ -1,4 +1,4 @@
-/* 天才程序员带我做游戏 v0.10.1 · shared career and pausable projects. */
+/* 天才程序员带我做游戏 v0.10.2 · shared career and pausable projects. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.StudioGame=factory();})(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
   const VERSION=10;
@@ -70,7 +70,7 @@
   function preferredJob(m){return ({design:'gameplay',code:'development',art:'subtheme',test:'qa',ops:'ads'})[SKILLS.reduce((a,j)=>m.skills[j.id]>m.skills[a]?j.id:a,'design')];}
   function createTeam(profile,partners){const hero=makeMember({...copy(HERO),name:profile.name,skills:copy(profile.skills)},'gameplay');return [hero,makeMember(COMPANION,'development'),...partners.map(id=>{const r=RECRUITS.find(r=>r.id===id);return makeMember(r,preferredJob(r));})];}
   function addLog(s,text,kind='info'){s.logs.unshift({week:s.week,text,kind});s.logs=s.logs.slice(0,90);}
-  function blocked(s){return s.over||s.paused||!!s.pendingEvent;}
+  function blocked(s){return s.over||s.paused||!!s.pendingEvent||!!s.eventResult?.unread;}
   function assignMember(s,id,job){const m=s.team.find(m=>m.id===id);if(blocked(s)||!m||publisherManaged(s,job)||job!=='idle'&&taskSkill(m,job)<=0)return false;m.job=job;syncPeople(s);return true;}
   function availableRecruits(s){return RECRUITS.filter(r=>s.knownPartners.includes(r.id)&&!s.team.some(m=>m.id===r.id)&&!s.departed.includes(r.id));}
   function teamSize(s){return s.team.length;}
@@ -89,7 +89,7 @@
   function coreReady(s){return JOBS.filter(j=>['content','framework'].includes(j.group)).every(j=>progress(s,j.id)>=1);}
   function complete(s){return progress(s,'materials')>=1&&progress(s,'review')>=1;}
   function goals(s){return ['materials','review'].map(id=>({name:task(id).name,ok:progress(s,id)>=1,value:Math.floor(progress(s,id)*100)+'%'}));}
-  function canRelease(s){return !s.over&&!s.paused&&!s.pendingEvent&&complete(s);}
+  function canRelease(s){return !blocked(s)&&complete(s);}
   function jobContributions(s,id,members,m=mods(s)){
     const j=task(id);if(!j||publisherManaged(s,id)||id==='acquisition'&&s.adBudget===0)return [];
     const ordered=members.map(p=>({id:p.id,n:taskSkill(p,id)/100*(id!==p.lastJob?1-.2*m.ramp:1)})).sort((a,b)=>b.n-a.n||a.id.localeCompare(b.id));
@@ -168,7 +168,7 @@
 
   function newRun(config={},meta=emptyMeta()){if(!validateMeta(meta))throw Error('生涯数据无效');if(meta.activeRunId)throw Error('请先暂停或结算当前项目，再开始新项目');const scaleId=config.scale||SCALES[0].id,g=SCALES.find(g=>g.id===scaleId);if(!g)throw Error('请选择有效的项目规模');const name=String(config.name||g.title).trim().slice(0,18)||g.title,nameStatus=projectNameStatus(name);if(!nameStatus.ok)throw Error(nameStatus.reason);const plan=scalePlan(g.id);if(meta.wallet<plan.minFunds)throw Error('资金不足：'+g.name+'需要 ¥'+plan.minFunds.toLocaleString('zh-CN')+'，当前 ¥'+meta.wallet.toLocaleString('zh-CN')+'，还差 ¥'+(plan.minFunds-meta.wallet).toLocaleString('zh-CN'));const seed=(Number(config.seed)||Date.now())>>>0;
     const req=baseRequirements(g.id);
-    const s={version:VERSION,id:'run-'+meta.stage+'-'+seed+'-'+Date.now(),stage:meta.stage,seed,rng:seed,scale:g.id,name,hard:config.hard===true,week:1,money:meta.wallet,spent:0,income:0,sharedCashDelta:0,paused:false,pace:'normal',work:Object.fromEntries(JOBS.map(j=>[j.id,0])),req,bugs:0,debt:0,morale:90,effects:[],logs:[],history:[],milestones:[],publisher:null,managed:false,pendingEvent:null,lastEvent:null,over:false,result:null,objective:config.objective==='acclaim'?'acclaim':'profit',departed:[],adBudget:0,adSpend:0,ratingRolls:{},revealRolls:{},ratingBonus:{},softCaps:Object.fromEntries(JOBS.filter(j=>j.group!=='release').map(j=>[j.id,INITIAL_SOFT_CAP])),pendingCapGroup:null};
+    const s={version:VERSION,id:'run-'+meta.stage+'-'+seed+'-'+Date.now(),stage:meta.stage,seed,rng:seed,scale:g.id,name,hard:config.hard===true,week:1,money:meta.wallet,spent:0,income:0,sharedCashDelta:0,paused:false,pace:'normal',work:Object.fromEntries(JOBS.map(j=>[j.id,0])),req,bugs:0,debt:0,morale:90,effects:[],logs:[],history:[],milestones:[],publisher:null,managed:false,pendingEvent:null,pendingChoices:null,eventResult:null,lastEvent:null,over:false,result:null,objective:config.objective==='acclaim'?'acclaim':'profit',departed:[],adBudget:0,adSpend:0,ratingRolls:{},revealRolls:{},ratingBonus:{},softCaps:Object.fromEntries(JOBS.filter(j=>j.group!=='release').map(j=>[j.id,INITIAL_SOFT_CAP])),pendingCapGroup:null};
     s.initialMoney=s.money;s.knownPartners=meta.knownPartners.slice();s.team=createTeam(meta.hero,meta.partners);syncPeople(s);if(s.money<cost(s).total)throw Error('生涯资金不足以支付首周团队成本；可在局外重新开始生涯');GROUPS.filter(g=>g.id!=='release').forEach(g=>{s.ratingRolls[g.id]=round(random(s)*56-28);s.revealRolls[g.id]=round(random(s)*2-1);s.ratingBonus[g.id]=0;});meta.activeRunId=s.id;meta.stage++;
     addLog(s,'第 '+s.stage+' 关「'+s.name+'」立项：继承资金 ¥'+s.money+' 与主角能力；'+g.name+'，需要 '+plan.personWeeks+' 人周工作量'+'；上架两项完成即可发售。','good');return s;
   }
@@ -236,14 +236,153 @@
     {id:'cash_review',tag:'资金复盘',title:'先算清楚，还能开发几周',text:'所有项目共用生涯余额；结束全部未完成项目后可领取创业补助，补助不算作品盈利。买量回款扣除投放投入后，才是买量净回款。',condition:s=>s.money<5440,choices:[{label:'精简短期维护安排',hint:'未来 2 周维护费 −25%，工资与买量预算不变',effect:{job:'overhead',mult:.75,weeks:2,name:'维护节流'}},{label:'研究商业化短板',hint:'商业化三项软上限各 +15%',caps:{commerce:.15}}]},
     {id:'team_exchange',tag:'全局团队',title:'伙伴想交流一下各自的工作方法',text:'伙伴与主角能力会带入后续项目；每个人本周仍只能负责一个岗位。',condition:s=>s.team.length>2||availableRecruits(s).length>0,choices:[{label:'组织岗位分享',hint:'下周全体效率 +12%',effect:{all:1.12,weeks:1,name:'岗位分享'}},{label:'安排团队交流',hint:'士气 +7',morale:7}]}
   ];
-  function event(s){const e=EVENTS.find(e=>e.id===s.pendingEvent);if(!e)return undefined;const g=group(s.pendingCapGroup),choices=e.choices.slice();if(g&&JOBS.some(j=>j.group===g.id&&softCap(s,j.id)<HARD_CAP))choices.push({label:'复盘并拓展'+g.name,hint:g.name+'各项完成度软上限 +15%，最高 100%；仍需安排工作',caps:{[g.id]:CAP_STEP}});return {...e,choices};}
-  function eventChoiceStatus(s,i){if(s.paused)return {ok:false,reason:'项目已暂停'};const c=event(s)?.choices[i];if(!c)return {ok:false,reason:'无效选项'};if(c.cash<0&&s.money<-c.cash)return {ok:false,reason:'资金不足'};return {ok:true};}
+  // Daily and concealed events deliberately share the same presentation before selection.
+  const daily=(id,title,text,labels)=>({id,kind:'ambient',tag:'工作室日常',title,text,choices:labels.map(label=>({label}))});
+  const concealed=(id,title,text,choices)=>({id,kind:'hidden',tag:'工作室日常',title,text,choices});
+  const publisherEvent=(id,title,text,choices)=>({id,kind:'publisher',tag:'发行商建议',title,text:'发行商代表：'+text,condition:s=>!!s.publisher,choices});
+  EVENTS.push(
+    daily('daily_cat','窗外有一只猫','一只猫坐在窗台上，似乎在监督这个工作室。',['隔着玻璃挥挥手','给它起个名字','继续看屏幕']),
+    daily('daily_lunch','午饭投票又平局了','菜单在群里传了三轮，大家依旧没有达成共识。',['投面条一票','投米饭一票','让硬币决定']),
+    daily('daily_branch','这个分支该叫什么','天才程序员说，这次取一个平平无奇的名字就好。',['叫做 next','叫做 next_final','叫做 next_final_really']),
+    daily('daily_plant','桌上的绿植朝左歪了','大家围着花盆研究了片刻，谁也没说出个所以然。',['把花盆转半圈','给它画个小箭头','赞同它的选择']),
+    daily('daily_cable','那根线到底属于谁','抽屉里多出一根没有标签的线，接口看起来很有年代感。',['放回原处','贴上「未知」标签','摆进线材收藏盒']),
+    daily('daily_cursor','光标停在一个句号后面','办公室很安静，只有键盘灯在缓缓变色。',['看它变成蓝色','看它变成紫色','把视线移开']),
+    daily('daily_rain','雨滴在窗上排队','有人问：如果把雨声放进片尾，会不会很合适？',['说像白噪音','说像篝火声','点头听一会儿']),
+    daily('daily_elevator','电梯里遇见邻居工作室','对方抱着一箱马克杯，你们交换了一个熟悉的眼神。',['微笑点头','聊一句天气','扶住电梯门']),
+    concealed('hidden_folder','旧文件夹里有什么','清理桌面时，一个名字模糊的文件夹引起了注意。',[
+      {label:'打开看看',resultText:'里面是曾经搁置的世界观草稿，题材有了新的打磨空间。',caps:{theme:.15}},
+      {label:'先归档',resultText:'归档时翻到了工具订单的返现凭证。',cash:90}]),
+    concealed('hidden_note','显示器边的一张便签','便签上只有一个箭头，指向屏幕角落。',[
+      {label:'顺着箭头找找',resultText:'原来是伙伴留下的问题复现线索。',bugs:-2},
+      {label:'把便签翻过来',resultText:'背面画着团队全员的简笔头像。',morale:4}]),
+    concealed('hidden_mail','收到一封没有标题的邮件','发件人的头像看起来有些熟悉。',[
+      {label:'回复一句问候',resultText:'以前的合作方补结了一笔尾款。',cash:150},
+      {label:'转给天才程序员',resultText:'邮件附件里的旧接口被临时接入，留下了一点维护负担。',debt:2}]),
+    concealed('hidden_build','构建结束时响了一声','屏幕上的窗口被另一张便签挡住了。',[
+      {label:'移开便签',resultText:'发现了可以复用的编译缓存，下一周程序工作更快。',effect:{job:'code',mult:1.18,weeks:1,name:'编译缓存'}},
+      {label:'先去倒杯水',resultText:'回来后发现日志里记录了几个边界问题。',bugs:3}]),
+    concealed('hidden_ticket','抽屉里的一张小票','纸张已经有些褪色，上面还有一个手绘的笑脸。',[
+      {label:'拿给大家看看',resultText:'这是工作室第一次聚餐的小票，大家聊起了当时的糗事。',morale:8},
+      {label:'夹进笔记本',resultText:'意外翻到了还没兑现的休假计划，大家有点失落。',morale:-4}]),
+    concealed('hidden_message','群聊里多了一条语音','消息不长，背景里有一点风声。',[
+      {label:'戴耳机听',resultText:'老朋友分享了一种有趣的玩法思路。',caps:{gameplay:.15}},
+      {label:'外放给大家听',resultText:'试玩者一口气描述了几个新问题。',bugs:2}]),
+    concealed('hidden_drawer','要整理哪个抽屉','工位旁的两个抽屉都贴着同样的标签。',[
+      {label:'上面的抽屉',resultText:'找到一张仍可兑换的小额工具券，已经折抵入账。',cash:80},
+      {label:'下面的抽屉',resultText:'找到尚未过期的维护套餐，未来两周可以节省一点开销。',effect:{job:'overhead',mult:.9,weeks:2,name:'旧维护套餐'}}]),
+    concealed('hidden_dream','早上想起了一个梦','梦里的游戏画面很清晰，但醒来后只剩两个片段。',[
+      {label:'记下那片风景',resultText:'风景给子主题提供了新的表达空间。',caps:{subtheme:.15}},
+      {label:'记下那段对白',resultText:'对白让作品的内容表达更有感染力。',bonus:{content:2}}]),
+    publisherEvent('publisher_position','发行商安排了一次定位讨论','你们的题材表达还有值得拓展的空间，也可以先把现有方向整理到位。',[
+      {label:'拓展内容表达',hint:'内容三项软上限各 +15%，最高 100%',caps:{content:.15}},
+      {label:'一起梳理题材',hint:'题材完成度 +8%，受当前上限限制',progress:{theme:.08}}]),
+    publisherEvent('publisher_playtest','发行商带来了试玩记录','我们整理了玩家卡住的地方，可以协助打磨，也可以探索玩法的下一步。',[
+      {label:'协作打磨玩法',hint:'玩法完成度 +8%，受当前上限限制',progress:{gameplay:.08}},
+      {label:'研究新玩法空间',hint:'玩法软上限 +15%，最高 100%',caps:{gameplay:.15}}]),
+    publisherEvent('publisher_tech','发行商请来了技术顾问','顾问看过现有构架，愿意协助整理实现或系统接口。',[
+      {label:'协助推进实现',hint:'开发进度完成度 +8%，受软上限和内容依赖限制',progress:{development:.08}},
+      {label:'梳理系统接口',hint:'系统协作完成度 +8%，受软上限和开发依赖限制',progress:{systems:.08}},
+      {label:'拓展程序打磨空间',hint:'程序三项软上限各 +15%，最高 100%',caps:{framework:.15}}]),
+    publisherEvent('publisher_quality','发行商组织了验收交流','现有实现可以交给验收人员协助测试，也可以先完善后续测试方案。',[
+      {label:'联合测试现有版本',hint:'测试完成度 +10%，受软上限和上游依赖限制；问题 −2',progress:{qa:.1},bugs:-2},
+      {label:'补充测试方案',hint:'测试软上限 +15%，最高 100%',caps:{qa:.15}}]),
+    publisherEvent('publisher_commerce','发行商提供了商业化建议','我们可以协作改善付费体验，或为商业化预留更多打磨空间。',[
+      {label:'协作打磨付费体验',hint:'用户付费完成度 +10%，受当前上限限制',progress:{payment:.1}},
+      {label:'拓展商业化方案',hint:'商业化三项软上限各 +15%，最高 100%',caps:{commerce:.15}}]),
+    publisherEvent('publisher_ads','发行商分享了广告体验建议','广告变现属于你们的商业化设计；我们可以协助打磨激励位置和展示节奏。',[
+      {label:'协作改善广告体验',hint:'广告变现完成度 +10%，受当前上限限制；不影响买量预算',progress:{ads:.1}},
+      {label:'拓展广告设计空间',hint:'广告变现软上限 +15%，最高 100%',caps:{ads:.15}}]),
+    publisherEvent('publisher_ip','发行商提出了衍生内容建议','角色与世界观很有辨识度，可以一起梳理衍生内容的制作方向。',[
+      {label:'协作完善衍生内容',hint:'IP衍生完成度 +10%，受当前上限限制',progress:{ip:.1}},
+      {label:'拓展衍生内容空间',hint:'IP衍生软上限 +15%，最高 100%',caps:{ip:.15}}]),
+    publisherEvent('publisher_art','发行商提出了视觉建议','我们从商店展示的角度整理了一批参考，希望能帮助作品更有辨识度。',[
+      {label:'协作完善子主题',hint:'子主题完成度 +8%，受当前上限限制',progress:{subtheme:.08}},
+      {label:'拓展视觉表现空间',hint:'子主题软上限 +15%，最高 100%',caps:{subtheme:.15}}])
+  );
+  const eventTargets=id=>task(id)?[task(id)]:JOBS.filter(j=>j.group===id);
+  function publisherAdviceAllowed(c){return ['caps','progress'].some(k=>c[k])&&['caps','progress'].every(k=>Object.keys(c[k]||{}).every(id=>eventTargets(id).length&&eventTargets(id).every(j=>['content','framework','commerce'].includes(j.group))));}
+  const capRoom=(s,id)=>eventTargets(id).some(j=>j.group!=='release'&&softCap(s,j.id)<HARD_CAP);
+  const progressRoom=(s,id)=>workLimit(s,id)-s.work[id]>.01;
+  // Original events remain, but irrelevant contexts and exhausted choices leave the live pool.
+  function eventContext(s,e){
+    if(e.min&&coreProgress(s)<e.min||e.condition&&!e.condition(s))return false;
+    if(['bug','compat','debt'].includes(e.id))return e.id==='bug'?s.bugs>0:s.debt>0;
+    if(['forms','store_page'].includes(e.id))return !complete(s);
+    if(e.id==='backup')return JOBS.some(j=>j.skill==='code'&&s.people[j.id]>0);
+    return true;
+  }
+  function usefulChoice(s,c){
+    if(c.cash<0&&s.money<-c.cash)return false;
+    // When the principal reward is exhausted, secondary morale or cleanup does not keep it alive.
+    if(c.caps&&!Object.keys(c.caps).some(id=>capRoom(s,id)))return false;
+    if(c.progress&&!Object.keys(c.progress).some(id=>progressRoom(s,id)))return false;
+    return c.cash>0||c.caps||c.progress||c.effect||c.bonus&&Object.entries(c.bonus).some(([id,n])=>n>0?s.ratingBonus[id]<12:s.ratingBonus[id]>-12)||c.bugs>0||c.bugs<0&&s.bugs>0||c.debt>0||c.debt<0&&s.debt>0||c.morale>0&&s.morale<100||c.morale<0&&s.morale>25;
+  }
+  function eventWeight(s,e,choices){
+    let weight=1;
+    if(e.id==='cash_review'&&s.money<cost(s).total*4)weight+=3;
+    if(e.id==='tired'&&s.morale<50)weight+=2;
+    if(e.id==='bug'&&s.bugs>5||e.id==='debt'&&s.debt>8)weight+=2;
+    if(choices.some(c=>c.caps&&Object.keys(c.caps).some(id=>eventTargets(id).some(j=>j.group!=='release'&&(s.people[j.id]>0||publisherManaged(s,j.id))&&progress(s,j.id)>=softCap(s,j.id)-.05))))weight+=2;
+    return weight;
+  }
+  function eligibleEvents(s){return EVENTS.filter(e=>e.id!==s.lastEvent&&eventContext(s,e)).map(e=>{
+    const choices=e.kind==='ambient'?e.choices:e.kind==='hidden'?(e.choices.some(c=>usefulChoice(s,c))?e.choices:[]):e.choices.filter(c=>(e.kind!=='publisher'||publisherAdviceAllowed(c))&&usefulChoice(s,c));
+    // Paused projects share their wallet with other projects: never freeze a paid-only decision.
+    if(!e.kind&&choices.length&&choices.every(c=>c.cash<0))choices.push({label:'暂时搁置',hint:'保留现有成果，没有数值变化'});
+    return {...e,choices,weight:eventWeight(s,e,choices)};
+  }).filter(e=>e.choices.length);}
+  function eventPool(s){return eligibleEvents(s).map(e=>({id:e.id,kind:e.kind||'standard',weight:e.weight}));}
+  function pendingEvent(s){const e=EVENTS.find(e=>e.id===s.pendingEvent);if(!e)return undefined;
+    const frozen=s.pendingChoices?.id===e.id,choices=frozen?copy(s.pendingChoices.choices):e.choices.slice(),g=group(s.pendingCapGroup);
+    if(!frozen&&!e.kind&&g&&capRoom(s,g.id))choices.push({label:'复盘并拓展'+g.name,hint:g.name+'各项完成度软上限 +15%，最高 100%；仍需安排工作',caps:{[g.id]:CAP_STEP}});
+    return {...e,choices};
+  }
+  function event(s){const e=pendingEvent(s);if(!e)return undefined;
+    const daily=e.kind==='ambient'||e.kind==='hidden';
+    return {id:e.id,kind:daily?'daily':e.kind||'standard',tag:e.tag,title:e.title,text:e.text,choices:e.choices.map(c=>daily?{label:c.label}:{...c})};
+  }
+  function eventChoiceStatus(s,i){if(s.over||s.paused)return {ok:false,reason:'项目已结束或暂停'};const e=pendingEvent(s),c=e?.choices[i];if(!c||e.kind==='publisher'&&!s.publisher)return {ok:false,reason:'无效选项'};if(e.kind==='publisher'&&!publisherAdviceAllowed(c))return {ok:false,reason:'发行商建议只能协助游戏内容、程序构架和商业化工作'};if(c.cash<0&&s.money<-c.cash)return {ok:false,reason:'资金不足'};return {ok:true};}
+  function acknowledgeEvent(s){if(s.over||s.paused||!s.eventResult?.unread)return false;s.eventResult.unread=false;return true;}
   function checkMilestones(s){const n=coreProgress(s);for(const milestone of [{id:'prototype',check:n>=.3,name:'可玩原型'},{id:'vertical',check:n>=.65,name:'垂直切片'},{id:'content',check:coreReady(s),name:'内容完成'}])if(milestone.check&&!s.milestones.includes(milestone.id)){s.milestones.push(milestone.id);const newcomers=RECRUITS.filter(r=>r.stage===milestone.id&&!s.knownPartners.includes(r.id));s.knownPartners.push(...newcomers.map(r=>r.id));addLog(s,'达成「'+milestone.name+'」。'+(newcomers.length?newcomers.map(r=>r.name).join('、')+'发来伙伴来信，加入全局结识名单。':'已结识的伙伴会继续与你同行。'),'good');}}
-  function resolveEvent(s,i){const e=event(s),c=e?.choices[i];if(s.over||s.paused||!eventChoiceStatus(s,i).ok)return false;if(c.cash){s.money+=c.cash;if(c.cash<0)s.spent-=c.cash;else s.income+=c.cash;}if(c.caps)unlockCaps(s,c.caps);if(c.bonus)Object.entries(c.bonus).forEach(([k,v])=>s.ratingBonus[k]=clamp(s.ratingBonus[k]+v,-12,12));s.bugs=Math.max(0,s.bugs+(c.bugs||0));s.debt=Math.max(0,s.debt+(c.debt||0));s.morale=clamp(s.morale+(c.morale||0),25,100);if(c.effect)s.effects.push(copy(c.effect));addLog(s,e.title+'：'+c.label+'。'+c.hint,c.cash<0?'info':'good');s.pendingEvent=null;s.pendingCapGroup=null;checkMilestones(s);return true;}
+  function resolveEvent(s,i){const e=pendingEvent(s),c=e?.choices[i];if(!eventChoiceStatus(s,i).ok)return false;
+    const before={work:copy(s.work),caps:copy(s.softCaps),money:s.money,bugs:s.bugs,debt:s.debt,morale:s.morale,bonus:copy(s.ratingBonus)},details=[];
+    if(c.cash){s.money+=c.cash;if(c.cash<0)s.spent-=c.cash;else s.income+=c.cash;}
+    if(c.caps)unlockCaps(s,c.caps);
+    if(c.bonus)Object.entries(c.bonus).forEach(([k,v])=>s.ratingBonus[k]=clamp(s.ratingBonus[k]+v,-12,12));
+    // Advice is applied once, bounded by the current soft cap and a single dependency snapshot.
+    const limits=Object.fromEntries(JOBS.map(j=>[j.id,workLimit(s,j.id)]));
+    if(e.kind==='publisher'&&c.progress)for(const [id,n] of Object.entries(c.progress))s.work[id]=Math.max(s.work[id],round(Math.min(limits[id],s.work[id]+s.req[id]*n)));
+    s.bugs=round(Math.max(0,s.bugs+(c.bugs||0)));s.debt=round(Math.max(0,s.debt+(c.debt||0)));s.morale=clamp(s.morale+(c.morale||0),25,100);
+    if(c.effect)s.effects.push(copy(c.effect));
+    const signed=n=>(n>0?'+':'−')+Math.abs(round(n));
+    if(s.money!==before.money)details.push('生涯资金 '+(s.money>before.money?'+':'−')+'¥'+Math.abs(s.money-before.money));
+    for(const j of JOBS){const gain=round((s.work[j.id]-before.work[j.id])/s.req[j.id]*100);if(gain)details.push(j.name+'完成度 '+signed(gain)+'%（现为 '+round(progress(s,j.id)*100)+'%）');if(j.group!=='release'&&s.softCaps[j.id]!==before.caps[j.id])details.push(j.name+'软上限 '+round(before.caps[j.id]*100)+'% → '+round(s.softCaps[j.id]*100)+'%');}
+    for(const [id,name] of [['bugs','问题'],['debt','技术债'],['morale','士气']])if(s[id]!==before[id])details.push(name+' '+signed(s[id]-before[id]));
+    for(const g of GROUPS.filter(g=>g.id!=='release'))if(s.ratingBonus[g.id]!==before.bonus[g.id])details.push(g.name+'潜力 '+signed(s.ratingBonus[g.id]-before.bonus[g.id]));
+    if(c.effect){const effect=c.effect,label=effect.all?'全体效率':effect.job==='overhead'?'维护费':(SKILLS.find(k=>k.id===effect.job)?.name||'工作')+'效率';details.push(label+' '+signed(((effect.all||effect.mult||1)-1)*100)+'% · 持续 '+effect.weeks+' 周');}
+    if(!details.length)details.push('没有发生任何数值变化。');
+    s.eventResult={id:e.id,kind:e.kind||'standard',week:s.week-1,title:e.title,label:c.label,text:c.resultText||(e.kind==='ambient'?'大家聊了几句，这段小插曲就这样过去了。':e.kind==='publisher'?'发行团队已落实这项建议。':'本周的决定已经记录。'),details,unread:!!e.kind};
+    addLog(s,e.title+'：'+c.label+'。'+details.join('；'),c.cash<0?'info':'good');
+    s.pendingEvent=null;s.pendingCapGroup=null;s.pendingChoices=null;if(e.kind==='publisher')checkMilestones(s);return true;
+  }
+  function drawEvent(s){
+    const pool=eligibleEvents(s),weights=s.publisher?{standard:48,ambient:14,hidden:14,publisher:24}:{standard:52,ambient:24,hidden:24};
+    const kinds=Object.keys(weights).filter(kind=>pool.some(e=>(e.kind||'standard')===kind));
+    let roll=random(s)*kinds.reduce((n,k)=>n+weights[k],0),kind=kinds.at(-1);
+    for(const k of kinds){roll-=weights[k];if(roll<0){kind=k;break;}}
+    const candidates=pool.filter(e=>(e.kind||'standard')===kind);roll=random(s)*candidates.reduce((n,e)=>n+e.weight,0);let chosen=candidates.at(-1);
+    for(const e of candidates){roll-=e.weight;if(roll<0){chosen=e;break;}}
+    s.pendingEvent=chosen.id;s.pendingChoices={id:chosen.id,choices:copy(chosen.choices)};s.pendingCapGroup=null;
+    // Preserve the original bonus cap opportunity only for the original events.
+    if(!chosen.kind){const groups=GROUPS.filter(g=>g.id!=='release'&&capRoom(s,g.id));if(groups.length){const g=groups[Math.floor(random(s)*groups.length)];s.pendingCapGroup=g.id;s.pendingChoices.choices.push({label:'复盘并拓展'+g.name,hint:g.name+'各项完成度软上限 +15%，最高 100%；仍需安排工作',caps:{[g.id]:CAP_STEP}});}}
+    s.lastEvent=chosen.id;return chosen;
+  }
   function advance(s){if(blocked(s))return {ok:false,reason:'请先完成当前选择'};const c=cost(s);if(s.money<c.total)return {ok:false,reason:'资金不足以支付本周工资、维护和投放；可降低买量预算、签约发行商或发售。'};const contributions=s.team.map(m=>({id:m.id,name:m.name,job:m.job,output:memberOutput(s,m.id)}));s.money-=c.total;s.spent+=c.total;const {production,gains,ranges,impacts}=workWeek(s);s.effects=s.effects.map(e=>({...e,weeks:e.weeks-1})).filter(e=>e.weeks>0);s.history.push({week:s.week,cost:c.total,ads:c.ads,publisherAds:c.publisherAds,production,gains,ranges,impacts,team:contributions,money:s.money,ratings:quality(s)});addLog(s,'完成第 '+s.week+' 周：支出 ¥'+c.total+(c.ads?'（含买量 ¥'+c.ads+'）':'')+(c.publisherAds?'，发行商另垫付买量 ¥'+c.publisherAds:'')+(s.publisher?'，发行团队自动推进宣发与上架':'')+'。'+contributions.filter(m=>m.output>0).map(m=>m.name+'负责'+task(m.job).name).join('、')+'。');
     for(const impact of impacts)addLog(s,task(impact.from).name+'的调整牵连了'+task(impact.to).name+'，后者完成度 −'+impact.points+'%。');
     for(const j of JOBS)if(gains[j.id]<0)addLog(s,task(j.id).name+'本周净变化：'+round(gains[j.id]/s.req[j.id]*100)+'%。');
-    const events=EVENTS.filter(e=>(!e.min||coreProgress(s)>=e.min)&&(!e.condition||e.condition(s))&&e.id!==s.lastEvent),e=events[Math.floor(random(s)*events.length)],groups=GROUPS.filter(g=>g.id!=='release'&&JOBS.some(j=>j.group===g.id&&softCap(s,j.id)<HARD_CAP));s.pendingEvent=e.id;s.pendingCapGroup=groups.length?groups[Math.floor(random(s)*groups.length)].id:null;s.lastEvent=e.id;s.week++;s.managed=false;return {ok:true,event:e.id};}
+    checkMilestones(s);const e=drawEvent(s);s.week++;s.managed=false;return {ok:true,event:e.id};}
+
   function preview(s,ignoreModeEffects=false){if(blocked(s))return null;const p=copy(s),c=cost(p),{production,gains,ranges}=workWeek(p,true,ignoreModeEffects);return {production,gains,ranges,cost:c,work:p.work,bugs:p.bugs,debt:p.debt,bottlenecks:p.lastBottlenecks,money:s.money-c.total};}
   // UI estimates use full efficiency; actual settlement retains real-mode slowdown, rework and spillover.
   function progressEstimate(s){return preview(s,true);}
@@ -332,7 +471,7 @@
     const recoveryRate=!released&&s.spent>0?(10+Math.floor(random(s)*41))/100:null,recovery=recoveryRate===null?0:Math.round(s.spent*recoveryRate);
     const profit=revenue+recovery+s.income-s.spent,objectiveOK=!!released&&(s.objective==='acclaim'?gradeIndex(trueValue)>=9:profit>=1200);
     const exp=released?Math.round(35+trueValue*.9+(profit>0?20:0)+(s.hard?25:0)+(objectiveOK?40:0)):Math.min(30,s.milestones.length*8);
-    s.money+=revenue+recovery;s.over=true;s.pendingEvent=null;s.pendingCapGroup=null;
+    s.money+=revenue+recovery;s.over=true;s.pendingEvent=null;s.pendingCapGroup=null;s.pendingChoices=null;if(s.eventResult)s.eventResult.unread=false;
     s.result={runId:s.id,stage:s.stage,walletStart:s.initialMoney,walletEnd:s.money,sharedCashDelta:s.sharedCashDelta,name:s.name,hard:s.hard,totalCompletion:round(JOBS.reduce((n,j)=>n+progress(s,j.id),0)/JOBS.length*100),progress:Object.fromEntries(GROUPS.map(g=>[g.id,round(groupProgress(s,g.id)*100)])),scale:s.scale,released,weeks:s.week-1,score:Math.round(trueValue),rating:released?rating:'—',ratings:released?Object.fromEntries(GROUPS.filter(g=>g.id!=='release').map(g=>[g.id,{grade:grade(trueScore(s,g.id)),score:trueScore(s,g.id)}])):null,organicRevenue,organicGrossRevenue,publisherOrganicRevenue,organicBaseRevenue,marketMultiplier:marketFactor,scaleRevenueMultiplier,adRevenue,adGrossRevenue:ad.gross,adNetRevenue:ad.studioNet,adCampaignNetRevenue:ad.campaignNet,adSpend:s.adSpend,studioAdSpend:ad.studioSpend,publisherAdSpend:ad.publisherSpend,publisherAdRevenue:ad.publisherRevenue,publisherAdRecovered:ad.publisherRecovered,publisherAdProfit:ad.publisherProfit,publisherAdLoss:ad.publisherLoss,adRate:released?adRate(s):null,publisher:copy(s.publisher),otherIncome:s.income,revenue,recovery,recoveryRate,cost:s.spent,profit,exp,objective:s.objective,objectiveOK,team:copy(s.team),seed:s.seed};
     addLog(s,released?'「'+s.name+'」正式发售，真实评级与发行账目已揭晓。':'项目已结束，回收工作室投入 '+recovery.toLocaleString('zh-CN')+' 元，保留里程碑经验。',released?'good':'info');return s.result;
   }
@@ -373,8 +512,14 @@
   }
   function validateSnapshot(snapshot){try{if(!snapshot||!validateMeta(snapshot.meta))return false;const {meta,run}=snapshot;if(meta.activeRunId)return validateRun(run)&&!run.over&&!run.paused&&run.id===meta.activeRunId&&run.money===meta.wallet&&run.stage<meta.stage;return !run||validateRun(run)&&run.over&&!run.paused;}catch{return false;}}
   function teamVoice(s,e){const skill={palette:'art',backup:'code',bug:'test',forms:'ops',showcase:'ops',inspiration:'design',scope:'design',feedback:'test'}[e?.id],m=s.team.find(m=>task(m.job)?.skill===skill)||s.team.find(m=>m.id==='ace');return {id:m.id,name:m.name,text:e?.id==='feedback'?'反馈让我们更接近真实评价，但不一定是我们原先想的那样。':m.quote};}
+  function validEventState(s){
+    const p=s.pendingChoices,r=s.eventResult;
+    if(p&&(!s.pendingEvent||p.id!==s.pendingEvent||!Array.isArray(p.choices)||!p.choices.length||p.choices.some(c=>!c||typeof c.label!=='string')))return false;
+    if(r&&(!EVENTS.some(e=>e.id===r.id)||!['standard','ambient','hidden','publisher'].includes(r.kind)||typeof r.unread!=='boolean'||!Number.isInteger(r.week)||r.week<0||!['title','label','text'].every(k=>typeof r[k]==='string')||!Array.isArray(r.details)||!r.details.length||r.details.some(d=>typeof d!=='string')||r.unread&&(s.pendingEvent||s.over)))return false;
+    return true;
+  }
   function validateRun(s){try{if(!s||s.version!==VERSION||typeof s.paused!=='boolean'||!Number.isInteger(s.stage)||s.stage<1||!SCALES.some(g=>g.id===s.scale)||!Number.isInteger(s.week)||s.week<1||!Array.isArray(s.team)||s.team.length<2||s.team.length>8)return false;for(const a of ['departed','history','logs','effects','milestones','knownPartners'])if(!Array.isArray(s[a]))return false;if(new Set(s.knownPartners).size!==s.knownPartners.length||s.knownPartners.some(id=>!RECRUITS.some(r=>r.id===id))||s.team.some(m=>m.kind==='partner'&&!s.knownPartners.includes(m.id)))return false;if(!s.work||!s.req||!s.softCaps||typeof s.hard!=='boolean'||s.pendingCapGroup&&!GROUPS.some(g=>g.id===s.pendingCapGroup&&g.id!=='release')||!s.people||!['normal','rest','crunch'].includes(s.pace)||!['profit','acclaim'].includes(s.objective)||!AD_BUDGETS.includes(s.adBudget))return false;const ids=s.team.map(m=>m.id);if(new Set(ids).size!==ids.length||!s.team.some(m=>m.id==='hero'&&m.kind==='hero')||!s.team.some(m=>m.id==='ace'&&m.kind==='companion'))return false;if(!s.team.every(m=>typeof m.name==='string'&&m.name.length>0&&Number.isFinite(m.salary)&&m.salary>=0&&['idle',...JOBS.map(j=>j.id)].includes(m.lastJob)&&SKILLS.every(j=>Number.isFinite(m.skills[j.id])&&m.skills[j.id]>=0&&m.skills[j.id]<=200)&&(m.job==='idle'||taskSkill(m,m.job)>0&&!publisherManaged(s,m.job))))return false;
-    return JOBS.every(j=>(j.group==='release'||Number.isFinite(s.softCaps[j.id])&&s.softCaps[j.id]>=INITIAL_SOFT_CAP&&s.softCaps[j.id]<=HARD_CAP&&s.work[j.id]<=s.req[j.id]*s.softCaps[j.id]+.01)&&Number.isFinite(s.work[j.id])&&s.work[j.id]>=0&&Number.isFinite(s.req[j.id])&&s.req[j.id]>0&&s.work[j.id]<=s.req[j.id]+.01&&s.people[j.id]===s.team.filter(m=>m.job===j.id).length)&&s.reserve===s.team.filter(m=>m.job==='idle').length&&GROUPS.filter(g=>g.id!=='release').every(g=>Number.isFinite(s.ratingRolls[g.id])&&Math.abs(s.ratingRolls[g.id])<=28&&Number.isFinite(s.revealRolls[g.id])&&Math.abs(s.revealRolls[g.id])<=1&&Number.isFinite(s.ratingBonus[g.id]))&&[s.money,s.spent,s.income,s.adSpend,s.bugs,s.debt,s.morale,s.rng,s.seed,s.initialMoney,s.sharedCashDelta].every(Number.isFinite)&&s.money>=0&&s.spent>=0&&s.adSpend>=0&&s.adSpend<=(s.spent+(s.publisher?.adSpend||0))&&(s.publisher===null||s.publisher&&Number.isFinite(s.publisher.advance)&&s.publisher.advance>0&&Number.isInteger(s.publisher.signWeek)&&s.publisher.signWeek>=1&&s.publisher.signWeek<=s.week&&Number.isFinite(s.publisher.adSpend)&&s.publisher.adSpend>=0&&s.publisher.adSpend<=s.adSpend&&s.publisher.quote&&s.publisher.quote.advance===s.publisher.advance)&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.over||!!s.result);
+    return validEventState(s)&&JOBS.every(j=>(j.group==='release'||Number.isFinite(s.softCaps[j.id])&&s.softCaps[j.id]>=INITIAL_SOFT_CAP&&s.softCaps[j.id]<=HARD_CAP&&s.work[j.id]<=s.req[j.id]*s.softCaps[j.id]+.01)&&Number.isFinite(s.work[j.id])&&s.work[j.id]>=0&&Number.isFinite(s.req[j.id])&&s.req[j.id]>0&&s.work[j.id]<=s.req[j.id]+.01&&s.people[j.id]===s.team.filter(m=>m.job===j.id).length)&&s.reserve===s.team.filter(m=>m.job==='idle').length&&GROUPS.filter(g=>g.id!=='release').every(g=>Number.isFinite(s.ratingRolls[g.id])&&Math.abs(s.ratingRolls[g.id])<=28&&Number.isFinite(s.revealRolls[g.id])&&Math.abs(s.revealRolls[g.id])<=1&&Number.isFinite(s.ratingBonus[g.id]))&&[s.money,s.spent,s.income,s.adSpend,s.bugs,s.debt,s.morale,s.rng,s.seed,s.initialMoney,s.sharedCashDelta].every(Number.isFinite)&&s.money>=0&&s.spent>=0&&s.adSpend>=0&&s.adSpend<=(s.spent+(s.publisher?.adSpend||0))&&(s.publisher===null||s.publisher&&Number.isFinite(s.publisher.advance)&&s.publisher.advance>0&&Number.isInteger(s.publisher.signWeek)&&s.publisher.signWeek>=1&&s.publisher.signWeek<=s.week&&Number.isFinite(s.publisher.adSpend)&&s.publisher.adSpend>=0&&s.publisher.adSpend<=s.adSpend&&s.publisher.quote&&s.publisher.quote.advance===s.publisher.advance)&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.over||!!s.result);
     }catch{return false;}}
-  return {VERSION,MARKET_MIN,MARKET_MAX,marketMultiplier,revenueRules,INITIAL_FUNDS,startupAidStatus,claimStartupAid,STANDARD_WEEKLY_WORK,STANDARD_PERSON_WEEK_COST,scalePlan,projectNameStatus,HARD_CAP,INITIAL_SOFT_CAP,CAP_STEP,softCap,workPhase,SKILLS,GROUPS,JOBS,GRADES,AD_RATES,AD_BUDGETS,HERO,COMPANION,RECRUITS,SCALES,baseRequirements,PUBLISHER_JOBS,PUBLISHER_WEEKLY_WORK,publisherManaged,publisherQuote,signPublisher,adSettlement,OBJECTIVES,EVENTS,skillLabel,taskSkill,assignMember,availableRecruits,memberOutput,teamVoice,newRun,pauseProject,resumeProject,endProject,validateSnapshot,mods,cost,teamSize,progress,groupProgress,coreProgress,coreReady,complete,goals,canRelease,quality,trueScore,overallScore,grade,gradeIndex,revealLevel,ratingView,overallView,adRate,adProjection,buyingStatus,setAdBudget,forecast,incomeView,objectiveStatus,throughput,workDependency,workLimit,hire,downsize,advance,event,eventChoiceStatus,resolveEvent,preview,progressEstimate,assignmentEstimate,automaticAssignmentPlan,autoAssign,softCapWarnings,finish,emptyMeta,settle,validateMeta,syncCareer,trainingCost,train,renameHero,hirePartner,dismissPartner,validateRun,copy};
+  return {VERSION,MARKET_MIN,MARKET_MAX,marketMultiplier,revenueRules,INITIAL_FUNDS,startupAidStatus,claimStartupAid,STANDARD_WEEKLY_WORK,STANDARD_PERSON_WEEK_COST,scalePlan,projectNameStatus,HARD_CAP,INITIAL_SOFT_CAP,CAP_STEP,softCap,workPhase,SKILLS,GROUPS,JOBS,GRADES,AD_RATES,AD_BUDGETS,HERO,COMPANION,RECRUITS,SCALES,baseRequirements,PUBLISHER_JOBS,PUBLISHER_WEEKLY_WORK,publisherManaged,publisherQuote,signPublisher,adSettlement,OBJECTIVES,EVENTS,skillLabel,taskSkill,assignMember,availableRecruits,memberOutput,teamVoice,newRun,pauseProject,resumeProject,endProject,validateSnapshot,mods,cost,teamSize,progress,groupProgress,coreProgress,coreReady,complete,goals,canRelease,quality,trueScore,overallScore,grade,gradeIndex,revealLevel,ratingView,overallView,adRate,adProjection,buyingStatus,setAdBudget,forecast,incomeView,objectiveStatus,throughput,workDependency,workLimit,hire,downsize,advance,event,eventPool,eventChoiceStatus,resolveEvent,acknowledgeEvent,preview,progressEstimate,assignmentEstimate,automaticAssignmentPlan,autoAssign,softCapWarnings,finish,emptyMeta,settle,validateMeta,syncCareer,trainingCost,train,renameHero,hirePartner,dismissPartner,validateRun,copy};
 });

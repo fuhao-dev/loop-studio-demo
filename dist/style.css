@@ -77,3 +77,6 @@
 
 /* Automatic team assignments */
 .crew-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.auto-assignment-help{margin:0 0 18px;color:var(--muted);font-size:12px}.auto-assignment-help summary{cursor:pointer;color:var(--teal);width:fit-content}.auto-assignment-help p{line-height:1.9;max-width:900px;margin:10px 0}@media(max-width:560px){.crew-section>.section-heading{align-items:flex-start;gap:12px;flex-wrap:wrap}.crew-actions{gap:8px}}
+
+/* Event choice and persisted outcome use the same compact dialog on every viewport. */
+.daily-option{min-height:58px}.publisher-advice{display:flex;align-items:center;gap:14px;padding:14px;background:#22342f;border:1px solid #3d6151;border-radius:8px;margin:16px 0}.publisher-advice>span{font-size:32px;color:var(--teal)}.publisher-advice p{font-size:12px;color:var(--muted);margin-top:4px}.event-result-mark{font-size:46px;text-align:center;color:var(--gold);padding:16px}.event-choice-receipt{font-size:12px;color:var(--muted);margin:12px 0}.event-result-effects{border:1px solid #3b5149;border-radius:8px;background:#1d2c28;padding:14px 18px;margin:16px 0}.event-result-effects p{font-size:13px;overflow-wrap:anywhere}.event-result-effects p+p{border-top:1px solid #34453e;margin-top:8px;padding-top:8px}

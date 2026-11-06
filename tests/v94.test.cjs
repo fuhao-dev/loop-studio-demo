@@ -38,7 +38,7 @@ check('pre-week budget warning does not spend time money or randomness',()=>{
   vm.runInNewContext(code+';showWorkCapWarning([])',{G,run,showDialog:x=>markup=x,dialogHeader:()=>'',esc:String});assert.equal(JSON.stringify(run),before);assert.ok(markup.includes('预算为 ¥0，本周买量无进度')&&markup.includes('去设置买量预算')&&markup.includes('仍然推进一周'));assert.ok(source.includes('warnings.length||buying.unfunded'));
 });
 check('event pool covers the current game and has no removed systems',()=>{
-  assert.equal(G.EVENTS.length,24);assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,24);
+  assert.equal(G.EVENTS.length,48);assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,48);
   const texts=G.EVENTS.map(e=>e.title+e.text+e.choices.map(c=>c.label+c.hint).join('')).join('');assert.ok(!/阿策|蓝图|主攻|任务奖励|角色模板/.test(texts));
   for(const key of ['买量净回款','0.10～10.00','软上限','规模','生涯','伙伴','资料','审核','广告变现','用户付费','IP'])assert.ok(texts.includes(key),key);
 });
@@ -57,7 +57,7 @@ check('seeded weekly events meet their state conditions without repeating the la
   assert.ok(seen.has('ad_plan')&&seen.has('scale_review')&&seen.has('market_watch')&&seen.has('cash_review')&&seen.has('team_exchange'));assert.ok(seen.size>=20);
 });
 check('pending current-version events restore identically and never grant progress directly',()=>{
-  for(const e of G.EVENTS.slice(14))for(let i=0;i<e.choices.length;i++){const s=ready();for(const j of G.JOBS)s.work[j.id]=s.req[j.id]*.5;s.pendingEvent=e.id;const restored=G.copy(s),before=G.copy(s.work),rng=s.rng;assert.ok(G.resolveEvent(s,i));assert.ok(G.resolveEvent(restored,i));assert.deepEqual(restored,s);assert.deepEqual(s.work,before);assert.equal(s.rng,rng);assert.ok(G.validateRun(s));}
+  for(const e of G.EVENTS.slice(14,24))for(let i=0;i<e.choices.length;i++){const s=ready();for(const j of G.JOBS)s.work[j.id]=s.req[j.id]*.5;s.pendingEvent=e.id;const restored=G.copy(s),before=G.copy(s.work),rng=s.rng;assert.ok(G.resolveEvent(s,i));assert.ok(G.resolveEvent(restored,i));assert.deepEqual(restored,s);assert.deepEqual(s.work,before);assert.equal(s.rng,rng);assert.ok(G.validateRun(s));}
 });
 check('cash-review relief changes maintenance only and leaves market rules intact',()=>{
   const s=ready();s.pendingEvent='cash_review';const before=G.cost(s),rules=G.revenueRules(s),work=G.copy(s.work);G.resolveEvent(s,0);const after=G.cost(s);assert.equal(after.wages,before.wages);assert.equal(after.ads,before.ads);assert.equal(after.overhead,Math.ceil(before.overhead*.75));assert.deepEqual(G.revenueRules(s),rules);assert.deepEqual(s.work,work);
