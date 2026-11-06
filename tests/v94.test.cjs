@@ -46,7 +46,7 @@ check('new contextual events require the corresponding job scale budget or team 
   const s=ready(),find=id=>G.EVENTS.find(e=>e.id===id);assert.equal(find('ad_plan').condition(s),false);G.assignMember(s,'ace','acquisition');assert.equal(find('ad_plan').condition(s),true);G.setAdBudget(s,100);assert.equal(find('ad_plan').condition(s),false);
   assert.equal(find('scale_review').condition(s),false);assert.equal(find('scale_review').condition(ready(false,'large')),true);
   assert.equal(find('cash_review').condition(s),false);s.money=100;assert.equal(find('cash_review').condition(s),true);
-  assert.equal(find('team_exchange').condition(s),false);s.knownPartners=['lin'];assert.equal(find('team_exchange').condition(s),true);
+  assert.equal(find('team_exchange').condition(s),true);s.knownPartners=[];assert.equal(find('team_exchange').condition(s),false);s.knownPartners=['lin'];assert.equal(find('team_exchange').condition(s),true);
 });
 check('seeded weekly events meet their state conditions without repeating the last event',()=>{
   const seen=new Set();for(let i=1;i<=640;i++){

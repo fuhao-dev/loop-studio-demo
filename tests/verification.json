@@ -1,5 +1,5 @@
 {
-  "version": "0.11.0",
+  "version": "0.12.0",
   "date": "2026-11-06",
   "checks": 39,
   "simulatedRuns": 23,
@@ -153,7 +153,7 @@
       "weeks": 77,
       "rating": "B+",
       "cost": 24572,
-      "walletEnd": 267676
+      "walletEnd": 267501
     },
     {
       "seed": 44001,
@@ -163,8 +163,8 @@
       "initialWallet": 270000,
       "weeks": 80,
       "rating": "B-",
-      "cost": 24040,
-      "walletEnd": 271396
+      "cost": 24033,
+      "walletEnd": 271378
     },
     {
       "seed": 44001,
@@ -172,10 +172,10 @@
       "hard": false,
       "route": "funded-scale-integration",
       "initialWallet": 810000,
-      "weeks": 190,
+      "weeks": 189,
       "rating": "A-",
-      "cost": 59280,
-      "walletEnd": 831144
+      "cost": 59025,
+      "walletEnd": 869139
     },
     {
       "seed": 44001,
@@ -183,10 +183,10 @@
       "hard": true,
       "route": "funded-scale-integration",
       "initialWallet": 810000,
-      "weeks": 235,
-      "rating": "B-",
-      "cost": 68089,
-      "walletEnd": 807153
+      "weeks": 231,
+      "rating": "B",
+      "cost": 68693,
+      "walletEnd": 806538
     },
     {
       "seed": 44001,

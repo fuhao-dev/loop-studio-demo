@@ -1,7 +1,7 @@
-/* 天才程序员带我做游戏 v0.11.0 · shared career and pausable projects. */
+/* 天才程序员带我做游戏 v0.12.0 · shared career and pausable projects. */
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.StudioGame=factory();})(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
-  const VERSION=11;
+  const VERSION=12;
   const STANDARD_WEEKLY_WORK=10,STANDARD_PERSON_WEEK_COST=100,INITIAL_FUNDS=7600;
   const HARD_CAP=1, INITIAL_SOFT_CAP=.7, CAP_STEP=.15;
   const SKILLS=[
@@ -18,15 +18,44 @@
     {id:'large',name:'大型游戏',tag:'04 / 长线开发',icon:'▣',multiplier:27,revenueMultiplier:27,desc:'一场长期开发，基础工作需求是微型的 27 倍。',title:'我们的宏大计划'}
   ];
   const PUBLISHER_JOBS=['publicity','acquisition','materials','review'],PUBLISHER_WEEKLY_WORK=20;
+  const PERSON_RANKS=[
+    {id:'N',min:0,color:'#a5acb7',shape:'circle'},
+    {id:'R',min:80,color:'#76b5e7',shape:'diamond'},
+    {id:'SR',min:110,color:'#ba9ce9',shape:'star4'},
+    {id:'SSR',min:135,color:'#e4c074',shape:'star6'},
+    {id:'UR',min:165,color:'#f0a578',shape:'crown'}
+  ];
+  function abilityScore(person){const values=SKILLS.map(k=>person.skills[k.id]||0).sort((a,b)=>b-a);return Math.round((values[0]*.6+values[1]*.25+(values[2]+values[3]+values[4])*.05)*100)/100;}
+  function personRank(person){if(person.id==='hero'||person.kind==='hero')return null;if(person.id==='ace'||person.kind==='companion')return {id:'EX',color:'#a2e0cc',shape:'horns',score:null};const score=abilityScore(person);return {...PERSON_RANKS.filter(r=>score>=r.min).at(-1),score};}
+  function recruitUnlockText(person){return {opening:'初始即可结识',prototype:'完成可玩原型（核心平均 30%）后结识',vertical:'完成垂直切片（核心平均 65%）后结识',content:'游戏内容与程序六项均到 100% 后结识'}[person.stage];}
   const HERO={id:'hero',name:'你',title:'独立制作人',kind:'hero',skills:{design:100,code:100,art:100,test:100,ops:100},salary:72,quote:'这一作积累的经验，会陪我走到下一作。',bio:'五项基础能力均为 100%；在局外生涯中训练后永久提高，跨项目继承。',color:'#d8b879',look:0};
   const COMPANION={id:'ace',name:'天才程序员',title:'白发有角龙娘 · 全能搭档',kind:'companion',skills:{design:145,code:145,art:145,test:145,ops:145},salary:96,quote:'你来决定方向，我来补上最需要的一块。',bio:'白发有角龙娘，强的可怕。',color:'#81bea7',look:5};
   const RECRUITS=[
-    {id:'lin',name:'林绘',title:'独立美术',skills:{design:90,code:0,art:170,test:40,ops:55},salary:88,stage:'prototype',quote:'这个原型，我想给它画一片天空。',bio:'被你的可玩原型打动，擅长视觉表达，完全不会写程序。',color:'#bc9fe4',look:2},
-    {id:'shen',name:'沈序',title:'引擎程序员',skills:{design:60,code:170,art:0,test:95,ops:40},salary:96,stage:'prototype',quote:'你的原型挺有意思，技术部分交给我。',bio:'喜欢有野心的系统，能承担复杂实现，不会美术制作。',color:'#76a9e7',look:1},
-    {id:'tang',name:'唐砚',title:'叙事设计师',skills:{design:165,code:40,art:110,test:0,ops:75},salary:92,stage:'vertical',quote:'切片里的世界，还能再多一点回响。',bio:'看过垂直切片后主动来信，擅长设计与画面叙事，不做测试。',color:'#d8b879',look:0},
-    {id:'wen',name:'温衡',title:'质量工程师',skills:{design:75,code:100,art:0,test:175,ops:65},salary:90,stage:'vertical',quote:'让每一个好设计，都能可靠地到达玩家。',bio:'相信打磨决定作品的最后一公里，擅长验收、修复与重构。',color:'#80ba91',look:3},
-    {id:'xia',name:'夏禾',title:'发行联络人',skills:{design:100,code:40,art:65,test:0,ops:175},salary:84,stage:'content',quote:'内容完成了，接下来让玩家找到它。',bio:'关注到你的完整版本，熟悉资质与渠道准备，不会测试。',color:'#dd957d',look:4},
-    {id:'lu',name:'陆简',title:'交付协调员',skills:{design:70,code:95,art:0,test:125,ops:135},salary:88,stage:'content',quote:'验收和上架，我们一起把最后几步走稳。',bio:'擅长测试和发行之间的协作，不会美术，适合收尾阶段。',color:'#8bbfc5',look:6}
+    {"id":"lin","name":"林绘","title":"独立美术","skills":{"design":90,"code":0,"art":170,"test":40,"ops":55},"salary":88,"stage":"prototype","quote":"这个原型，我想给它画一片天空。","bio":"被你的可玩原型打动，擅长视觉表达，完全不会写程序。","color":"#bc9fe4","look":2},
+    {"id":"shen","name":"沈序","title":"引擎程序员","skills":{"design":60,"code":170,"art":0,"test":95,"ops":40},"salary":96,"stage":"prototype","quote":"你的原型挺有意思，技术部分交给我。","bio":"喜欢有野心的系统，能承担复杂实现，不会美术制作。","color":"#76a9e7","look":3},
+    {"id":"tang","name":"唐砚","title":"叙事设计师","skills":{"design":165,"code":40,"art":110,"test":0,"ops":75},"salary":92,"stage":"vertical","quote":"切片里的世界，还能再多一点回响。","bio":"看过垂直切片后主动来信，擅长设计与画面叙事，不做测试。","color":"#d8b879","look":4},
+    {"id":"wen","name":"温衡","title":"质量工程师","skills":{"design":75,"code":100,"art":0,"test":175,"ops":65},"salary":90,"stage":"vertical","quote":"让每一个好设计，都能可靠地到达玩家。","bio":"相信打磨决定作品的最后一公里，擅长验收、修复与重构。","color":"#80ba91","look":5},
+    {"id":"xia","name":"夏禾","title":"发行联络人","skills":{"design":100,"code":40,"art":65,"test":0,"ops":175},"salary":84,"stage":"content","quote":"内容完成了，接下来让玩家找到它。","bio":"关注到你的完整版本，熟悉资质与渠道准备，不会测试。","color":"#dd957d","look":6},
+    {"id":"lu","name":"陆简","title":"交付协调员","skills":{"design":70,"code":95,"art":0,"test":125,"ops":135},"salary":88,"stage":"content","quote":"验收和上架，我们一起把最后几步走稳。","bio":"擅长测试和发行之间的协作，不会美术，适合收尾阶段。","color":"#8bbfc5","look":7},
+    {"id":"yu","name":"余苗","title":"策划实习生","skills":{"design":90,"code":40,"art":20,"test":0,"ops":0},"salary":32,"stage":"opening","quote":"先把一个小点子做清楚。","bio":"刚入行的策划，愿意反复整理玩法笔记，不会测试与发行。","color":"#b1ac91","look":8},
+    {"id":"chi","name":"池川","title":"初级程序员","skills":{"design":20,"code":95,"art":0,"test":35,"ops":10},"salary":35,"stage":"opening","quote":"今天也少写一个临时补丁。","bio":"负责简单实现与脚本维护，不会美术，适合低预算起步。","color":"#849cae","look":9},
+    {"id":"mo","name":"墨小雨","title":"美术学徒","skills":{"design":30,"code":0,"art":100,"test":20,"ops":10},"salary":36,"stage":"opening","quote":"我想给这款游戏画第一张图。","bio":"喜欢像素和色块，负责基础美术，不会程序。","color":"#c99db0","look":10},
+    {"id":"qiao","name":"乔安","title":"测试助理","skills":{"design":10,"code":40,"art":0,"test":95,"ops":20},"salary":33,"stage":"opening","quote":"我会把每一步都记下来。","bio":"耐心执行验收步骤，对程序略有了解，完全不会美术。","color":"#91b29e","look":11},
+    {"id":"le","name":"乐小满","title":"社区助理","skills":{"design":35,"code":10,"art":20,"test":0,"ops":95},"salary":34,"stage":"opening","quote":"先认真回复每一条留言。","bio":"负责基础发行事务和玩家沟通，不会测试。","color":"#c5ae7b","look":12},
+    {"id":"ning","name":"宁禾","title":"制作助理","skills":{"design":75,"code":70,"art":50,"test":35,"ops":0},"salary":38,"stage":"opening","quote":"哪里缺人，我就先去学。","bio":"可以协助多项基础工作，但缺少突出专长，不会发行。","color":"#aaa7c2","look":13},
+    {"id":"he","name":"何知","title":"玩法策划","skills":{"design":135,"code":20,"art":70,"test":45,"ops":0},"salary":65,"stage":"opening","quote":"规则讲清楚，乐趣才会留下来。","bio":"擅长玩法设计，能画简单示意稿，不处理发行事务。","color":"#d4b47c","look":14},
+    {"id":"you","name":"游弈","title":"工具程序员","skills":{"design":40,"code":135,"art":0,"test":75,"ops":20},"salary":68,"stage":"opening","quote":"重复三次的事，就写成工具吧。","bio":"擅长程序与工具，能承担部分测试，不会美术。","color":"#7da6bd","look":15},
+    {"id":"qiu","name":"秋染","title":"像素美术师","skills":{"design":65,"code":0,"art":140,"test":30,"ops":20},"salary":66,"stage":"opening","quote":"四个像素也能有自己的表情。","bio":"擅长像素场景和角色绘制，不会写程序。","color":"#c292b8","look":16},
+    {"id":"cheng","name":"程谨","title":"功能测试员","skills":{"design":30,"code":80,"art":0,"test":135,"ops":25},"salary":64,"stage":"opening","quote":"能复现，就能把验收做扎实。","bio":"擅长测试，了解实现逻辑，不会美术。","color":"#87b19a","look":17},
+    {"id":"su","name":"苏晴","title":"社区运营","skills":{"design":75,"code":20,"art":40,"test":0,"ops":135},"salary":63,"stage":"opening","quote":"把合适的游戏送到合适的人面前。","bio":"擅长发行事务和玩家交流，不会测试。","color":"#d09a82","look":18},
+    {"id":"zhao","name":"赵平","title":"综合开发者","skills":{"design":110,"code":100,"art":0,"test":65,"ops":55},"salary":70,"stage":"opening","quote":"先让今天的版本完整跑起来。","bio":"策划与程序都能胜任，适合灵活补位，不会美术。","color":"#9bafb4","look":19},
+    {"id":"ji","name":"纪澄","title":"自动化测试工程师","skills":{"design":70,"code":100,"art":0,"test":155,"ops":55},"salary":94,"stage":"prototype","quote":"把验证流程也做成作品的一部分。","bio":"擅长测试与基础程序协作，不会美术；被可玩原型吸引而来。","color":"#81b6a4","look":20},
+    {"id":"bai","name":"白露","title":"商业化设计师","skills":{"design":100,"code":40,"art":60,"test":0,"ops":160},"salary":96,"stage":"vertical","quote":"好的付费体验，也应该让人舒服。","bio":"擅长商业化与发行设计，理解策划，不会测试。","color":"#d6a187","look":21},
+    {"id":"xu","name":"许望","title":"创意总监","skills":{"design":190,"code":80,"art":130,"test":0,"ops":50},"salary":128,"stage":"vertical","quote":"让每一处设计都服务于同一种体验。","bio":"顶尖策划，兼具美术表达能力，不会测试。","color":"#d6bd82","look":22},
+    {"id":"han","name":"韩栈","title":"架构专家","skills":{"design":65,"code":195,"art":0,"test":130,"ops":45},"salary":132,"stage":"content","quote":"复杂的系统，也能有干净的边界。","bio":"顶尖程序专家，擅长测试协作，不会美术。","color":"#87b4d3","look":23},
+    {"id":"gu","name":"顾星河","title":"创意大师","skills":{"design":200,"code":100,"art":180,"test":0,"ops":60},"salary":172,"stage":"content","quote":"给玩家一个离开之后还会想起的世界。","bio":"策划与美术双专长，能理解技术实现，不会测试。","color":"#e5bf73","look":24},
+    {"id":"zero","name":"零一","title":"技术大师","skills":{"design":100,"code":200,"art":0,"test":185,"ops":60},"salary":178,"stage":"content","quote":"让宏大的想法，也能稳稳运行。","bio":"程序与测试双专长，面对复杂实现游刃有余，不会美术。","color":"#93c9dc","look":25},
+    {"id":"shang","name":"商时雨","title":"商业大师","skills":{"design":180,"code":60,"art":100,"test":0,"ops":200},"salary":175,"stage":"content","quote":"先理解作品，再找到它应得的市场。","bio":"发行与策划双专长，能参与美术表达，不会测试。","color":"#e3a786","look":26}
   ];
   const GROUPS=[
     {id:'content',name:'游戏内容',rating:'可玩性',color:'#d8b879',icon:'✦'},
@@ -74,7 +103,7 @@
   function assignMember(s,id,job){const m=s.team.find(m=>m.id===id);if(blocked(s)||!m||publisherManaged(s,job)||job!=='idle'&&taskSkill(m,job)<=0)return false;m.job=job;syncPeople(s);return true;}
   function availableRecruits(s){return RECRUITS.filter(r=>s.knownPartners.includes(r.id)&&!s.team.some(m=>m.id===r.id)&&!s.departed.includes(r.id));}
   function teamSize(s){return s.team.length;}
-  function hire(s,id){const r=availableRecruits(s).find(r=>r.id===id);if(!r||blocked(s)||s.managed||s.team.length>=8||s.money<180)return false;const m=makeMember(r,publisherManaged(s,preferredJob(r))?'idle':preferredJob(r));m.lastJob='idle';s.team.push(m);syncPeople(s);s.money-=180;s.spent+=180;s.managed=true;addLog(s,r.name+'加入团队，基础周薪 ¥'+r.salary+'；准备支出 ¥180。','good');return true;}
+  function hire(s,id){const r=availableRecruits(s).find(r=>r.id===id);if(!r||blocked(s)||s.managed||s.money<180)return false;const m=makeMember(r,publisherManaged(s,preferredJob(r))?'idle':preferredJob(r));m.lastJob='idle';s.team.push(m);syncPeople(s);s.money-=180;s.spent+=180;s.managed=true;addLog(s,r.name+'加入团队，基础周薪 ¥'+r.salary+'；准备支出 ¥180。','good');return true;}
   function downsize(s,id){const m=s.team.find(m=>m.id===id);if(!m||m.kind!=='partner'||blocked(s)||s.managed||s.money<100)return false;s.team=s.team.filter(m=>m.id!==id);s.departed.push(id);syncPeople(s);s.money-=100;s.spent+=100;s.managed=true;addLog(s,'与'+m.name+'暂别，支付 ¥100；本项目不再重复邀请。');return true;}
   function mods(s){const m={all:1,design:1,code:1,art:1,test:1,ops:1,play:1,visual:1,debt:1,rework:1,overhead:1,wages:1,ramp:1,crowd:.45,morale:0,cleanup:0,fee:0,sales:1};s.effects.forEach(e=>{if(e.weeks>0){m.all*=e.all||1;if(e.job)m[e.job]*=e.mult||1;}});return m;}
   function campaignCost(s){return s.publisher||s.people.acquisition>0?s.adBudget:0;}
@@ -430,7 +459,8 @@
   // Full-efficiency estimates make job gains additive; publisher work is constant.
   function automaticAssignmentPlan(s){
     if(!s||blocked(s))return {ok:false,improved:false,reason:'请先恢复项目并处理当前事件。'};
-    const n=s.team.length,size=1<<n,all=size-1,epsilon=1e-10;
+    if(s.team.length>10)return largeAssignmentPlan(s);
+    const n=s.team.length,size=1<<n,epsilon=1e-10;
     const weekly=cost(s),baseCost=weekly.total-weekly.ads;
     const canBuy=!!s.publisher||baseCost+s.adBudget<=s.money;
     const m=mods(s),jobs=JOBS.filter(j=>!publisherManaged(s,j.id)&&(j.id!=='acquisition'||canBuy));
@@ -471,12 +501,38 @@
     }
     const assignments=Object.fromEntries(s.team.map(p=>[p.id,'idle']));
     for(let i=tables.length-1;i>=0;i--){const bits=parents[i][mask];s.team.forEach((p,k)=>{if(bits&(1<<k))assignments[p.id]=tables[i].job;});mask^=bits;}
+    return assignmentPlanResult(s,assignments,canBuy,true);
+  }
+  function assignmentPlanResult(s,assignments,canBuy,exact){
     const proposed=copy(s);for(const member of proposed.team)member.job=assignments[member.id];syncPeople(proposed);
-    const before=progressEstimate(s),after=progressEstimate(proposed);
-    const total=plan=>JOBS.reduce((sum,j)=>sum+plan.gains[j.id]/s.req[j.id],0)/JOBS.length*100;
-    const beforeProgress=total(before),afterProgress=total(after);
-    const improved=afterProgress>beforeProgress+epsilon||before.cost.total>s.money&&after.cost.total<=s.money;
-    return {ok:true,improved,beforeProgress,afterProgress:improved?afterProgress:beforeProgress,beforeCost:before.cost.total,afterCost:improved?after.cost.total:before.cost.total,budgetLimited:!canBuy,assignments:improved?assignments:Object.fromEntries(s.team.map(p=>[p.id,p.job])),changes:improved?s.team.filter(p=>assignments[p.id]!==p.job).map(p=>({id:p.id,name:p.name,from:p.job,to:assignments[p.id]})):[]};
+    const before=progressEstimate(s),after=progressEstimate(proposed),total=plan=>JOBS.reduce((sum,j)=>sum+plan.gains[j.id]/s.req[j.id],0)/JOBS.length*100;
+    const beforeProgress=total(before),afterProgress=total(after),improved=afterProgress>beforeProgress+1e-10||before.cost.total>s.money&&after.cost.total<=s.money;
+    return {ok:true,improved,exact,beforeProgress,afterProgress:improved?afterProgress:beforeProgress,beforeCost:before.cost.total,afterCost:improved?after.cost.total:before.cost.total,budgetLimited:!canBuy,assignments:improved?assignments:Object.fromEntries(s.team.map(p=>[p.id,p.job])),changes:improved?s.team.filter(p=>assignments[p.id]!==p.job).map(p=>({id:p.id,name:p.name,from:p.job,to:assignments[p.id]})):[]};
+  }
+  // Large rosters use deterministic marginal placement, then best moves and swaps.
+  // This avoids exponential subset tables and reports that it is a search, not a proof.
+  function largeAssignmentPlan(s){
+    const n=s.team.length,m=mods(s),weekly=cost(s),base=weekly.total-weekly.ads,canBuy=!!s.publisher||base+s.adBudget<=s.money;
+    const jobs=JOBS.filter(j=>!publisherManaged(s,j.id)&&(j.id!=='acquisition'||canBuy&&s.adBudget>0)),ids=jobs.map(j=>j.id),room=jobs.map(j=>Math.max(0,workLimit(s,j.id)-s.work[j.id]));
+    const weights=jobs.map(j=>s.team.map(p=>taskSkill(p,j.id)/100*(j.id!==p.lastJob?1-.2*m.ramp:1)));
+    const outputs=jobs.map((j,k)=>weights[k].map(w=>{const raw=w*STANDARD_WEEKLY_WORK*m.all*m[j.skill]*(s.pace==='crunch'?1.35:s.pace==='rest'?.7:1)*(.65+s.morale/285)*(j.skill==='code'?Math.max(.6,1-s.debt*.01):1);return {solo:round(raw),coop:round(raw*m.crowd)};}));
+    function value(job,members){if(job<0||!members.length||room[job]<=0)return 0;let lead=members[0],amount=0;for(const i of members){amount+=outputs[job][i].coop;if(weights[job][i]>weights[job][lead]||weights[job][i]===weights[job][lead]&&s.team[i].id.localeCompare(s.team[lead].id)<0)lead=i;}amount=round(amount+outputs[job][lead].solo-outputs[job][lead].coop);const id=ids[job],after=round(clamp(s.work[id]+Math.min(room[job],amount),0,s.req[id]));return round(after-s.work[id])/s.req[id];}
+    function improve(initial){
+      const a=initial.slice(),groups=jobs.map((_,j)=>a.map((v,i)=>v===j?i:-1).filter(i=>i>=0));let values=groups.map((g,j)=>value(j,g));
+      for(let pass=0;pass<200;pass++){
+        let best=1e-10,move=null;
+        for(let i=0;i<n;i++){const from=a[i],without=from<0?[]:groups[from].filter(v=>v!==i),loss=from<0?0:value(from,without)-values[from];
+          for(let to=-1;to<jobs.length;to++){if(to===from||to>=0&&weights[to][i]<=0)continue;const delta=loss+(to<0?0:value(to,[...groups[to],i])-values[to]);if(delta>best){best=delta;move={i,to};}}
+          for(let k=i+1;k<n;k++){const to=a[k];if(to===from||to>=0&&weights[to][i]<=0||from>=0&&weights[from][k]<=0)continue;const delta=(from<0?0:value(from,[...without,k])-values[from])+(to<0?0:value(to,[...groups[to].filter(v=>v!==k),i])-values[to]);if(delta>best){best=delta;move={i,to,k,from};}}
+        }
+        if(!move)break;const {i,to,k,from}=move,old=a[i];if(old>=0)groups[old]=groups[old].filter(v=>v!==i);if(k!==undefined){if(to>=0)groups[to]=groups[to].filter(v=>v!==k);a[k]=from;if(from>=0)groups[from].push(k);}a[i]=to;if(to>=0)groups[to].push(i);values=groups.map((g,j)=>value(j,g));
+      }
+      return {a,score:values.reduce((v,x)=>v+x,0),changes:a.filter((j,i)=>(ids[j]||'idle')!==s.team[i].job).length};
+    }
+    const current=s.team.map(p=>ids.indexOf(p.job)),starts=[current],order=s.team.map((_,i)=>i).sort((a,b)=>Math.max(...weights.map(w=>w[b]))-Math.max(...weights.map(w=>w[a]))||s.team[a].id.localeCompare(s.team[b].id));
+    for(const sequence of [order,order.slice().reverse()]){const a=Array(n).fill(-1),groups=jobs.map(()=>[]),values=jobs.map(()=>0);for(const i of sequence){let best=0,to=-1;for(let j=0;j<jobs.length;j++)if(weights[j][i]>0){const delta=value(j,[...groups[j],i])-values[j];if(delta>best+1e-10){best=delta;to=j;}}if(to>=0){a[i]=to;groups[to].push(i);values[to]=value(to,groups[to]);}}starts.push(a);}
+    const choices=starts.map(improve).sort((a,b)=>Math.abs(b.score-a.score)>1e-10?b.score-a.score:a.changes-b.changes),best=choices[0];
+    return assignmentPlanResult(s,Object.fromEntries(s.team.map((p,i)=>[p.id,ids[best.a[i]]||'idle'])),canBuy,false);
   }
   function autoAssign(s){
     const plan=automaticAssignmentPlan(s);if(!plan.ok||!plan.improved)return plan;
@@ -508,7 +564,7 @@
     s.result={runId:s.id,stage:s.stage,walletStart:s.initialMoney,walletEnd:s.money,sharedCashDelta:s.sharedCashDelta,name:s.name,hard:s.hard,totalCompletion:round(JOBS.reduce((n,j)=>n+progress(s,j.id),0)/JOBS.length*100),progress:Object.fromEntries(GROUPS.map(g=>[g.id,round(groupProgress(s,g.id)*100)])),scale:s.scale,released,weeks:s.week-1,score:Math.round(trueValue),rating:released?rating:'—',ratings:released?Object.fromEntries(GROUPS.filter(g=>g.id!=='release').map(g=>[g.id,{grade:grade(trueScore(s,g.id)),score:trueScore(s,g.id)}])):null,organicRevenue,organicGrossRevenue,publisherOrganicRevenue,organicBaseRevenue,marketMultiplier:marketFactor,scaleRevenueMultiplier,adRevenue,adGrossRevenue:ad.gross,adNetRevenue:ad.studioNet,adCampaignNetRevenue:ad.campaignNet,adSpend:s.adSpend,studioAdSpend:ad.studioSpend,publisherAdSpend:ad.publisherSpend,publisherAdRevenue:ad.publisherRevenue,publisherAdRecovered:ad.publisherRecovered,publisherAdProfit:ad.publisherProfit,publisherAdLoss:ad.publisherLoss,adRate:released?adRate(s):null,publisher:copy(s.publisher),otherIncome:s.income,revenue,recovery,recoveryRate,cost:s.spent,profit,exp,objective:s.objective,objectiveOK,team:copy(s.team),seed:s.seed};
     addLog(s,released?'「'+s.name+'」正式发售，真实评级与发行账目已揭晓。':'项目已结束，回收工作室投入 '+recovery.toLocaleString('zh-CN')+' 元，保留里程碑经验。',released?'good':'info');return s.result;
   }
-  function emptyMeta(){return {version:3,wallet:INITIAL_FUNDS,hero:{name:HERO.name,skills:copy(HERO.skills)},partners:[],knownPartners:[],exp:0,earnedExp:0,stage:1,activeRunId:null,pausedProjects:[],receipts:{},history:[]};}
+  function emptyMeta(){return {version:3,wallet:INITIAL_FUNDS,hero:{name:HERO.name,skills:copy(HERO.skills)},partners:[],knownPartners:RECRUITS.filter(r=>r.stage==='opening').map(r=>r.id),exp:0,earnedExp:0,stage:1,activeRunId:null,pausedProjects:[],receipts:{},history:[]};}
   function validateMeta(m){try{return !!m&&m.version===3&&Number.isFinite(m.wallet)&&m.wallet>=0&&Number.isInteger(m.exp)&&m.exp>=0&&Number.isInteger(m.earnedExp)&&m.earnedExp>=m.exp&&Number.isInteger(m.stage)&&m.stage>=1&&m.hero&&typeof m.hero.name==='string'&&m.hero.name.trim().length>0&&m.hero.name.length<=12&&SKILLS.every(j=>Number.isInteger(m.hero.skills[j.id])&&m.hero.skills[j.id]>=100&&m.hero.skills[j.id]<=200)&&[m.partners,m.knownPartners].every(a=>Array.isArray(a)&&new Set(a).size===a.length&&a.every(id=>RECRUITS.some(r=>r.id===id)))&&m.partners.every(id=>m.knownPartners.includes(id))&&m.receipts&&typeof m.receipts==='object'&&!Array.isArray(m.receipts)&&Array.isArray(m.history)&&Array.isArray(m.pausedProjects)&&m.pausedProjects.every(p=>validateRun(p)&&p.paused&&!p.over&&p.id!==m.activeRunId&&p.stage<m.stage)&&new Set(m.pausedProjects.map(p=>p.id)).size===m.pausedProjects.length&&(m.activeRunId===null||typeof m.activeRunId==='string');}catch{return false;}}
   function syncCareer(meta,s){if(s&&!s.over&&!s.paused&&meta.activeRunId===s.id){meta.wallet=s.money;const hero=s.team.find(p=>p.id==='hero');meta.hero={name:hero.name,skills:copy(hero.skills)};meta.partners=s.team.filter(m=>m.kind==='partner').map(m=>m.id);meta.knownPartners=s.knownPartners.slice();}return meta;}
   function startupAidStatus(meta,s=null){
@@ -525,7 +581,7 @@
   function trainingCost(meta,id){return SKILLS.some(j=>j.id===id)?40+(meta.hero.skills[id]-100)*2:Infinity;}
   function train(meta,id){const price=trainingCost(meta,id);if(meta.activeRunId||!Number.isFinite(price)||meta.exp<price||meta.hero.skills[id]>=200)return false;meta.exp-=price;meta.hero.skills[id]=Math.min(200,meta.hero.skills[id]+5);return true;}
   function renameHero(meta,name){const value=String(name||'').trim().slice(0,12);if(meta.activeRunId||!value)return false;meta.hero.name=value;return true;}
-  function hirePartner(meta,id){if(meta.activeRunId||meta.wallet<180||meta.partners.length>=6||!meta.knownPartners.includes(id)||meta.partners.includes(id))return false;meta.partners.push(id);meta.wallet-=180;return true;}
+  function hirePartner(meta,id){if(meta.activeRunId||meta.wallet<180||!meta.knownPartners.includes(id)||meta.partners.includes(id))return false;meta.partners.push(id);meta.wallet-=180;return true;}
   function dismissPartner(meta,id){if(meta.activeRunId||meta.wallet<100||!meta.partners.includes(id))return false;meta.partners=meta.partners.filter(member=>member!==id);meta.wallet-=100;return true;}
   function settle(meta,s){const m=copy(meta);if(!s.over||!s.result||Object.prototype.hasOwnProperty.call(m.receipts,s.id)||m.activeRunId!==s.id)return m;const r=copy(s.result),hero=s.team.find(m=>m.id==='hero');m.receipts[s.id]=r.exp;m.exp+=r.exp;m.earnedExp+=r.exp;m.wallet=r.walletEnd;m.hero={name:hero.name,skills:copy(hero.skills)};m.partners=s.team.filter(m=>m.kind==='partner').map(m=>m.id);m.knownPartners=s.knownPartners.slice();m.stage=Math.max(m.stage,s.stage+1);m.activeRunId=null;m.history.unshift(r);return m;}
   function pauseProject(meta,s){if(!validateMeta(meta)||!validateRun(s)||s.over||s.paused||meta.activeRunId!==s.id)return false;syncCareer(meta,s);s.paused=true;meta.pausedProjects.push(copy(s));meta.activeRunId=null;return true;}
@@ -551,8 +607,8 @@
     if(r&&(!EVENTS.some(e=>e.id===r.id)||!['standard','ambient','hidden','publisher'].includes(r.kind)||typeof r.unread!=='boolean'||!Number.isInteger(r.week)||r.week<0||!['title','label','text'].every(k=>typeof r[k]==='string')||!Array.isArray(r.details)||!r.details.length||r.details.some(d=>typeof d!=='string')||r.unread&&(s.pendingEvent||s.over)))return false;
     return true;
   }
-  function validateRun(s){try{if(!s||s.version!==VERSION||typeof s.paused!=='boolean'||!Number.isInteger(s.stage)||s.stage<1||!SCALES.some(g=>g.id===s.scale)||!Number.isInteger(s.week)||s.week<1||!Array.isArray(s.team)||s.team.length<2||s.team.length>8)return false;for(const a of ['departed','history','logs','effects','milestones','knownPartners'])if(!Array.isArray(s[a]))return false;if(new Set(s.knownPartners).size!==s.knownPartners.length||s.knownPartners.some(id=>!RECRUITS.some(r=>r.id===id))||s.team.some(m=>m.kind==='partner'&&!s.knownPartners.includes(m.id)))return false;if(!s.work||!s.req||!s.softCaps||typeof s.hard!=='boolean'||s.pendingCapGroup&&!GROUPS.some(g=>g.id===s.pendingCapGroup&&g.id!=='release')||!s.people||!['normal','rest','crunch'].includes(s.pace)||!['profit','acclaim'].includes(s.objective)||!AD_BUDGETS.includes(s.adBudget))return false;const ids=s.team.map(m=>m.id);if(new Set(ids).size!==ids.length||!s.team.some(m=>m.id==='hero'&&m.kind==='hero')||!s.team.some(m=>m.id==='ace'&&m.kind==='companion'))return false;if(!s.team.every(m=>typeof m.name==='string'&&m.name.length>0&&Number.isFinite(m.salary)&&m.salary>=0&&['idle',...JOBS.map(j=>j.id)].includes(m.lastJob)&&SKILLS.every(j=>Number.isFinite(m.skills[j.id])&&m.skills[j.id]>=0&&m.skills[j.id]<=200)&&(m.job==='idle'||taskSkill(m,m.job)>0&&!publisherManaged(s,m.job))))return false;
+  function validateRun(s){try{if(!s||s.version!==VERSION||typeof s.paused!=='boolean'||!Number.isInteger(s.stage)||s.stage<1||!SCALES.some(g=>g.id===s.scale)||!Number.isInteger(s.week)||s.week<1||!Array.isArray(s.team)||s.team.length<2)return false;for(const a of ['departed','history','logs','effects','milestones','knownPartners'])if(!Array.isArray(s[a]))return false;if(new Set(s.knownPartners).size!==s.knownPartners.length||s.knownPartners.some(id=>!RECRUITS.some(r=>r.id===id))||s.team.some(m=>m.kind==='partner'&&!s.knownPartners.includes(m.id)))return false;if(!s.work||!s.req||!s.softCaps||typeof s.hard!=='boolean'||s.pendingCapGroup&&!GROUPS.some(g=>g.id===s.pendingCapGroup&&g.id!=='release')||!s.people||!['normal','rest','crunch'].includes(s.pace)||!['profit','acclaim'].includes(s.objective)||!AD_BUDGETS.includes(s.adBudget))return false;const ids=s.team.map(m=>m.id);if(new Set(ids).size!==ids.length||!s.team.some(m=>m.id==='hero'&&m.kind==='hero')||!s.team.some(m=>m.id==='ace'&&m.kind==='companion'))return false;if(!s.team.every(m=>typeof m.name==='string'&&m.name.length>0&&Number.isFinite(m.salary)&&m.salary>=0&&['idle',...JOBS.map(j=>j.id)].includes(m.lastJob)&&SKILLS.every(j=>Number.isFinite(m.skills[j.id])&&m.skills[j.id]>=0&&m.skills[j.id]<=200)&&(m.job==='idle'||taskSkill(m,m.job)>0&&!publisherManaged(s,m.job))))return false;
     return validEventState(s)&&JOBS.every(j=>(j.group==='release'||Number.isFinite(s.softCaps[j.id])&&s.softCaps[j.id]>=INITIAL_SOFT_CAP&&s.softCaps[j.id]<=HARD_CAP&&s.work[j.id]<=s.req[j.id]*s.softCaps[j.id]+.01)&&Number.isFinite(s.work[j.id])&&s.work[j.id]>=0&&Number.isFinite(s.req[j.id])&&s.req[j.id]>0&&s.work[j.id]<=s.req[j.id]+.01&&s.people[j.id]===s.team.filter(m=>m.job===j.id).length)&&s.reserve===s.team.filter(m=>m.job==='idle').length&&GROUPS.filter(g=>g.id!=='release').every(g=>Number.isFinite(s.ratingRolls[g.id])&&Math.abs(s.ratingRolls[g.id])<=28&&Number.isFinite(s.revealRolls[g.id])&&Math.abs(s.revealRolls[g.id])<=1)&&[s.money,s.spent,s.income,s.adSpend,s.debt,s.morale,s.rng,s.seed,s.initialMoney,s.sharedCashDelta].every(Number.isFinite)&&s.money>=0&&s.spent>=0&&s.adSpend>=0&&s.adSpend<=(s.spent+(s.publisher?.adSpend||0))&&(s.publisher===null||s.publisher&&Number.isFinite(s.publisher.advance)&&s.publisher.advance>0&&Number.isInteger(s.publisher.signWeek)&&s.publisher.signWeek>=1&&s.publisher.signWeek<=s.week&&Number.isFinite(s.publisher.adSpend)&&s.publisher.adSpend>=0&&s.publisher.adSpend<=s.adSpend&&s.publisher.quote&&s.publisher.quote.advance===s.publisher.advance)&&(!s.pendingEvent||EVENTS.some(e=>e.id===s.pendingEvent))&&(!s.over||!!s.result);
     }catch{return false;}}
-  return {VERSION,MARKET_MIN,MARKET_MAX,marketMultiplier,revenueRules,INITIAL_FUNDS,startupAidStatus,claimStartupAid,STANDARD_WEEKLY_WORK,STANDARD_PERSON_WEEK_COST,scalePlan,projectNameStatus,HARD_CAP,INITIAL_SOFT_CAP,CAP_STEP,softCap,workPhase,SKILLS,GROUPS,JOBS,GRADES,AD_RATES,AD_BUDGETS,HERO,COMPANION,RECRUITS,SCALES,baseRequirements,PUBLISHER_JOBS,PUBLISHER_WEEKLY_WORK,publisherManaged,publisherQuote,signPublisher,adSettlement,OBJECTIVES,EVENTS,skillLabel,taskSkill,assignMember,availableRecruits,memberOutput,teamVoice,newRun,pauseProject,resumeProject,endProject,validateSnapshot,mods,cost,teamSize,progress,groupProgress,coreProgress,coreReady,complete,goals,canRelease,quality,trueScore,overallScore,grade,gradeIndex,revealLevel,ratingView,overallView,adRate,adProjection,buyingStatus,setAdBudget,forecast,incomeView,objectiveStatus,throughput,workDependency,workLimit,hire,downsize,advance,event,eventPool,eventChoiceStatus,resolveEvent,acknowledgeEvent,preview,progressEstimate,assignmentEstimate,automaticAssignmentPlan,autoAssign,softCapWarnings,finish,emptyMeta,settle,validateMeta,syncCareer,trainingCost,train,renameHero,hirePartner,dismissPartner,validateRun,copy};
+  return {VERSION,PERSON_RANKS,abilityScore,personRank,recruitUnlockText,MARKET_MIN,MARKET_MAX,marketMultiplier,revenueRules,INITIAL_FUNDS,startupAidStatus,claimStartupAid,STANDARD_WEEKLY_WORK,STANDARD_PERSON_WEEK_COST,scalePlan,projectNameStatus,HARD_CAP,INITIAL_SOFT_CAP,CAP_STEP,softCap,workPhase,SKILLS,GROUPS,JOBS,GRADES,AD_RATES,AD_BUDGETS,HERO,COMPANION,RECRUITS,SCALES,baseRequirements,PUBLISHER_JOBS,PUBLISHER_WEEKLY_WORK,publisherManaged,publisherQuote,signPublisher,adSettlement,OBJECTIVES,EVENTS,skillLabel,taskSkill,assignMember,availableRecruits,memberOutput,teamVoice,newRun,pauseProject,resumeProject,endProject,validateSnapshot,mods,cost,teamSize,progress,groupProgress,coreProgress,coreReady,complete,goals,canRelease,quality,trueScore,overallScore,grade,gradeIndex,revealLevel,ratingView,overallView,adRate,adProjection,buyingStatus,setAdBudget,forecast,incomeView,objectiveStatus,throughput,workDependency,workLimit,hire,downsize,advance,event,eventPool,eventChoiceStatus,resolveEvent,acknowledgeEvent,preview,progressEstimate,assignmentEstimate,automaticAssignmentPlan,autoAssign,softCapWarnings,finish,emptyMeta,settle,validateMeta,syncCareer,trainingCost,train,renameHero,hirePartner,dismissPartner,validateRun,copy};
 });
