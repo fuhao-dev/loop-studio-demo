@@ -99,6 +99,21 @@
 @media(max-width:740px){.tutorial-coach{right:12px;bottom:135px;width:320px;max-width:calc(100vw - 74px);max-height:38dvh;font-size:12px}.tutorial-coach-head{padding:9px 12px;gap:8px}.tutorial-coach-head h2{font-size:14px}.tutorial-coach-content{padding:8px 12px}.tutorial-coach-content>p{margin:7px 0}.tutorial-coach.minimized{width:250px}.tutorial-welcome{gap:14px;align-items:flex-start}.tutorial-welcome p{font-size:13px}.tutorial-outline>li{gap:8px}.tutorial-outline span{flex-basis:100%;padding-left:26px}.tutorial-dialog-tip{padding:10px;font-size:11px}.tutorial-target{outline-offset:2px}}
 .tutorial-coach{overflow:visible}.tutorial-coach-content{max-height:calc(100dvh - 280px);overflow:auto}@media(max-width:740px){.tutorial-coach{max-width:calc(100vw - 90px)}.tutorial-coach-content{max-height:calc(38dvh - 64px)}}
 /* v0.16: put weekly decisions first without removing their detail. */
+/* v0.17: a topic-based handbook, shared by desktop and mobile. */
+dialog:has(.manual-handbook){width:min(900px,calc(100vw - 30px))}
+.manual-intro{font-size:12px;line-height:1.8;color:var(--muted);margin-bottom:16px}
+.manual-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 24px}
+.manual-nav button{font-size:12px;padding:12px 8px;background:#17212a}
+.manual-nav button.selected{color:var(--gold);border-color:var(--gold);background:#363127}
+.manual-topic>header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:18px}
+.manual-topic>header small{font-size:10px;color:var(--gold);letter-spacing:1px}
+.manual-topic>header h3{font-size:21px;margin:8px 0}.manual-topic>header p{font-size:12px;color:var(--muted);line-height:1.9}
+.manual-cards{display:grid;gap:13px}.manual-card{padding:18px;border:1px solid var(--line);border-radius:9px;background:#15202a}
+.manual-card h4{margin:0 0 11px;font-size:14px;color:var(--gold);font-weight:600}
+.manual-card p,.manual-card li{font-size:12px;line-height:1.95;color:#bbc5cc}.manual-card p+p{margin-top:10px}.manual-card ul{padding-left:20px;margin:0}.manual-card li+li{margin-top:8px}
+.manual-work-list p{display:flex;gap:15px;align-items:baseline}.manual-work-list strong{min-width:72px;color:var(--text)}
+.manual-table-wrap{overflow-x:auto}.manual-table{width:100%;border-collapse:collapse;font-size:11px;line-height:1.85}.manual-table th,.manual-table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.manual-table thead th{color:var(--gold)}.manual-table tbody th{font-weight:500;color:var(--text)}.manual-table td{color:#bbc5cc}
+@media(max-width:600px){.manual-nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:18px}.manual-nav button{font-size:11px;padding:10px 5px}.manual-card{padding:13px}.manual-card p,.manual-card li{font-size:11px}.manual-work-list p{display:block}.manual-work-list strong{display:block;margin-bottom:3px}.manual-table th,.manual-table td{padding:8px 4px;font-size:10px}.manual-table th:first-child{width:28%}.manual-table th:nth-child(2){width:24%}}
 .job-pick-note{grid-column:1/-1;font-size:10px;color:var(--gold);line-height:1.7}
 .decision-finance{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px;padding:14px;border:1px solid var(--line);border-radius:10px;background:rgba(216,184,121,.04)}
 .decision-finance small,.decision-finance b{display:block;font-size:10px}.decision-finance b{font-size:14px;margin-top:5px;color:var(--gold)}.decision-finance p{grid-column:1/-1;font-size:10px;line-height:1.7;color:var(--muted);margin:0}

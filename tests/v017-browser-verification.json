@@ -1,0 +1,43 @@
+{
+  "version": "0.17.0",
+  "date": "2026-11-06",
+  "browser": "Microsoft Edge",
+  "testOrigin": "http://127.0.0.1:4206/",
+  "method": "Real UI actions through the Codex computer-use browser session; no save injection or hidden game-state mutation.",
+  "career": {
+    "initialWallet": 7600,
+    "initialTeam": 2,
+    "reputation": 0,
+    "invited": ["余苗", "池川", "墨小雨"],
+    "invitationCostEach": 180,
+    "teamAfterInvites": 5,
+    "walletAfterInvites": 7060,
+    "reloadPreservedTeamAndWallet": true,
+    "catalogExplainsUnlimitedTeam": true
+  },
+  "milestones": {
+    "rewardCount": 32,
+    "firstThresholds": [20, 40, 65, 95, 130, 170],
+    "lastThreshold": 2965,
+    "advancedTalentThresholds": {"SR": 95, "SSR": 445, "UR": 1145},
+    "teamDisplay": "全局团队 5 人，人数不限，包含主角与龙娘",
+    "noHeadcountRewards": true
+  },
+  "manual": {
+    "topicsClicked": ["入门流程", "开发与完成度", "团队与成本", "评级与收益", "宣发与发行", "名誉与成长", "项目与补助", "真实视界"],
+    "oneSelectedTopicAtATime": true,
+    "desktopNavigationColumns": 4,
+    "mobileNavigationColumns": 2,
+    "lastTopicRememberedOnReopen": "真实视界",
+    "realityChapterChecked": ["周初阶段与65%／35%效率", "50%～70%牵连", "超过70%随机推进或返工", "上架例外", "满效率预估", "发售额外25 EXP", "无额外工资加价", "既有事件与界面差异"]
+  },
+  "responsive": [
+    {"viewport": "1699x943", "dialogWidth": 900, "pageHorizontalOverflow": false},
+    {"viewport": "390x844", "dialogWidth": 340.667, "pageHorizontalOverflow": false},
+    {"viewport": "320x780", "dialogWidth": 270.667, "pageHorizontalOverflow": false, "tableHorizontalOverflow": false}
+  ],
+  "temporaryViewportReset": true,
+  "applicationConsoleErrorsOrWarnings": [],
+  "screenshots": ["docs/v017-manual-preview.png", "docs/v017-manual-mobile-preview.png"],
+  "limits": ["The browser smoke test recruited five people; the automated suite separately exercised all 27 available members and their costs, persistence and project lifecycle."]
+}
