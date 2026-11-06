@@ -1,5 +1,5 @@
 {
-  "version": "0.12.0",
+  "version": "0.13.0",
   "date": "2026-11-06",
   "checks": 39,
   "simulatedRuns": 23,
@@ -13,7 +13,7 @@
       "weeks": 13,
       "rating": "B+",
       "cost": 4152,
-      "walletEnd": 5728,
+      "walletEnd": 6932,
       "crew": [
         "hero",
         "ace",
@@ -29,7 +29,7 @@
       "weeks": 11,
       "rating": "B",
       "cost": 3461,
-      "walletEnd": 6314,
+      "walletEnd": 9882,
       "crew": [
         "hero",
         "ace",
@@ -45,7 +45,7 @@
       "weeks": 13,
       "rating": "B",
       "cost": 4152,
-      "walletEnd": 6669,
+      "walletEnd": 6819,
       "crew": [
         "hero",
         "ace",
@@ -61,7 +61,7 @@
       "weeks": 11,
       "rating": "C+",
       "cost": 3461,
-      "walletEnd": 7036,
+      "walletEnd": 7129,
       "crew": [
         "hero",
         "ace",
@@ -75,9 +75,9 @@
       "route": "balanced-with-recruit",
       "initialWallet": 7600,
       "weeks": 13,
-      "rating": "B",
+      "rating": "B+",
       "cost": 4152,
-      "walletEnd": 6831,
+      "walletEnd": 7130,
       "crew": [
         "hero",
         "ace",
@@ -91,9 +91,9 @@
       "route": "balanced-with-recruit",
       "initialWallet": 7600,
       "weeks": 12,
-      "rating": "C+",
+      "rating": "B-",
       "cost": 3808,
-      "walletEnd": 6681,
+      "walletEnd": 6721,
       "crew": [
         "hero",
         "ace",
@@ -109,7 +109,7 @@
       "weeks": 13,
       "rating": "B+",
       "cost": 4152,
-      "walletEnd": 28128
+      "walletEnd": 29332
     },
     {
       "seed": 44001,
@@ -120,7 +120,7 @@
       "weeks": 11,
       "rating": "B",
       "cost": 3461,
-      "walletEnd": 28714
+      "walletEnd": 32282
     },
     {
       "seed": 44001,
@@ -129,9 +129,9 @@
       "route": "funded-scale-integration",
       "initialWallet": 90000,
       "weeks": 29,
-      "rating": "B+",
+      "rating": "A-",
       "cost": 9431,
-      "walletEnd": 97105
+      "walletEnd": 101636
     },
     {
       "seed": 44001,
@@ -139,10 +139,10 @@
       "hard": true,
       "route": "funded-scale-integration",
       "initialWallet": 90000,
-      "weeks": 29,
+      "weeks": 30,
       "rating": "B-",
-      "cost": 8737,
-      "walletEnd": 90304
+      "cost": 9076,
+      "walletEnd": 89521
     },
     {
       "seed": 44001,
@@ -151,9 +151,9 @@
       "route": "funded-scale-integration",
       "initialWallet": 270000,
       "weeks": 77,
-      "rating": "B+",
+      "rating": "A-",
       "cost": 24572,
-      "walletEnd": 267501
+      "walletEnd": 323429
     },
     {
       "seed": 44001,
@@ -162,9 +162,9 @@
       "route": "funded-scale-integration",
       "initialWallet": 270000,
       "weeks": 80,
-      "rating": "B-",
-      "cost": 24033,
-      "walletEnd": 271378
+      "rating": "B",
+      "cost": 24067,
+      "walletEnd": 276246
     },
     {
       "seed": 44001,
@@ -175,7 +175,7 @@
       "weeks": 189,
       "rating": "A-",
       "cost": 59025,
-      "walletEnd": 869139
+      "walletEnd": 1168956
     },
     {
       "seed": 44001,
@@ -184,9 +184,9 @@
       "route": "funded-scale-integration",
       "initialWallet": 810000,
       "weeks": 231,
-      "rating": "B",
-      "cost": 68693,
-      "walletEnd": 806538
+      "rating": "B+",
+      "cost": 68705,
+      "walletEnd": 943433
     },
     {
       "seed": 44001,
@@ -204,7 +204,7 @@
       "rating": "B",
       "adSpend": 0,
       "adRevenue": 0,
-      "walletEnd": 4417
+      "walletEnd": 4880
     },
     {
       "seed": 44001,
@@ -231,7 +231,7 @@
       "rating": "B-",
       "adSpend": 0,
       "adRevenue": 0,
-      "walletEnd": 4346
+      "walletEnd": 4400
     },
     {
       "seed": 44002,

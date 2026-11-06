@@ -22,17 +22,17 @@ check('four scales multiply natural income by their work scale',()=>{
   for(const g of G.SCALES){const r=ship(g.id,50,.5);assert.equal(r.organicBaseRevenue,3250*g.revenueMultiplier);assert.equal(r.organicRevenue,r.organicBaseRevenue);assert.equal(r.scaleRevenueMultiplier,g.revenueMultiplier);}
 });
 check('settlement supports exact cold and hot boundaries',()=>{
-  for(const [roll,factor] of [[0,.1],[.5,1],[1-1/4294967296,10]]){const r=ship('micro',50,roll);assert.equal(r.marketMultiplier,factor);assert.equal(r.organicRevenue,Math.round(3250*factor));}
+  for(const [roll,factor] of [[0,.5],[.5,1],[1-1/4294967296,10]]){const r=ship('micro',50,roll);assert.equal(r.marketMultiplier,factor);assert.equal(r.organicRevenue,Math.round(3250*factor));}
 });
-check('market luck can outweigh the complete quality range',()=>{
-  const lowQualityHit=ship('micro',0,1-1/4294967296),perfectFlop=ship('micro',100,0);
-  assert.equal(lowQualityHit.organicRevenue,6500);assert.equal(perfectFlop.organicRevenue,1350);assert.ok(lowQualityHit.organicRevenue>perfectFlop.organicRevenue);
+check('market luck can still outweigh a quality gap after rating floors',()=>{
+  const lowQualityHit=ship('micro',35,1-1/4294967296),perfectFlop=ship('micro',80,0);
+  assert.equal(perfectFlop.marketMultiplier,2);assert.ok(lowQualityHit.organicRevenue>perfectFlop.organicRevenue);
 });
 check('quality still improves revenue when scale and luck are equal',()=>{
   for(const roll of [0,.5,.99])assert.ok(ship('micro',80,roll).organicRevenue>ship('micro',20,roll).organicRevenue);
 });
 check('fully revealed grades retain market uncertainty',()=>{
-  const {s}=ready(),f=G.forecast(s);assert.equal(f.exact,true);assert.equal(f.rating.text,'B');assert.equal(f.low,Math.round(organicAtBounds(s,false)*.1));assert.equal(f.high,Math.round(organicAtBounds(s,true)*10));assert.ok(f.high/f.low>100);assert.deepEqual(f.rules,{scaleMultiplier:1,marketMin:.1,marketMax:10});
+  const {s}=ready(),f=G.forecast(s);assert.equal(f.exact,true);assert.equal(f.rating.text,'B');assert.equal(f.low,Math.round(organicAtBounds(s,false)*.5));assert.equal(f.high,Math.round(organicAtBounds(s,true)*10));assert.ok(f.high/f.low>20);assert.deepEqual(f.rules,{scaleMultiplier:1,marketMin:.5,marketMax:10});
 });
 function organicAtBounds(s,high){const f=G.overallView(s),c=G.ratingView(s,'commerce'),q=high?f.high:f.low,v=high?c.high:c.low;return Math.round((1000+.9*q*q)*(.65+.007*v));}
 check('forecast contains releases across scales reveal levels and publishing',()=>{
@@ -63,7 +63,7 @@ check('preview and rules do not draw or reveal the market roll',()=>{
 check('successful release draws once and persists the market result',()=>{
   const {meta,s}=ready();nextRoll(s,.25);const oldRng=s.rng,r=G.finish(s,true);assert.notEqual(s.rng,oldRng);
   const saved=G.copy(s),before=JSON.stringify(saved);assert.equal(G.finish(saved,true),false);assert.equal(JSON.stringify(saved),before);
-  const next=G.settle(meta,s);assert.equal(next.history[0].marketMultiplier,.32);assert.deepEqual(G.settle(next,s),next);assert.equal(saved.result.marketMultiplier,r.marketMultiplier);
+  const next=G.settle(meta,s);assert.equal(next.history[0].marketMultiplier,.5);assert.deepEqual(G.settle(next,s),next);assert.equal(saved.result.marketMultiplier,r.marketMultiplier);
 });
 check('failed release and abort do not draw a market outcome',()=>{
   const {s}=ready();s.work.review=0;const before=JSON.stringify(s);assert.equal(G.finish(s,true),false);assert.equal(JSON.stringify(s),before);
@@ -74,8 +74,8 @@ check('release confirmation and report show the rules and actual market factor',
   let markup='';const {s}=ready('large');const context={G,run:s,meta:G.emptyMeta(),showDialog:x=>markup=x,dialogHeader:()=>'',esc:String,yen:n=>'¥'+n};
   vm.runInNewContext(source.slice(source.indexOf('  function incomeRange('),source.indexOf('  const pct=')),context);
   const releaseCode=source.slice(source.indexOf('  function release('),source.indexOf('  function help('));
-  vm.runInNewContext(releaseCode+';release()',context);assert.ok(markup.includes('规模倍率 ×27')&&markup.includes('×0.10～10.00')&&markup.includes('宣传无法消除市场波动'));
+  vm.runInNewContext(releaseCode+';release()',context);assert.ok(markup.includes('规模倍率 ×27')&&markup.includes('×0.50～10.00')&&markup.includes('宣传无法消除市场波动'));
   const reportCode=source.slice(source.indexOf('  function result('),source.indexOf('  function release('));nextRoll(s,.25);G.finish(s,true);
-  vm.runInNewContext(reportCode+';result()',context);assert.ok(markup.includes('遇冷 · ×0.32')&&markup.includes('规模收益倍率')&&markup.includes('规模后基准自然收入'));
+  vm.runInNewContext(reportCode+';result()',context);assert.ok(markup.includes('遇冷 · ×0.50')&&markup.includes('规模收益倍率')&&markup.includes('规模后基准自然收入'));
 });
 console.log(JSON.stringify({marketChecks:checks,forecastCases:80,distributionSamples:10000}));
