@@ -1,7 +1,12 @@
 const fs=require('node:fs'),path=require('node:path');
 let html=fs.readFileSync(path.join(__dirname,'dist/index.html'),'utf8');
 const css=fs.readFileSync(path.join(__dirname,'dist/style.css'),'utf8');
-const scripts=['engine.js','audio.js','characters-ui.js','tutorial.js','app.js'].map(f=>fs.readFileSync(path.join(__dirname,'dist',f),'utf8'));
+const portraitPath='assets/dragon-programmer-star.png';
+const portraitData='data:image/png;base64,'+fs.readFileSync(path.join(__dirname,'dist',portraitPath)).toString('base64');
+const scripts=['engine.js','audio.js','characters-ui.js','tutorial.js','app.js'].map(f=>{
+  const source=fs.readFileSync(path.join(__dirname,'dist',f),'utf8');
+  return f==='characters-ui.js'?source.replace("'"+portraitPath+"'",()=>"'"+portraitData+"'"):source;
+});
 html=html.replace('<link rel="stylesheet" href="style.css">',()=>'<style>'+css+'</style>');
 html=html.replace(/<script defer src="(?:engine|audio|characters-ui|tutorial|app)\.js"><\/script>/g,'');
 const license=fs.readFileSync(path.join(__dirname,'LICENSE'),'utf8');

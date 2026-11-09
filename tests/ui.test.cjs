@@ -12,6 +12,10 @@ assert.equal((window.StudioPeople.assignment(s,s.team[0],true).match(/<option/g)
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8'),scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];
 assert.equal(scripts.length,5,'offline package includes the people module');
 scripts.forEach((m,i)=>new vm.Script(m[1],{filename:'offline-script-'+i}));
+const offlinePeople={StudioGame:G};vm.runInNewContext(scripts[2][1],{window:offlinePeople});
+const offlinePortrait=offlinePeople.StudioPeople.portrait(G.COMPANION).match(/src="data:image\/png;base64,([^"]+)"/);
+assert.ok(offlinePortrait,'offline dragon portrait is embedded instead of loading an external file');
+assert.ok(Buffer.from(offlinePortrait[1],'base64').equals(fs.readFileSync(path.join(root,'dist/assets/dragon-programmer-star.png'))),'offline portrait matches the distributed PNG exactly');
 assert.ok(!/<script\b[^>]*\bsrc=|<link\b[^>]*rel=["']stylesheet/i.test(html),'offline scripts and styles embedded');
 assert.ok(html.includes('v'+require('../package.json').version+' DEMO')&&html.includes('loop_studio_career_v18'),'offline build current version and isolated save key');
 for(const f of ['engine.js','audio.js','characters-ui.js','tutorial.js','app.js'])new vm.Script(fs.readFileSync(path.join(root,'dist',f),'utf8'),{filename:f});
