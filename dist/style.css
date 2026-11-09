@@ -164,6 +164,7 @@ dialog:has(.manual-handbook){width:min(900px,calc(100vw - 30px))}
 .crew-detail-person{display:flex;align-items:center;gap:12px;margin:10px 0}
 .crew-detail-person .person-portrait{width:42px;height:63px;flex-shrink:0}
 .crew-detail-person p{font-size:11px}
+.dragon-portrait{object-fit:contain;image-rendering:pixelated}
 .crew-row-details .ability-list{margin:10px 0}
 .crew-row-details .production-pair{margin-top:12px}
 .crew-count{display:block;color:var(--muted);font-size:10px;margin:10px 0}

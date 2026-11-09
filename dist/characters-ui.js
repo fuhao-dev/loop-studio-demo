@@ -36,7 +36,9 @@
     ['#b27a6c','#6c4f60','#edbf82',2,'pony','scarf','phone']
   ];
   function pixelShade(hex,delta){return '#'+hex.slice(1).match(/../g).map(c=>Math.max(0,Math.min(255,parseInt(c,16)+delta)).toString(16).padStart(2,'0')).join('');}
+  const DRAGON_PORTRAIT='assets/dragon-programmer-star.png';
   function portrait(m){
+    if(m.id==='ace')return '<img class="person-portrait pixel-portrait dragon-portrait" src="'+DRAGON_PORTRAIT+'" width="256" height="384" alt="'+esc(m.name)+'的像素立绘" title="'+esc(m.name)+' · '+esc(m.title||'团队成员')+'" decoding="async">';
     const look=m.id==='hero'?0:m.id==='ace'?1:(m.look||2),[hair,coat,accent,skinId,style,accessory,prop]=PIXEL_LOOKS[look%PIXEL_LOOKS.length],skin=['#edc6a5','#d6aa88','#b98265'][skinId],ink='#172330',shade=pixelShade(coat,-24),light=pixelShade(coat,24),hairDark=pixelShade(hair,-25),rank=G.personRank(m);let pixels='';
     const r=(x,y,w,h,c)=>{pixels+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" fill="'+c+'"/>';};
     r(12,69,26,2,'#101c25');r(16,68,18,1,'#29404a');

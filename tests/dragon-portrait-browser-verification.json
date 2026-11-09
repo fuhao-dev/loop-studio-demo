@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-09",
+  "scope": "Dragon companion portrait replacement using the approved pixel icon character design",
+  "browser": "Codex in-app browser",
+  "asset": {
+    "path": "dist/assets/dragon-programmer-star.png",
+    "width": 256,
+    "height": 384,
+    "format": "RGBA PNG",
+    "cornerAlpha": 0,
+    "bytes": 107131
+  },
+  "validation": {
+    "npmTest": "passed: 378 rule checks and UI checks",
+    "offlineBuild": "passed",
+    "distributedAndEmbeddedPortraitBytesMatch": true,
+    "all27CharacterArtRemainDistinct": true,
+    "other26CharactersRetainRectangularPixelArtChecks": true
+  },
+  "actualUiChecks": [
+    "Initial tutorial welcome contains the new companion portrait",
+    "Career team portrait loads correctly in the compact viewport",
+    "1280x900 desktop team card: complete image, natural size 256x384, rendered at 88x132, object-fit contain, image-rendering pixelated, no page horizontal overflow",
+    "390x844 mobile team card: complete image rendered at 78x117, full figure visible, no page horizontal overflow",
+    "Actual first project started normally and two development weeks advanced",
+    "Week 2 event '相册里多了一张截图': companion portrait loads at 35x52 in the event dialogue",
+    "Root single-file build restores the same career with balance 7083 and the existing project; visible companion image uses a data:image/png;base64 source and loads at natural size 256x384",
+    "Browser error and warning logs are empty",
+    "Temporary viewport override reset and owned preview tab closed"
+  ],
+  "screenshots": [
+    "docs/dragon-portrait-career-mobile.jpg",
+    "docs/dragon-portrait-team-desktop.jpg",
+    "docs/dragon-portrait-team-mobile.jpg",
+    "docs/dragon-portrait-event-mobile.jpg"
+  ]
+}
