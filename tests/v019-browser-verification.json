@@ -1,0 +1,35 @@
+{
+  "version": "0.19.0",
+  "date": "2026-11-10",
+  "browser": "Microsoft Edge",
+  "origin": "http://127.0.0.1:4219/dist/index.html",
+  "workflow": [
+    "Started a fresh ideal-mode micro project through the real UI, without injected state.",
+    "Inspected large-project setup: publisher staffing x4.5, 90 points per job per week, estimated listing 24 weeks; insufficient-funds gate remained active.",
+    "Completed three development weeks and encountered the first method discussion, offering small-team, flexible transfers and decline.",
+    "Adopted flexible transfers. Confirmation and workbench showed 10% transfer loss and x0.950 worker efficiency.",
+    "Reloaded and verified the selected method persisted.",
+    "Automatic assignment changed one person's task and exposed the existing undo action.",
+    "Publisher panel and contract confirmation agreed on 20 points per job per week and four remaining listing weeks for the micro project.",
+    "Signed the fictional publisher contract; signing payment of 400 was received.",
+    "Paused the project and restored it from development history; method selection and signed contract both persisted."
+  ],
+  "layout": [
+    {"viewport": "desktop", "documentClientWidth": 1684, "documentScrollWidth": 1684},
+    {"viewportWidth": 390, "documentClientWidth": 375, "documentScrollWidth": 375, "methodDialogClientWidth": 339, "methodDialogScrollWidth": 339},
+    {"viewportWidth": 320, "documentClientWidth": 305, "documentScrollWidth": 305, "methodPanelClientWidth": 227, "methodPanelScrollWidth": 227}
+  ],
+  "screenshots": [
+    "docs/v019-workbench-desktop.png",
+    "docs/v019-method-event-desktop.png",
+    "docs/v019-method-event-mobile.png",
+    "docs/v019-method-panel-mobile.png"
+  ],
+  "console": "No application error observed. Captured warnings originated from a browser extension content script.",
+  "cleanup": "Temporary viewport override reset, owned test tab closed and local static server stopped.",
+  "limits": [
+    "Browser workflow covered one micro project; all sixteen listing-cycle combinations were verified in engine simulations.",
+    "No full release was performed in this browser workflow; release and termination method records were covered in rule tests.",
+    "No GitHub push, merge or production deployment was performed."
+  ]
+}

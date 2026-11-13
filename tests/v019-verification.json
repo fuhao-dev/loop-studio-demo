@@ -1,0 +1,125 @@
+{
+  "version": "0.19.0",
+  "cycles": [
+    {
+      "scale": "micro",
+      "hard": false,
+      "reputation": 0,
+      "weeklyWork": 20,
+      "weeks": 4
+    },
+    {
+      "scale": "small",
+      "hard": false,
+      "reputation": 0,
+      "weeklyWork": 30,
+      "weeks": 8
+    },
+    {
+      "scale": "medium",
+      "hard": false,
+      "reputation": 0,
+      "weeklyWork": 60,
+      "weeks": 12
+    },
+    {
+      "scale": "large",
+      "hard": false,
+      "reputation": 0,
+      "weeklyWork": 90,
+      "weeks": 24
+    },
+    {
+      "scale": "micro",
+      "hard": false,
+      "reputation": 2965,
+      "weeklyWork": 36,
+      "weeks": 4
+    },
+    {
+      "scale": "small",
+      "hard": false,
+      "reputation": 2965,
+      "weeklyWork": 54,
+      "weeks": 6
+    },
+    {
+      "scale": "medium",
+      "hard": false,
+      "reputation": 2965,
+      "weeklyWork": 108,
+      "weeks": 8
+    },
+    {
+      "scale": "large",
+      "hard": false,
+      "reputation": 2965,
+      "weeklyWork": 162,
+      "weeks": 14
+    },
+    {
+      "scale": "micro",
+      "hard": true,
+      "reputation": 0,
+      "weeklyWork": 20,
+      "weeks": 4
+    },
+    {
+      "scale": "small",
+      "hard": true,
+      "reputation": 0,
+      "weeklyWork": 30,
+      "weeks": 8
+    },
+    {
+      "scale": "medium",
+      "hard": true,
+      "reputation": 0,
+      "weeklyWork": 60,
+      "weeks": 12
+    },
+    {
+      "scale": "large",
+      "hard": true,
+      "reputation": 0,
+      "weeklyWork": 90,
+      "weeks": 24
+    },
+    {
+      "scale": "micro",
+      "hard": true,
+      "reputation": 2965,
+      "weeklyWork": 36,
+      "weeks": 4
+    },
+    {
+      "scale": "small",
+      "hard": true,
+      "reputation": 2965,
+      "weeklyWork": 54,
+      "weeks": 6
+    },
+    {
+      "scale": "medium",
+      "hard": true,
+      "reputation": 2965,
+      "weeklyWork": 108,
+      "weeks": 8
+    },
+    {
+      "scale": "large",
+      "hard": true,
+      "reputation": 2965,
+      "weeklyWork": 162,
+      "weeks": 14
+    }
+  ],
+  "checks": 26,
+  "methodOfferSeeds": 80,
+  "exhaustiveMethodPlans": 4,
+  "limits": [
+    "Cycle fixtures isolate publisher listing at fixed signed speed; events remain active but cannot directly advance listing.",
+    "Method production uses public project progress and roster size; no hidden rating or market prediction.",
+    "Browser verification is recorded separately."
+  ]
+}

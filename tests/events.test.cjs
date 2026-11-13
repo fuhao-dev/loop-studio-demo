@@ -5,9 +5,9 @@ function pending(s,id){s.pendingEvent=id;s.pendingChoices=null;s.pendingCapGroup
 function numericState(s){return G.copy({money:s.money,spent:s.spent,income:s.income,work:s.work,softCaps:s.softCaps,debt:s.debt,morale:s.morale,effects:s.effects,knownPartners:s.knownPartners,milestones:s.milestones,week:s.week,rng:s.rng,adSpend:s.adSpend,publisher:s.publisher});}
 function pick(s,index=0){assert.ok(G.resolveEvent(s,index));if(s.eventResult?.unread)assert.ok(G.acknowledgeEvent(s));}
 const originalIds=['inspiration','palette','discount','feedback','coffee','break','backup','scope','showcase','bug','forms','compat','tired','debt','monetization','pricing','ip_plan','ad_plan','store_page','scale_review','market_rival','market_watch','cash_review','team_exchange'];
-check('all original event identities remain in the 120-event pool',()=>{
+check('all original event identities remain alongside the three new method discussions',()=>{
   assert.deepEqual(G.EVENTS.slice(0,24).map(e=>e.id),originalIds);
-  assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,120);
+  assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,123);
   for(const [kind,count] of [['ambient',36],['hidden',36],['publisher',12]])assert.equal(G.EVENTS.filter(e=>e.kind===kind).length,count);assert.equal(G.EVENTS.filter(e=>!e.kind).length,36);
 });
 check('all ambient options leave every numerical value and RNG unchanged in both modes',()=>{

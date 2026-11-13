@@ -20,7 +20,7 @@ check('testing remains useful through completion and creates no continuing phant
   s.softCaps.qa=1;s.work.qa=s.req.qa;const warning=G.softCapWarnings(s).find(w=>w.job==='qa');assert.ok(warning);assert.equal(warning.ongoing,'');
 });
 check('each of 36 daily scenes has both outcome categories with exactly the same story and labels',()=>{
-  assert.equal(ordinary.length,36);assert.equal(outcomes.length,36);assert.equal(G.EVENTS.length,120);assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,120);
+  assert.equal(ordinary.length,36);assert.equal(outcomes.length,36);assert.equal(G.EVENTS.length,123);assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,123);
   for(const a of ordinary){const matches=outcomes.filter(e=>e.scene===a.scene);assert.equal(matches.length,1);const h=matches[0];assert.equal(a.title,h.title);assert.equal(a.text,h.text);assert.equal(a.tag,h.tag);assert.deepEqual(a.choices.map(c=>c.label),h.choices.map(c=>c.label));}
 });
 check('all paired public event objects and voices are indistinguishable before selection',()=>{
@@ -46,4 +46,4 @@ check('seeded sampling reaches both versions of several shared scenes without un
 check('every publisher suggestion stays inside the three player groups after expansion',()=>{
   const list=G.EVENTS.filter(e=>e.kind==='publisher');assert.equal(list.length,12);for(const e of list)for(let index=0;index<e.choices.length;index++){const s=start();G.signPublisher(s);const before=G.copy(s);pending(s,e.id);assert.ok(G.resolveEvent(s,index));for(const id of G.PUBLISHER_JOBS){assert.equal(s.work[id],before.work[id]);assert.equal(G.softCap(s,id),G.softCap(before,id));}assert.equal(s.adBudget,before.adBudget);assert.equal(s.publisher.adSpend,before.publisher.adSpend);}
 });
-console.log(JSON.stringify({eventExpansionChecks:checks,totalEvents:120,sharedDailyScenes:36,seededCases:1400,cooldownWeeks:200}));
+console.log(JSON.stringify({eventExpansionChecks:checks,totalEvents:123,sharedDailyScenes:36,seededCases:1400,cooldownWeeks:200}));

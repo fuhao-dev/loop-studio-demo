@@ -38,7 +38,7 @@ check('pre-week budget warning does not spend time money or randomness',()=>{
   vm.runInNewContext(code+';showWorkCapWarning([])',{G,run,showDialog:x=>markup=x,dialogHeader:()=>'',esc:String});assert.equal(JSON.stringify(run),before);assert.ok(markup.includes('预算为 ¥0，本周买量无进度')&&markup.includes('去设置买量预算')&&markup.includes('仍然推进一周'));assert.ok(source.includes('warnings.length||buying.unfunded'));
 });
 check('event pool covers the current game and has no removed systems',()=>{
-  assert.equal(G.EVENTS.length,120);assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,120);
+  assert.equal(G.EVENTS.length,123);assert.equal(new Set(G.EVENTS.map(e=>e.id)).size,123);
   const texts=G.EVENTS.map(e=>e.title+e.text+e.choices.map(c=>c.label+c.hint).join('')).join('');assert.ok(!/阿策|蓝图|主攻|任务奖励|角色模板/.test(texts));
   for(const key of ['买量净回款','0.10～10.00','软上限','规模','生涯','伙伴','资料','审核','广告变现','用户付费','IP'])assert.ok(texts.includes(key),key);
 });

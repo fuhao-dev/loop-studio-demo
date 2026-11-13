@@ -99,6 +99,7 @@
     const conditions=notes.slice();
     if(s.hard)notes.push('满效率预估，不含真实模式减速、返工与牵连');
     if(m.job!==m.lastJob)notes.push('转岗磨合 −'+Math.round(20*G.mods(s).ramp)+'%');
+    for(const method of G.projectMethodStatus(s))notes.push('制作方法 · '+method.name+'：'+method.current);
     if(G.reputationProfile(s).speedBonus)notes.push('工作室名誉加速 +'+Math.round(G.reputationProfile(s).speedBonus*100)+'%');
     const dependency=G.workDependency(s,m.job);if(dependency)notes.push('上游依赖：'+dependency.sources.map(source=>source.name+' '+(source.value*100).toFixed(1)+'%').join(' / ')+'；上游允许上限 '+(dependency.cap*100).toFixed(1)+'%');
     if(noBudget)notes.push('买量预算为 ¥0，不扣投放费，不产生买量进度；团队工资照付。');

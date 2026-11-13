@@ -289,3 +289,25 @@ dialog:has(.postmortem){width:min(920px,calc(100vw - 32px))}
   #app.workbench-work .rating-summary-item small{font-size:9px}
   #app.workbench-work .rating-summary-item strong{font-size:10px;white-space:nowrap}
 }
+
+/* Project-scoped production methods: collapsed on the workbench, readable on mobile. */
+.project-methods{margin:16px 0;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+.project-methods>summary{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;list-style:none;font-size:12px}
+.project-methods>summary::-webkit-details-marker{display:none}.project-methods>summary strong{flex-shrink:0}.project-methods>summary strong span{margin-left:6px;color:var(--teal)}
+.project-methods>summary>span{flex:1;min-width:0;color:var(--muted);overflow-wrap:anywhere}.project-methods>summary small{flex-shrink:0;color:var(--teal)}
+.method-panel-body{padding:0 16px 16px}.method-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:10px;margin:12px 0}.method-card{padding:14px;background:rgba(140,173,163,.06);border:1px solid var(--line);border-radius:9px;min-width:0}
+.method-card h3{font-size:13px;margin:0 0 8px}.method-card p{font-size:12px;line-height:1.8;color:var(--muted);margin:0 0 9px}.method-card strong{font-size:11px;font-weight:500;color:var(--teal)}.method-total{font-size:12px;line-height:1.9;overflow-wrap:anywhere}.method-panel-body>small{display:block;font-size:11px;color:var(--muted);line-height:1.8}
+@media(max-width:540px){.project-methods>summary{flex-wrap:wrap;gap:8px 10px;padding:12px}.project-methods>summary>span{order:3;flex-basis:100%}.project-methods>summary small{margin-left:auto}.method-panel-body{padding:0 12px 12px}.method-cards{grid-template-columns:1fr}}
+
+/* Compare contracts before committing a project. */
+.publisher-pace { margin: 16px 0; line-height: 1.6; }
+.publisher-options { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+.publisher-option { display: flex; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: #15202a; }
+.publisher-option header { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.publisher-option h3, .publisher-option p, .publisher-option dl { margin: 0; }
+.publisher-option p { line-height: 1.5; }
+.publisher-option dl { flex: 1; }
+.publisher-option dl div { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2px 12px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.publisher-option dd { margin: 0; font-weight: 700; }
+.publisher-option button { align-self: start; max-width: 100%; white-space: normal; }
+@media (max-width: 640px) { .publisher-options { grid-template-columns: 1fr; } }

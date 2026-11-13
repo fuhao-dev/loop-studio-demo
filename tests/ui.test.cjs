@@ -17,7 +17,7 @@ const offlinePortrait=offlinePeople.StudioPeople.portrait(G.COMPANION).match(/sr
 assert.ok(offlinePortrait,'offline dragon portrait is embedded instead of loading an external file');
 assert.ok(Buffer.from(offlinePortrait[1],'base64').equals(fs.readFileSync(path.join(root,'dist/assets/dragon-programmer-star.png'))),'offline portrait matches the distributed PNG exactly');
 assert.ok(!/<script\b[^>]*\bsrc=|<link\b[^>]*rel=["']stylesheet/i.test(html),'offline scripts and styles embedded');
-assert.ok(html.includes('v'+require('../package.json').version+' DEMO')&&html.includes('loop_studio_career_v18'),'offline build current version and isolated save key');
+assert.ok(html.includes('v'+require('../package.json').version+' DEMO')&&html.includes('loop_studio_career_v19'),'offline build current version and isolated save key');
 for(const f of ['engine.js','audio.js','characters-ui.js','tutorial.js','app.js'])new vm.Script(fs.readFileSync(path.join(root,'dist',f),'utf8'),{filename:f});
 console.log('UI checks passed: individual ramp hints, unavailable role, escaped names, five inline scripts, current offline build.');
 
